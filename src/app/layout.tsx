@@ -14,8 +14,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Zylo Restaurant Web",
-  description: "Multi-tenant restaurant website platform",
+  title: "Fish Station | Seafood Restaurant in Kathmandu",
+  description: "Fresh seafood in Sano Gaucharan / Bhatkekopul, Kathmandu.",
 };
 
 export default function RootLayout({
