@@ -10,23 +10,37 @@ import {
 } from "react";
 import type { AddToCartInput, CartItem } from "./cart.types";
 
+type CartOpenBehavior = "manual" | "first-item" | "always";
+
 type CartContextValue = {
     items: CartItem[];
     isOpen: boolean;
     itemCount: number;
     subtotal: number;
+    hasItems: boolean;
     openCart: () => void;
     closeCart: () => void;
+    toggleCart: () => void;
     addItem: (input: AddToCartInput) => void;
     increaseQty: (menuItemId: string) => void;
     decreaseQty: (menuItemId: string) => void;
     removeItem: (menuItemId: string) => void;
     clearCart: () => void;
+    isInCart: (menuItemId: string) => boolean;
+    getItemQty: (menuItemId: string) => number;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-export function CartProvider({ children }: { children: ReactNode }) {
+type CartProviderProps = {
+    children: ReactNode;
+    openBehavior?: CartOpenBehavior;
+};
+
+export function CartProvider({
+                                 children,
+                                 openBehavior = "manual",
+                             }: CartProviderProps) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -38,38 +52,54 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setIsOpen(false);
     }, []);
 
+    const toggleCart = useCallback(() => {
+        setIsOpen((prev) => !prev);
+    }, []);
+
     const clearCart = useCallback(() => {
         setItems([]);
+        setIsOpen(false);
     }, []);
 
-    const addItem = useCallback((input: AddToCartInput) => {
-        setItems((prev) => {
-            const existing = prev.find(
-                (item) => item.menuItemId === input.menuItemId
-            );
+    const addItem = useCallback(
+        (input: AddToCartInput) => {
+            let wasCartEmpty = false;
 
-            if (existing) {
-                return prev.map((item) =>
-                    item.menuItemId === input.menuItemId
-                        ? { ...item, quantity: item.quantity + 1 }
-                        : item
+            setItems((prev) => {
+                wasCartEmpty = prev.length === 0;
+
+                const existing = prev.find(
+                    (item) => item.menuItemId === input.menuItemId
                 );
+
+                if (existing) {
+                    return prev.map((item) =>
+                        item.menuItemId === input.menuItemId
+                            ? { ...item, quantity: item.quantity + 1 }
+                            : item
+                    );
+                }
+
+                return [
+                    ...prev,
+                    {
+                        id: `cart-${input.menuItemId}`,
+                        menuItemId: input.menuItemId,
+                        name: input.name,
+                        price: input.price,
+                        quantity: 1,
+                    },
+                ];
+            });
+
+            if (openBehavior === "always") {
+                setIsOpen(true);
+            } else if (openBehavior === "first-item" && wasCartEmpty) {
+                setIsOpen(true);
             }
-
-            return [
-                ...prev,
-                {
-                    id: `cart-${input.menuItemId}`,
-                    menuItemId: input.menuItemId,
-                    name: input.name,
-                    price: input.price,
-                    quantity: 1,
-                },
-            ];
-        });
-
-        setIsOpen(true);
-    }, []);
+        },
+        [openBehavior]
+    );
 
     const increaseQty = useCallback((menuItemId: string) => {
         setItems((prev) =>
@@ -86,7 +116,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             prev
                 .map((item) =>
                     item.menuItemId === menuItemId
-                        ? { ...item, quantity: Math.max(item.quantity - 1, 0) }
+                        ? { ...item, quantity: item.quantity - 1 }
                         : item
                 )
                 .filter((item) => item.quantity > 0)
@@ -96,6 +126,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const removeItem = useCallback((menuItemId: string) => {
         setItems((prev) => prev.filter((item) => item.menuItemId !== menuItemId));
     }, []);
+
+    const isInCart = useCallback(
+        (menuItemId: string) => {
+            return items.some((item) => item.menuItemId === menuItemId);
+        },
+        [items]
+    );
+
+    const getItemQty = useCallback(
+        (menuItemId: string) => {
+            const item = items.find((cartItem) => cartItem.menuItemId === menuItemId);
+            return item?.quantity ?? 0;
+        },
+        [items]
+    );
 
     const itemCount = useMemo(
         () => items.reduce((sum, item) => sum + item.quantity, 0),
@@ -107,32 +152,42 @@ export function CartProvider({ children }: { children: ReactNode }) {
         [items]
     );
 
+    const hasItems = items.length > 0;
+
     const value = useMemo<CartContextValue>(
         () => ({
             items,
             isOpen,
             itemCount,
             subtotal,
+            hasItems,
             openCart,
             closeCart,
+            toggleCart,
             addItem,
             increaseQty,
             decreaseQty,
             removeItem,
             clearCart,
+            isInCart,
+            getItemQty,
         }),
         [
             items,
             isOpen,
             itemCount,
             subtotal,
+            hasItems,
             openCart,
             closeCart,
+            toggleCart,
             addItem,
             increaseQty,
             decreaseQty,
             removeItem,
             clearCart,
+            isInCart,
+            getItemQty,
         ]
     );
 

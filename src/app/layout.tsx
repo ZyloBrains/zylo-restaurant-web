@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Poppins } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const inter = Inter({
@@ -50,13 +51,17 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
+};
+
+export const viewport: Viewport = {
   themeColor: "#0A2540",
-  viewport: "width=device-width, initial-scale=1",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
-                                     children,
-                                   }: Readonly<{
+                                    children,
+                                  }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
@@ -65,6 +70,16 @@ export default function RootLayout({
           className={`${inter.variable} ${poppins.variable} font-[var(--font-body)] antialiased bg-[var(--color-background)] text-[var(--color-text)]`}
       >
       {children}
+
+      <Toaster
+          position="top-center"
+          offset="80px"
+          closeButton
+          duration={2200}
+          toastOptions={{
+            unstyled: true,
+          }}
+      />
       </body>
       </html>
   );
