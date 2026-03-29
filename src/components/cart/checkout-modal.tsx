@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { X, CheckCircle2 } from "lucide-react";
 import { useCart } from "@/features/cart/cart-context";
 import type { CheckoutFormData } from "@/features/checkout/checkout.types";
 import {
@@ -24,7 +25,7 @@ export function CheckoutModal({
                                   restaurantName,
                                   whatsappNumber,
                               }: CheckoutModalProps) {
-    const { items, subtotal, isOpen, closeCart } = useCart();
+    const { items, subtotal, closeCart } = useCart();
 
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -65,15 +66,15 @@ export function CheckoutModal({
             alert("Please enter customer name and phone.");
             return;
         }
-
         setIsSuccess(true);
     }
 
     return (
         <>
-            <div className="border-t border-slate-200 px-5 py-4">
-                <div className="mb-4 flex items-center justify-between">
-                    <span className="text-sm text-[var(--color-text-muted)]">Subtotal</span>
+            {/* FOOTER BUTTON */}
+            <div className="border-t border-[var(--color-border)] px-5 py-4">
+                <div className="mb-4 flex items-center justify-between text-sm">
+                    <span className="text-[var(--color-text-muted)]">Subtotal</span>
                     <span className="text-lg font-bold text-[var(--color-primary)]">
             NPR {subtotal}
           </span>
@@ -81,54 +82,54 @@ export function CheckoutModal({
 
                 <button
                     onClick={openCheckout}
-                    className="w-full rounded-[var(--radius-button)] bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    className="btn-primary w-full"
                     disabled={items.length === 0}
                 >
                     Proceed to Checkout
                 </button>
             </div>
 
-            {isCheckoutOpen ? (
+            {/* OVERLAY */}
+            {isCheckoutOpen && (
                 <button
                     aria-label="Close checkout overlay"
-                    className="fixed inset-0 z-[60] bg-black/40"
+                    className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm"
                     onClick={closeCheckout}
                 />
-            ) : null}
+            )}
 
+            {/* MODAL */}
             <div
                 className={`fixed inset-x-0 bottom-0 z-[70] mx-auto max-h-[92vh] w-full max-w-4xl overflow-hidden rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 md:bottom-6 md:rounded-3xl ${
                     isCheckoutOpen ? "translate-y-0" : "translate-y-[110%]"
                 }`}
             >
-                <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-                    <h2
-                        className="text-lg font-semibold"
-                        style={{ fontFamily: "var(--font-heading, Poppins)" }}
-                    >
-                        Checkout
-                    </h2>
+                {/* HEADER */}
+                <div className="flex items-center justify-between border-b border-[var(--color-border)] px-5 py-4">
+                    <h2 className="text-lg font-semibold">Checkout</h2>
+
                     <button
                         onClick={closeCheckout}
-                        className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium"
+                        className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--color-border)]"
                     >
-                        Close
+                        <X className="h-4 w-4" />
                     </button>
                 </div>
 
+                {/* SUCCESS STATE */}
                 {isSuccess ? (
                     <div className="grid gap-6 p-6 md:p-8">
-                        <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6">
-                            <h3
-                                className="text-2xl font-bold text-emerald-700"
-                                style={{ fontFamily: "var(--font-heading, Poppins)" }}
-                            >
-                                Demo order placed successfully
-                            </h3>
-                            <p className="mt-3 text-sm text-emerald-800">
-                                This is still static demo mode. In the real version, this will save
-                                the order in the backend and then redirect to WhatsApp.
-                            </p>
+                        <div className="flex items-start gap-3 rounded-3xl border border-emerald-200 bg-emerald-50 p-6">
+                            <CheckCircle2 className="mt-1 h-6 w-6 text-emerald-600" />
+                            <div>
+                                <h3 className="text-xl font-bold text-emerald-700">
+                                    Demo order placed successfully
+                                </h3>
+                                <p className="mt-2 text-sm text-emerald-800">
+                                    In production, this will be saved to backend before redirecting
+                                    to WhatsApp.
+                                </p>
+                            </div>
                         </div>
 
                         <div className="flex flex-wrap gap-3">
@@ -136,7 +137,7 @@ export function CheckoutModal({
                                 href={whatsappLink}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="rounded-[var(--radius-button)] bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-white"
+                                className="btn-primary"
                             >
                                 Send via WhatsApp
                             </a>
@@ -147,106 +148,98 @@ export function CheckoutModal({
                                     closeCheckout();
                                     closeCart();
                                 }}
-                                className="rounded-[var(--radius-button)] border border-slate-300 px-5 py-3 text-sm font-semibold"
+                                className="btn-secondary"
                             >
                                 Finish Demo
                             </button>
                         </div>
                     </div>
                 ) : (
-                    <div className="grid gap-0 md:grid-cols-[1fr_0.95fr]">
-                        <div className="border-b border-slate-200 p-5 md:border-b-0 md:border-r md:p-6">
-                            <h3
-                                className="text-lg font-semibold"
-                                style={{ fontFamily: "var(--font-heading, Poppins)" }}
-                            >
-                                Customer Details
-                            </h3>
+                    <div className="grid md:grid-cols-[1fr_0.95fr]">
+
+                        {/* LEFT FORM */}
+                        <div className="border-b border-[var(--color-border)] p-5 md:border-b-0 md:border-r md:p-6">
+                            <h3 className="text-lg font-semibold">Customer Details</h3>
 
                             <div className="mt-5 grid gap-4">
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium">
-                                        Name <span className="text-red-500">*</span>
-                                    </label>
-                                    <input
-                                        value={form.customerName}
-                                        onChange={(e) => updateField("customerName", e.target.value)}
-                                        className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-[var(--color-primary)]"
-                                        placeholder="Enter customer name"
-                                    />
-                                </div>
+                                {[
+                                    {
+                                        label: "Name *",
+                                        key: "customerName",
+                                        placeholder: "Enter customer name",
+                                    },
+                                    {
+                                        label: "Phone *",
+                                        key: "customerPhone",
+                                        placeholder: "98XXXXXXXX",
+                                    },
+                                ].map((field) => (
+                                    <div key={field.key}>
+                                        <label className="mb-2 block text-sm font-medium">
+                                            {field.label}
+                                        </label>
+                                        <input
+                                            value={form[field.key as keyof CheckoutFormData] as string}
+                                            onChange={(e) =>
+                                                updateField(field.key as any, e.target.value)
+                                            }
+                                            className="w-full rounded-xl border border-[var(--color-border)] px-4 py-3 focus:border-[var(--color-primary)] outline-none"
+                                            placeholder={field.placeholder}
+                                        />
+                                    </div>
+                                ))}
 
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium">
-                                        Phone <span className="text-red-500">*</span>
-                                    </label>
-                                    <input
-                                        value={form.customerPhone}
-                                        onChange={(e) => updateField("customerPhone", e.target.value)}
-                                        className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-[var(--color-primary)]"
-                                        placeholder="98XXXXXXXX"
-                                    />
-                                </div>
+                                <textarea
+                                    value={form.customerAddress}
+                                    onChange={(e) =>
+                                        updateField("customerAddress", e.target.value)
+                                    }
+                                    className="min-h-24 w-full rounded-xl border border-[var(--color-border)] px-4 py-3"
+                                    placeholder="Address"
+                                />
 
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium">Address</label>
-                                    <textarea
-                                        value={form.customerAddress}
-                                        onChange={(e) => updateField("customerAddress", e.target.value)}
-                                        className="min-h-24 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-[var(--color-primary)]"
-                                        placeholder="Enter delivery address"
-                                    />
-                                </div>
+                                <textarea
+                                    value={form.customerNotes}
+                                    onChange={(e) =>
+                                        updateField("customerNotes", e.target.value)
+                                    }
+                                    className="min-h-24 w-full rounded-xl border border-[var(--color-border)] px-4 py-3"
+                                    placeholder="Notes"
+                                />
 
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium">Notes</label>
-                                    <textarea
-                                        value={form.customerNotes}
-                                        onChange={(e) => updateField("customerNotes", e.target.value)}
-                                        className="min-h-24 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-[var(--color-primary)]"
-                                        placeholder="Less spicy, call before delivery, etc."
-                                    />
-                                </div>
-
-                                <button
-                                    onClick={handlePlaceDemoOrder}
-                                    className="rounded-[var(--radius-button)] bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-white"
-                                >
+                                <button onClick={handlePlaceDemoOrder} className="btn-primary">
                                     Place Demo Order
                                 </button>
                             </div>
                         </div>
 
+                        {/* RIGHT SUMMARY */}
                         <div className="p-5 md:p-6">
-                            <h3
-                                className="text-lg font-semibold"
-                                style={{ fontFamily: "var(--font-heading, Poppins)" }}
-                            >
-                                Order Summary
-                            </h3>
+                            <h3 className="text-lg font-semibold">Order Summary</h3>
 
                             <div className="mt-5 space-y-3">
                                 {items.map((item) => (
-                                    <div
-                                        key={item.menuItemId}
-                                        className="flex items-start justify-between gap-4 rounded-2xl border border-slate-200 p-4"
-                                    >
-                                        <div>
-                                            <p className="font-medium">{item.name}</p>
-                                            <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-                                                NPR {item.price} × {item.quantity}
+                                    <div key={item.menuItemId} className="card-base p-4">
+                                        <div className="flex justify-between">
+                                            <div>
+                                                <p className="font-medium">{item.name}</p>
+                                                <p className="text-sm text-[var(--color-text-muted)]">
+                                                    NPR {item.price} × {item.quantity}
+                                                </p>
+                                            </div>
+                                            <p className="font-semibold text-[var(--color-primary)]">
+                                                NPR {item.price * item.quantity}
                                             </p>
                                         </div>
-                                        <p className="text-sm font-semibold text-[var(--color-primary)]">
-                                            NPR {item.price * item.quantity}
-                                        </p>
                                     </div>
                                 ))}
                             </div>
 
                             <div className="mt-5 rounded-2xl bg-[var(--color-surface)] p-4">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-[var(--color-text-muted)]">Total</span>
+                                <div className="flex justify-between">
+                  <span className="text-sm text-[var(--color-text-muted)]">
+                    Total
+                  </span>
                                     <span className="text-lg font-bold text-[var(--color-primary)]">
                     NPR {subtotal}
                   </span>
@@ -257,7 +250,7 @@ export function CheckoutModal({
                                 <h4 className="text-sm font-semibold text-[var(--color-primary)]">
                                     WhatsApp Preview
                                 </h4>
-                                <pre className="mt-3 whitespace-pre-wrap rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs leading-6 text-slate-700">
+                                <pre className="mt-3 whitespace-pre-wrap rounded-2xl border border-[var(--color-border)] bg-slate-50 p-4 text-xs">
                   {whatsappMessage}
                 </pre>
                             </div>

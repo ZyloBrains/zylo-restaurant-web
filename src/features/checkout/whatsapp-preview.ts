@@ -1,26 +1,37 @@
 import type { CheckoutPayload } from "./checkout.types";
 
 export function buildWhatsAppOrderMessage(payload: CheckoutPayload): string {
+    const {
+        customer,
+        items,
+        pricing,
+        restaurantName,
+    } = payload;
+
     const lines: string[] = [
-        `Hello ${payload.restaurantName}, I would like to place an order.`,
+        `Hello ${restaurantName}, I would like to place an order.`,
         "",
-        `Name: ${payload.customerName}`,
-        `Phone: ${payload.customerPhone}`,
-        `Address: ${payload.customerAddress || "-"}`,
+        `Name: ${customer.name}`,
+        `Phone: ${customer.phone}`,
+        `Address: ${customer.address || "-"}`,
         "",
         "Items:",
-        ...payload.items.map(
-            (item) => `- ${item.name} x ${item.quantity} = NPR ${item.price * item.quantity}`
+        ...items.map(
+            (item) =>
+                `- ${item.name} x ${item.quantity} = NPR ${
+                    item.price * item.quantity
+                }`
         ),
         "",
-        `Notes: ${payload.customerNotes || "-"}`,
+        `Notes: ${customer.notes || "-"}`,
         `Payment: COD`,
-        `Total: NPR ${payload.subtotal}`,
+        `Total: NPR ${pricing.subtotal}`,
     ];
 
     return lines.join("\n");
 }
 
 export function buildWhatsAppLink(phone: string, message: string): string {
-    return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    const cleanPhone = phone.replace(/\D/g, ""); // remove spaces, dashes
+    return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
 }

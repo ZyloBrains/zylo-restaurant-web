@@ -1,5 +1,6 @@
 "use client";
 
+import { PhoneCall, MessageCircle, ShoppingCart } from "lucide-react";
 import { useCart } from "@/features/cart/cart-context";
 
 type MobileBottomBarProps = {
@@ -14,27 +15,38 @@ export function MobileBottomBar({
     const { itemCount, openCart } = useCart();
 
     return (
-        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 p-3 backdrop-blur md:hidden">
+        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--color-border)] bg-white/95 p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] backdrop-blur-md md:hidden">
             <div className="grid grid-cols-3 gap-2">
                 <a
                     href={`tel:${phone}`}
-                    className="rounded-[var(--radius-button)] border border-slate-300 px-3 py-3 text-center text-sm font-semibold"
+                    className="inline-flex items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[var(--color-border)] bg-white px-3 py-3 text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
                 >
-                    Call
+                    <PhoneCall className="h-4 w-4" />
+                    <span>Call</span>
                 </a>
+
                 <a
                     href={`https://wa.me/${whatsappNumber}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="rounded-[var(--radius-button)] border border-[var(--color-primary)] px-3 py-3 text-center text-sm font-semibold text-[var(--color-primary)]"
+                    className="inline-flex items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[var(--color-primary)] bg-white px-3 py-3 text-sm font-semibold text-[var(--color-primary)] transition hover:bg-slate-50"
                 >
-                    WhatsApp
+                    <MessageCircle className="h-4 w-4" />
+                    <span>WhatsApp</span>
                 </a>
+
                 <button
                     onClick={openCart}
-                    className="rounded-[var(--radius-button)] bg-[var(--color-primary)] px-3 py-3 text-center text-sm font-semibold text-white"
+                    className="relative inline-flex items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--color-primary)] px-3 py-3 text-sm font-semibold text-white transition hover:bg-[var(--color-primary-hover)]"
                 >
-                    Cart ({itemCount})
+                    <ShoppingCart className="h-4 w-4" />
+                    <span>Cart</span>
+
+                    {itemCount > 0 && (
+                        <span className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-cyan-500 px-1 text-[10px] font-bold text-white shadow-sm">
+              {itemCount}
+            </span>
+                    )}
                 </button>
             </div>
         </div>

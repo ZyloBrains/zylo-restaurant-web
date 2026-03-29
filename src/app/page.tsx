@@ -9,16 +9,16 @@ export default function HomePage() {
     const themeStyle = buildThemeStyle(tenant.theme);
 
     return (
-        <main
+        <div
             className="min-h-screen pb-24 md:pb-0"
             style={{
                 ...themeStyle,
-                fontFamily: "var(--font-body, Inter)",
+                fontFamily: "var(--font-body, Inter, sans-serif)",
                 backgroundColor: "var(--color-background)",
                 color: "var(--color-text)",
             }}
         >
             <MenuClientShell tenant={tenant} menu={menu} />
-        </main>
+        </div>
     );
 }

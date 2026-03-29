@@ -1,3 +1,6 @@
+"use client";
+
+import { PhoneCall, MessageCircle, Mail, MapPin } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { SectionTitle } from "@/components/ui/section-title";
 
@@ -17,47 +20,83 @@ export function ContactSection({
                                    mapsUrl,
                                }: ContactSectionProps) {
     return (
-        <section id="contact" className="py-16 md:py-20">
+        <section id="contact" className="section-surface py-16 md:py-20">
             <Container>
                 <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+
+                    {/* LEFT SIDE */}
                     <div>
                         <SectionTitle
                             eyebrow="Contact"
                             title="Make it easy for customers to reach you"
-                            description="For the Nepal market, phone and WhatsApp should always be fast, visible, and thumb-friendly."
+                            description="Phone and WhatsApp should always be fast, visible, and thumb-friendly for Kathmandu customers."
                         />
 
                         <div className="mt-8 space-y-4">
-                            <a
-                                href={`tel:${phone}`}
-                                className="block rounded-[var(--radius-button)] bg-[var(--color-primary)] px-5 py-4 text-center font-semibold text-white"
-                            >
+
+                            {/* CALL BUTTON */}
+                            <a href={`tel:${phone}`} className="btn-primary w-full gap-2">
+                                <PhoneCall className="h-4 w-4" />
                                 Call {phone}
                             </a>
 
+                            {/* WHATSAPP BUTTON */}
                             <a
                                 href={`https://wa.me/${whatsappNumber}`}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="block rounded-[var(--radius-button)] border border-[var(--color-primary)] px-5 py-4 text-center font-semibold text-[var(--color-primary)]"
+                                className="btn-secondary w-full gap-2"
                             >
+                                <MessageCircle className="h-4 w-4" />
                                 WhatsApp Us
                             </a>
 
-                            <div className="rounded-[var(--radius-card)] border border-slate-200 p-5 shadow-[var(--shadow-card)]">
-                                <p className="text-sm font-semibold text-[var(--color-primary)]">Address</p>
-                                <p className="mt-2 text-sm text-[var(--color-text-muted)]">{address}</p>
+                            {/* INFO CARD */}
+                            <div className="card-base space-y-4 p-5">
 
-                                <p className="mt-4 text-sm font-semibold text-[var(--color-primary)]">Email</p>
-                                <p className="mt-2 text-sm text-[var(--color-text-muted)]">{email}</p>
+                                {/* ADDRESS */}
+                                <div className="flex items-start gap-3">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-50 text-[var(--color-accent)]">
+                                        <MapPin className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+                                            Address
+                                        </p>
+                                        <p className="mt-1 text-sm text-[var(--color-text)]">
+                                            {address}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* EMAIL */}
+                                <div className="flex items-start gap-3">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-50 text-[var(--color-accent)]">
+                                        <Mail className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+                                            Email
+                                        </p>
+                                        <p className="mt-1 text-sm text-[var(--color-text)]">
+                                            {email}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* SUPPORT NOTE */}
+                            <div className="rounded-2xl bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-muted)]">
+                                Tip: Call or message before visiting for faster service and availability.
                             </div>
                         </div>
                     </div>
 
-                    <div className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-3 shadow-[var(--shadow-card)]">
+                    {/* MAP */}
+                    <div className="card-base p-3">
                         <iframe
                             src={mapsUrl}
-                            className="h-[380px] w-full rounded-2xl"
+                            className="h-[380px] w-full rounded-2xl border-0"
                             loading="lazy"
                             referrerPolicy="no-referrer-when-downgrade"
                         />

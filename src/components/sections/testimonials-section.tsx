@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Star } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { SectionTitle } from "@/components/ui/section-title";
 import { fadeUp, staggerContainer } from "@/lib/utils/animations";
@@ -8,26 +9,29 @@ import { fadeUp, staggerContainer } from "@/lib/utils/animations";
 const testimonials = [
     {
         name: "Aarav",
+        role: "Seafood Lover",
         text: "Fresh taste, good portion size, and very easy to order. Perfect for seafood lovers in Kathmandu.",
     },
     {
         name: "Sita",
+        role: "Regular Customer",
         text: "The grilled fish feels premium and the ordering experience is simple and fast.",
     },
     {
         name: "Rohan",
+        role: "Local Food Explorer",
         text: "A restaurant like this stands out more when the website makes calling and WhatsApp ordering effortless.",
     },
 ];
 
 export function TestimonialsSection() {
     return (
-        <section className="bg-[var(--color-surface)] py-16 md:py-20">
+        <section className="py-16 md:py-20">
             <Container>
                 <SectionTitle
                     eyebrow="Testimonials"
                     title="Build trust before the customer even visits"
-                    description="Testimonials or trust indicators make the demo feel more complete and business-ready."
+                    description="Testimonials, social proof, and premium presentation help visitors feel confident about ordering, calling, or visiting."
                 />
 
                 <motion.div
@@ -41,14 +45,34 @@ export function TestimonialsSection() {
                         <motion.div
                             key={testimonial.name}
                             variants={fadeUp}
-                            className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-6 shadow-[var(--shadow-card)]"
+                            className="card-base card-hover h-full p-6"
                         >
+                            <div className="mb-4 flex items-center gap-1 text-amber-500">
+                                <Star className="h-4 w-4 fill-current" />
+                                <Star className="h-4 w-4 fill-current" />
+                                <Star className="h-4 w-4 fill-current" />
+                                <Star className="h-4 w-4 fill-current" />
+                                <Star className="h-4 w-4 fill-current" />
+                            </div>
+
                             <p className="text-sm leading-7 text-[var(--color-text-muted)]">
                                 “{testimonial.text}”
                             </p>
-                            <p className="mt-5 font-semibold text-[var(--color-primary)]">
-                                {testimonial.name}
-                            </p>
+
+                            <div className="mt-6 flex items-center gap-3">
+                                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-cyan-50 text-sm font-bold text-[var(--color-accent)]">
+                                    {testimonial.name.charAt(0)}
+                                </div>
+
+                                <div>
+                                    <p className="font-semibold text-[var(--color-primary)]">
+                                        {testimonial.name}
+                                    </p>
+                                    <p className="text-xs text-[var(--color-text-muted)]">
+                                        {testimonial.role}
+                                    </p>
+                                </div>
+                            </div>
                         </motion.div>
                     ))}
                 </motion.div>

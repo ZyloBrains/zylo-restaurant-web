@@ -27,55 +27,59 @@ export function MenuClientShell({ tenant, menu }: MenuClientShellProps) {
 
     return (
         <CartProvider>
-            <Header restaurantName={tenant.restaurantName} />
+            <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-text)]">
+                <Header restaurantName={tenant.restaurantName} />
 
-            <HeroSection
-                restaurantName={tenant.restaurantName}
-                title={tenant.heroTitle}
-                subtitle={tenant.heroSubtitle}
-                phone={tenant.phone}
-            />
+                <main>
+                    <HeroSection
+                        restaurantName={tenant.restaurantName}
+                        title={tenant.heroTitle}
+                        subtitle={tenant.heroSubtitle}
+                        phone={tenant.phone}
+                    />
 
-            <AboutSection
-                description={tenant.description}
-                address={address}
-            />
+                    <AboutSection
+                        description={tenant.description}
+                        address={address}
+                    />
 
-            <WhyChooseUsSection />
+                    <WhyChooseUsSection />
 
-            <MenuSection menu={menu} />
+                    <MenuSection menu={menu} />
 
-            <GallerySection />
+                    <GallerySection />
 
-            <ServicesSection />
+                    <ServicesSection />
 
-            <OpeningHoursSection hours={tenant.openingHours} />
+                    <OpeningHoursSection hours={tenant.openingHours} />
 
-            <TestimonialsSection />
+                    <TestimonialsSection />
 
-            <ContactSection
-                phone={tenant.phone}
-                whatsappNumber={tenant.whatsappNumber}
-                email={tenant.email}
-                address={address}
-                mapsUrl={tenant.mapsUrl}
-            />
+                    <ContactSection
+                        phone={tenant.phone}
+                        whatsappNumber={tenant.whatsappNumber}
+                        email={tenant.email}
+                        address={address}
+                        mapsUrl={tenant.mapsUrl}
+                    />
+                </main>
 
-            <Footer
-                restaurantName={tenant.restaurantName}
-                address={address}
-                phone={tenant.phone}
-            />
+                <Footer
+                    restaurantName={tenant.restaurantName}
+                    address={address}
+                    phone={tenant.phone}
+                />
 
-            <MobileBottomBar
-                phone={tenant.phone}
-                whatsappNumber={tenant.whatsappNumber}
-            />
+                <MobileBottomBar
+                    phone={tenant.phone}
+                    whatsappNumber={tenant.whatsappNumber}
+                />
 
-            <CartDrawer
-                restaurantName={tenant.restaurantName}
-                whatsappNumber={tenant.whatsappNumber}
-            />
+                <CartDrawer
+                    restaurantName={tenant.restaurantName}
+                    whatsappNumber={tenant.whatsappNumber}
+                />
+            </div>
         </CartProvider>
     );
 }
