@@ -13,9 +13,17 @@ const poppins = Poppins({
   variable: "--font-heading",
 });
 
-export const metadata: Metadata = {
-  title: "Fish Station | Seafood Restaurant in Kathmandu",
-  description: "Fresh seafood in Sano Gaucharan / Bhatkekopul, Kathmandu.",
+export const metadata = {
+  title: "Fish Station | Seafood in Kathmandu",
+  description: "Fresh seafood in Bhatkekopul Kathmandu",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "Fish Station",
+    description: "Fresh seafood in Kathmandu",
+    images: ["/images/logo.png"],
+  },
 };
 
 export default function RootLayout({

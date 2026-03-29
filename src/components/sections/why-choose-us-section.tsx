@@ -1,5 +1,9 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { Container } from "@/components/ui/container";
 import { SectionTitle } from "@/components/ui/section-title";
+import { fadeUp, staggerContainer } from "@/lib/utils/animations";
 
 const highlights = [
     {
@@ -29,10 +33,17 @@ export function WhyChooseUsSection() {
                     description="This section helps clients understand the business value the website is communicating to visitors."
                 />
 
-                <div className="mt-10 grid gap-6 md:grid-cols-3">
+                <motion.div
+                    variants={staggerContainer}
+                    initial="initial"
+                    whileInView="animate"
+                    viewport={{ once: true, amount: 0.2 }}
+                    className="mt-10 grid gap-6 md:grid-cols-3"
+                >
                     {highlights.map((item) => (
-                        <div
+                        <motion.div
                             key={item.title}
+                            variants={fadeUp}
                             className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-6 shadow-[var(--shadow-card)]"
                         >
                             <div className="mb-4 h-12 w-12 rounded-2xl bg-[var(--color-surface)]" />
@@ -45,9 +56,9 @@ export function WhyChooseUsSection() {
                             <p className="mt-3 text-sm leading-6 text-[var(--color-text-muted)]">
                                 {item.description}
                             </p>
-                        </div>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
             </Container>
         </section>
     );

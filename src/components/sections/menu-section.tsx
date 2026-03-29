@@ -1,17 +1,21 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { Container } from "@/components/ui/container";
 import { SectionTitle } from "@/components/ui/section-title";
 import type { MenuData } from "@/features/menu/menu.types";
 import { useCart } from "@/features/cart/cart-context";
+import { fadeUp, staggerContainer } from "@/lib/utils/animations";
 
 type MenuSectionProps = {
     menu: MenuData;
 };
 
 export function MenuSection({ menu }: MenuSectionProps) {
-    const [activeCategoryId, setActiveCategoryId] = useState(menu.categories[0]?.id ?? "");
+    const [activeCategoryId, setActiveCategoryId] = useState(
+        menu.categories[0]?.id ?? ""
+    );
     const { addItem } = useCart();
 
     const activeCategory = menu.categories.find((c) => c.id === activeCategoryId);
@@ -55,13 +59,27 @@ export function MenuSection({ menu }: MenuSectionProps) {
                     </p>
                 ) : null}
 
-                <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                <motion.div
+                    variants={staggerContainer}
+                    initial="initial"
+                    whileInView="animate"
+                    viewport={{ once: true, amount: 0.15 }}
+                    className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3"
+                >
                     {filteredItems.map((item) => (
-                        <div
+                        <motion.div
                             key={item.id}
+                            variants={fadeUp}
                             className="group rounded-[var(--radius-card)] border border-slate-200 bg-white p-5 shadow-[var(--shadow-card)] transition-transform duration-300 hover:-translate-y-1"
                         >
-                            <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-slate-200 to-slate-100" />
+                            <div className="aspect-[4/3] overflow-hidden rounded-2xl">
+                                <img
+                                    src={item.imageUrl}
+                                    alt={item.name}
+                                    loading="lazy"
+                                    className="h-full w-full object-cover"
+                                />
+                            </div>
 
                             <div className="mt-5">
                                 <div className="flex items-start justify-between gap-4">
@@ -106,9 +124,9 @@ export function MenuSection({ menu }: MenuSectionProps) {
                                     Add to Cart
                                 </button>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
             </Container>
         </section>
     );

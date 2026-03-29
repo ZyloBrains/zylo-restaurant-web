@@ -1,4 +1,8 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { Container } from "@/components/ui/container";
+import { fadeUp } from "@/lib/utils/animations";
 
 type HeroSectionProps = {
     restaurantName: string;
@@ -16,12 +20,16 @@ export function HeroSection({
     return (
         <section
             id="top"
-            className="relative overflow-hidden border-b border-slate-200 bg-[var(--color-surface)] py-20 md:py-28"
+            className="relative overflow-hidden bg-gradient-to-br from-[#0A2540] via-[#0f2f52] to-[#1e3a5f] py-20 text-white md:py-28"
         >
+            <div className="pointer-events-none absolute inset-0 opacity-30">
+                <div className="absolute left-1/2 top-0 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-cyan-400 blur-[120px]" />
+            </div>
+
             <Container>
                 <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-                    <div>
-                        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-accent)]">
+                    <motion.div {...fadeUp}>
+                        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
                             {restaurantName}
                         </p>
 
@@ -32,49 +40,53 @@ export function HeroSection({
                             {title}
                         </h1>
 
-                        <p className="mt-5 max-w-2xl text-base text-[var(--color-text-muted)] md:text-lg">
+                        <p className="mt-5 max-w-2xl text-base text-slate-200 md:text-lg">
                             {subtitle}
                         </p>
 
                         <div className="mt-8 flex flex-wrap gap-3">
-                            <a
-                                href="#menu"
-                                className="rounded-[var(--radius-button)] bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-white"
-                            >
+                            <a href="#menu" className="btn-primary">
                                 Order Now
                             </a>
+
                             <a
                                 href="#menu"
-                                className="rounded-[var(--radius-button)] border border-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-[var(--color-primary)]"
+                                className="rounded-[var(--radius-button)] border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-white"
                             >
                                 View Menu
                             </a>
+
                             <a
                                 href={`tel:${phone}`}
-                                className="rounded-[var(--radius-button)] border border-slate-300 px-5 py-3 text-sm font-semibold"
+                                className="rounded-[var(--radius-button)] border border-white/30 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
                             >
                                 Call Now
                             </a>
                         </div>
-                    </div>
+                    </motion.div>
 
-                    <div className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[var(--shadow-card)]">
-                        <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-slate-200 to-slate-100" />
-                        <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-                            <div className="rounded-xl bg-[var(--color-surface)] p-3">
-                                <p className="text-lg font-bold text-[var(--color-primary)]">Fresh</p>
-                                <p className="mt-1 text-xs text-[var(--color-text-muted)]">Seafood</p>
-                            </div>
-                            <div className="rounded-xl bg-[var(--color-surface)] p-3">
-                                <p className="text-lg font-bold text-[var(--color-primary)]">Fast</p>
-                                <p className="mt-1 text-xs text-[var(--color-text-muted)]">Ordering</p>
-                            </div>
-                            <div className="rounded-xl bg-[var(--color-surface)] p-3">
-                                <p className="text-lg font-bold text-[var(--color-primary)]">Local</p>
-                                <p className="mt-1 text-xs text-[var(--color-text-muted)]">Delivery</p>
+                    <motion.div {...fadeUp}>
+                        <div className="rounded-[var(--radius-card)] border border-white/10 bg-white/5 p-4 backdrop-blur">
+                            <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-slate-200 to-slate-100" />
+
+                            <div className="mt-4 grid grid-cols-3 gap-3 text-center">
+                                <div className="rounded-xl bg-white/10 p-3">
+                                    <p className="text-lg font-bold text-cyan-300">Fresh</p>
+                                    <p className="mt-1 text-xs text-slate-300">Seafood</p>
+                                </div>
+
+                                <div className="rounded-xl bg-white/10 p-3">
+                                    <p className="text-lg font-bold text-cyan-300">Fast</p>
+                                    <p className="mt-1 text-xs text-slate-300">Ordering</p>
+                                </div>
+
+                                <div className="rounded-xl bg-white/10 p-3">
+                                    <p className="text-lg font-bold text-cyan-300">Local</p>
+                                    <p className="mt-1 text-xs text-slate-300">Delivery</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             </Container>
         </section>

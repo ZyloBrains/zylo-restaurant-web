@@ -1,5 +1,9 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { Container } from "@/components/ui/container";
 import { SectionTitle } from "@/components/ui/section-title";
+import { fadeUp, staggerContainer } from "@/lib/utils/animations";
 
 const galleryItems = [
     "Signature Grilled Fish",
@@ -18,16 +22,30 @@ export function GallerySection() {
                     description="For client presentation, placeholders are fine now. Later these can be replaced with actual food and restaurant photos."
                 />
 
-                <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-                    {galleryItems.map((item) => (
-                        <div key={item} className="group">
-                            <div className="aspect-[4/5] rounded-[var(--radius-card)] border border-slate-200 bg-gradient-to-br from-slate-200 to-slate-100 shadow-[var(--shadow-card)] transition-transform duration-300 group-hover:-translate-y-1" />
+                <motion.div
+                    variants={staggerContainer}
+                    initial="initial"
+                    whileInView="animate"
+                    viewport={{ once: true, amount: 0.2 }}
+                    className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-4"
+                >
+                    {galleryItems.map((item, index) => (
+                        <motion.div key={item} variants={fadeUp} className="group">
+                            <div className="aspect-[4/5] overflow-hidden rounded-[var(--radius-card)] border border-slate-200 shadow-[var(--shadow-card)]">
+                                <img
+                                    src={`/images/gallery-${index + 1}.jpg`}
+                                    alt={item}
+                                    loading="lazy"
+                                    className="h-full w-full object-cover"
+                                />
+                            </div>
+
                             <p className="mt-3 text-sm font-medium text-[var(--color-text-muted)]">
                                 {item}
                             </p>
-                        </div>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
             </Container>
         </section>
     );

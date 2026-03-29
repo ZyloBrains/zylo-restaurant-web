@@ -1,5 +1,9 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { Container } from "@/components/ui/container";
 import { SectionTitle } from "@/components/ui/section-title";
+import { fadeUp, staggerContainer } from "@/lib/utils/animations";
 
 const testimonials = [
     {
@@ -26,10 +30,17 @@ export function TestimonialsSection() {
                     description="Testimonials or trust indicators make the demo feel more complete and business-ready."
                 />
 
-                <div className="mt-10 grid gap-6 md:grid-cols-3">
+                <motion.div
+                    variants={staggerContainer}
+                    initial="initial"
+                    whileInView="animate"
+                    viewport={{ once: true, amount: 0.2 }}
+                    className="mt-10 grid gap-6 md:grid-cols-3"
+                >
                     {testimonials.map((testimonial) => (
-                        <div
+                        <motion.div
                             key={testimonial.name}
+                            variants={fadeUp}
                             className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-6 shadow-[var(--shadow-card)]"
                         >
                             <p className="text-sm leading-7 text-[var(--color-text-muted)]">
@@ -38,9 +49,9 @@ export function TestimonialsSection() {
                             <p className="mt-5 font-semibold text-[var(--color-primary)]">
                                 {testimonial.name}
                             </p>
-                        </div>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
             </Container>
         </section>
     );
