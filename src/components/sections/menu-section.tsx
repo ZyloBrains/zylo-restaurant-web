@@ -14,6 +14,8 @@ export function MenuSection({ menu }: MenuSectionProps) {
     const [activeCategoryId, setActiveCategoryId] = useState(menu.categories[0]?.id ?? "");
     const { addItem } = useCart();
 
+    const activeCategory = menu.categories.find((c) => c.id === activeCategoryId);
+
     const filteredItems = useMemo(() => {
         return menu.items.filter((item) => item.categoryId === activeCategoryId);
     }, [menu.items, activeCategoryId]);
@@ -47,11 +49,17 @@ export function MenuSection({ menu }: MenuSectionProps) {
                     })}
                 </div>
 
+                {activeCategory?.description ? (
+                    <p className="mt-5 text-sm text-[var(--color-text-muted)]">
+                        {activeCategory.description}
+                    </p>
+                ) : null}
+
                 <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {filteredItems.map((item) => (
                         <div
                             key={item.id}
-                            className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-5 shadow-[var(--shadow-card)]"
+                            className="group rounded-[var(--radius-card)] border border-slate-200 bg-white p-5 shadow-[var(--shadow-card)] transition-transform duration-300 hover:-translate-y-1"
                         >
                             <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-slate-200 to-slate-100" />
 
@@ -67,33 +75,36 @@ export function MenuSection({ menu }: MenuSectionProps) {
                                     {item.shortDescription}
                                 </p>
 
-                                <div className="mt-5 flex items-center justify-between">
-                                    <div className="flex gap-2">
-                                        {item.isSpicy ? (
-                                            <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-600">
-                        Spicy
-                      </span>
-                                        ) : null}
-                                        {item.isFeatured ? (
-                                            <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
-                        Popular
-                      </span>
-                                        ) : null}
-                                    </div>
-
-                                    <button
-                                        onClick={() =>
-                                            addItem({
-                                                menuItemId: item.id,
-                                                name: item.name,
-                                                price: item.price,
-                                            })
-                                        }
-                                        className="rounded-[var(--radius-button)] bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white"
-                                    >
-                                        Add to Cart
-                                    </button>
+                                <div className="mt-4 flex flex-wrap gap-2">
+                                    {item.isSpicy ? (
+                                        <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-600">
+                      Spicy
+                    </span>
+                                    ) : null}
+                                    {item.isFeatured ? (
+                                        <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+                      Popular
+                    </span>
+                                    ) : null}
+                                    {item.isAvailable ? (
+                                        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                      Available
+                    </span>
+                                    ) : null}
                                 </div>
+
+                                <button
+                                    onClick={() =>
+                                        addItem({
+                                            menuItemId: item.id,
+                                            name: item.name,
+                                            price: item.price,
+                                        })
+                                    }
+                                    className="mt-5 rounded-[var(--radius-button)] bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white"
+                                >
+                                    Add to Cart
+                                </button>
                             </div>
                         </div>
                     ))}

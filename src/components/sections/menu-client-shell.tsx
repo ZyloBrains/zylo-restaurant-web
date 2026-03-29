@@ -6,9 +6,13 @@ import { MobileBottomBar } from "@/components/layout/mobile-bottom-bar";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { AboutSection } from "@/components/sections/about-section";
 import { ContactSection } from "@/components/sections/contact-section";
+import { GallerySection } from "@/components/sections/gallery-section";
 import { HeroSection } from "@/components/sections/hero-section";
 import { MenuSection } from "@/components/sections/menu-section";
+import { OpeningHoursSection } from "@/components/sections/opening-hours-section";
 import { ServicesSection } from "@/components/sections/services-section";
+import { TestimonialsSection } from "@/components/sections/testimonials-section";
+import { WhyChooseUsSection } from "@/components/sections/why-choose-us-section";
 import { CartProvider } from "@/features/cart/cart-context";
 import type { MenuData } from "@/features/menu/menu.types";
 import type { TenantInfo } from "@/features/tenant/tenant.types";
@@ -37,9 +41,17 @@ export function MenuClientShell({ tenant, menu }: MenuClientShellProps) {
                 address={address}
             />
 
+            <WhyChooseUsSection />
+
             <MenuSection menu={menu} />
 
+            <GallerySection />
+
             <ServicesSection />
+
+            <OpeningHoursSection hours={tenant.openingHours} />
+
+            <TestimonialsSection />
 
             <ContactSection
                 phone={tenant.phone}
