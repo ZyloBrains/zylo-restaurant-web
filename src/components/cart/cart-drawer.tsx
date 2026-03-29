@@ -1,12 +1,20 @@
 "use client";
 
+import { CheckoutModal } from "@/components/cart/checkout-modal";
 import { useCart } from "@/features/cart/cart-context";
 
-export function CartDrawer() {
+type CartDrawerProps = {
+    restaurantName: string;
+    whatsappNumber: string;
+};
+
+export function CartDrawer({
+                               restaurantName,
+                               whatsappNumber,
+                           }: CartDrawerProps) {
     const {
         items,
         isOpen,
-        subtotal,
         closeCart,
         increaseQty,
         decreaseQty,
@@ -100,21 +108,10 @@ export function CartDrawer() {
                     )}
                 </div>
 
-                <div className="border-t border-slate-200 px-5 py-4">
-                    <div className="mb-4 flex items-center justify-between">
-                        <span className="text-sm text-[var(--color-text-muted)]">Subtotal</span>
-                        <span className="text-lg font-bold text-[var(--color-primary)]">
-              NPR {subtotal}
-            </span>
-                    </div>
-
-                    <button
-                        className="w-full rounded-[var(--radius-button)] bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-white"
-                        disabled={items.length === 0}
-                    >
-                        Proceed to Checkout
-                    </button>
-                </div>
+                <CheckoutModal
+                    restaurantName={restaurantName}
+                    whatsappNumber={whatsappNumber}
+                />
             </aside>
         </>
     );

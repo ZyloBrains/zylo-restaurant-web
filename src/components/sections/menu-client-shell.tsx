@@ -60,7 +60,10 @@ export function MenuClientShell({ tenant, menu }: MenuClientShellProps) {
                 whatsappNumber={tenant.whatsappNumber}
             />
 
-            <CartDrawer />
+            <CartDrawer
+                restaurantName={tenant.restaurantName}
+                whatsappNumber={tenant.whatsappNumber}
+            />
         </CartProvider>
     );
 }
