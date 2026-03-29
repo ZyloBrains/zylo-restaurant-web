@@ -8,12 +8,13 @@ import { sectionImages } from "@/lib/constants/section-images";
 
 export function GallerySection() {
     return (
-        <section className="section-surface py-16 md:py-20">
+        <section id="gallery" className="section-mesh section-glow-both section-divider-top py-16 md:py-20">
             <Container>
                 <SectionTitle
                     eyebrow="Gallery"
                     title="A visual taste of Fish Station"
                     description="Showcase signature dishes, fresh seafood plating, and restaurant ambience with a clean, premium gallery layout."
+                    align="center"
                 />
 
                 <motion.div

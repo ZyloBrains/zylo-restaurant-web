@@ -26,12 +26,13 @@ const testimonials = [
 
 export function TestimonialsSection() {
     return (
-        <section className="py-16 md:py-20">
+        <section id="testimonials" className="section-plain section-divider-top py-16 md:py-20">
             <Container>
                 <SectionTitle
                     eyebrow="Testimonials"
                     title="Build trust before the customer even visits"
                     description="Testimonials, social proof, and premium presentation help visitors feel confident about ordering, calling, or visiting."
+                    align="center"
                 />
 
                 <motion.div

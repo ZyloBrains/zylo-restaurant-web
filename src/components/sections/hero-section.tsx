@@ -21,7 +21,7 @@ export function HeroSection({
     return (
         <section
             id="top"
-            className="relative overflow-hidden bg-gradient-to-br from-[#0A2540] via-[#0f2f52] to-[#1e3a5f] py-20 text-white md:py-28"
+            className="relative overflow-hidden bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.18),transparent_24%),linear-gradient(135deg,#0A2540_0%,#0f2f52_50%,#1e3a5f_100%)] py-20 text-white md:py-28"
         >
             {/* Background glow */}
             <div className="pointer-events-none absolute inset-0 opacity-30">

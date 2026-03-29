@@ -17,7 +17,7 @@ const highlights = [
 
 export function AboutSection({ description, address }: AboutSectionProps) {
     return (
-        <section id="about" className="py-16 md:py-20">
+        <section id="about" className="section-plain section-divider-top py-16 md:py-20">
             <Container>
                 <div className="grid gap-10 lg:grid-cols-[1fr_0.95fr] lg:items-center">
                     <div>

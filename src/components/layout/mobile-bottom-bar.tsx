@@ -15,7 +15,7 @@ export function MobileBottomBar({
     const { itemCount, openCart } = useCart();
 
     return (
-        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--color-border)] bg-white/95 p-3 pb-[calc(env(safe-area-inset-bottom)+12px)] backdrop-blur-md md:hidden">
+        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--color-border)] bg-white/90 backdrop-blur-xl p-3 md:hidden">
             <div className="grid grid-cols-3 gap-2">
                 <a
                     href={`tel:${phone}`}

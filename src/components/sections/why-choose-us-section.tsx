@@ -29,7 +29,7 @@ const highlights = [
 
 export function WhyChooseUsSection() {
     return (
-        <section className="section-surface py-16 md:py-20">
+        <section id="why-choose-us" className="section-soft-gradient bg-soft-pattern section-divider-top py-16 md:py-20">
             <Container>
                 <SectionTitle
                     eyebrow="Why Choose Us"

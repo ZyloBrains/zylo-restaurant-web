@@ -29,7 +29,7 @@ export function MenuSection({ menu }: MenuSectionProps) {
     }, [menu.items, activeCategoryId]);
 
     return (
-        <section id="menu" className="py-16 md:py-20">
+        <section id="menu" className="section-plain section-divider-top py-16 md:py-20">
             <Container>
                 <SectionTitle
                     eyebrow="Menu"

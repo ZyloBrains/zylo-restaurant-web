@@ -22,7 +22,7 @@ export function OpeningHoursSection({ hours }: OpeningHoursSectionProps) {
     const todayName = weekOrder[todayIndex];
 
     return (
-        <section className="section-surface py-16 md:py-20">
+        <section id="hours" className="section-surface section-glow-cyan section-divider-top py-16 md:py-20">
             <Container>
                 <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
                     <div>

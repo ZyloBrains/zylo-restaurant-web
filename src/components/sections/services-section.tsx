@@ -39,7 +39,7 @@ const services = [
 
 export function ServicesSection() {
     return (
-        <section id="services" className="py-16 md:py-20">
+        <section id="services" className="section-plain section-divider-top py-16 md:py-20">
             <Container>
                 <SectionTitle
                     eyebrow="Services"

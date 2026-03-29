@@ -20,7 +20,7 @@ export function ContactSection({
                                    mapsUrl,
                                }: ContactSectionProps) {
     return (
-        <section id="contact" className="section-surface py-16 md:py-20">
+        <section id="contact" className="section-soft-gradient bg-soft-pattern section-divider-top py-16 md:py-20">
             <Container>
                 <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
 

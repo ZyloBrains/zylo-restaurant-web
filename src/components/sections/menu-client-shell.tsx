@@ -27,7 +27,7 @@ export function MenuClientShell({ tenant, menu }: MenuClientShellProps) {
 
     return (
         <CartProvider>
-            <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-text)]">
+            <div className="min-h-screen bg-[var(--color-background)] pb-24 text-[var(--color-text)] md:pb-0">
                 <Header restaurantName={tenant.restaurantName} />
 
                 <main>
@@ -47,13 +47,13 @@ export function MenuClientShell({ tenant, menu }: MenuClientShellProps) {
 
                     <MenuSection menu={menu} />
 
-                    <GallerySection />
-
                     <ServicesSection />
 
-                    <OpeningHoursSection hours={tenant.openingHours} />
+                    <GallerySection />
 
                     <TestimonialsSection />
+
+                    <OpeningHoursSection hours={tenant.openingHours} />
 
                     <ContactSection
                         phone={tenant.phone}
