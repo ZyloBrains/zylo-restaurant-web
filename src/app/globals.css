@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+:root {
+  --color-primary: #0A2540;
+  --color-secondary: #4A5568;
+  --color-accent: #2EC5CE;
+  --color-background: #FFFFFF;
+  --color-surface: #F8FAFC;
+  --color-text: #111827;
+  --color-text-muted: #6B7280;
+  --radius-button: 14px;
+  --radius-card: 20px;
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+* {
+  box-sizing: border-box;
+}
