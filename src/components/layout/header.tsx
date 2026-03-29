@@ -1,10 +1,15 @@
+"use client";
+
 import { Container } from "@/components/ui/container";
+import { useCart } from "@/features/cart/cart-context";
 
 type HeaderProps = {
     restaurantName: string;
 };
 
 export function Header({ restaurantName }: HeaderProps) {
+    const { itemCount, openCart } = useCart();
+
     return (
         <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur">
             <Container className="flex h-16 items-center justify-between">
@@ -20,18 +25,22 @@ export function Header({ restaurantName }: HeaderProps) {
                     <a href="#about" className="text-sm font-medium text-slate-700 transition hover:text-[var(--color-primary)]">
                         About
                     </a>
+                    <a href="#menu" className="text-sm font-medium text-slate-700 transition hover:text-[var(--color-primary)]">
+                        Menu
+                    </a>
                     <a href="#services" className="text-sm font-medium text-slate-700 transition hover:text-[var(--color-primary)]">
                         Services
                     </a>
                     <a href="#contact" className="text-sm font-medium text-slate-700 transition hover:text-[var(--color-primary)]">
                         Contact
                     </a>
-                    <a
-                        href="#menu"
+
+                    <button
+                        onClick={openCart}
                         className="rounded-[var(--radius-button)] bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white"
                     >
-                        View Menu
-                    </a>
+                        Cart ({itemCount})
+                    </button>
                 </nav>
             </Container>
         </header>
