@@ -3,6 +3,9 @@ import { Inter, Poppins } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
+import { CartProvider } from "@/features/cart/cart-context";
+import { AppShell } from "@/components/layout/app-shell";
+import { fishStationTenant as tenant } from "@/features/tenant/tenant.mock";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-body",
@@ -17,40 +20,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: {
-    default: "Fish Station | Seafood in Kathmandu",
-    template: "%s | Fish Station",
-  },
+  title: "Fish Station | Seafood in Kathmandu",
   description:
-      "Fresh seafood restaurant in Bhatkekopul, Kathmandu. Order online, call, or WhatsApp for fast delivery and dine-in.",
-  keywords: [
-    "Fish Station",
-    "Seafood Kathmandu",
-    "Fish restaurant Nepal",
-    "Grilled fish Kathmandu",
-    "Seafood delivery Kathmandu",
-  ],
-  authors: [{ name: "Fish Station" }],
-  icons: {
-    icon: "/favicon.ico",
-  },
-  openGraph: {
-    title: "Fish Station | Fresh Seafood in Kathmandu",
-    description:
-        "Premium seafood experience in Kathmandu. Order online or via WhatsApp.",
-    url: "https://fishstation.yourdomain.com",
-    siteName: "Fish Station",
-    images: [
-      {
-        url: "/images/logo.png",
-        width: 1200,
-        height: 630,
-        alt: "Fish Station Seafood",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
+    "Fresh seafood restaurant in Kathmandu. Order online or visit us.",
 };
 
 export const viewport: Viewport = {
@@ -60,27 +32,29 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({
-                                    children,
-                                  }: Readonly<{
+  children,
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-      <html lang="en">
+    <html lang="en">
       <body
-          className={`${inter.variable} ${poppins.variable} font-[var(--font-body)] antialiased bg-[var(--color-background)] text-[var(--color-text)]`}
+        className={`${inter.variable} ${poppins.variable} font-[var(--font-body)] antialiased bg-[var(--color-background)] text-[var(--color-text)]`}
       >
-      {children}
+        <CartProvider>
+          <AppShell tenant={tenant}>
+            {children}
+          </AppShell>
+        </CartProvider>
 
-      <Toaster
+        <Toaster
           position="top-center"
           offset="80px"
           closeButton
           duration={2200}
-          toastOptions={{
-            unstyled: true,
-          }}
-      />
+          toastOptions={{ unstyled: true }}
+        />
       </body>
-      </html>
+    </html>
   );
 }

@@ -40,11 +40,11 @@ const services = [
 export function ServicesSection() {
     return (
         <section id="services" className="section-plain section-divider-top py-16 md:py-20">
-            <Container>
+            <Container className="relative max-w-[1540px] px-3 lg:px-4 xl:px-6">
                 <SectionTitle
-                    eyebrow="Services"
-                    title="Built around how local customers actually order"
-                    description="Fish Station is designed for dine-in, quick calls, WhatsApp, takeaway, and fast delivery — all optimized for local convenience."
+                   
+                    title="Services"
+                    align="center"
                 />
 
                 <motion.div

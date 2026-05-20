@@ -1,205 +1,213 @@
 "use client";
 
 import {
-    createContext,
-    useCallback,
-    useContext,
-    useMemo,
-    useState,
-    type ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
 } from "react";
 import type { AddToCartInput, CartItem } from "./cart.types";
 
 type CartOpenBehavior = "manual" | "first-item" | "always";
 
 type CartContextValue = {
-    items: CartItem[];
-    isOpen: boolean;
-    itemCount: number;
-    subtotal: number;
-    hasItems: boolean;
-    openCart: () => void;
-    closeCart: () => void;
-    toggleCart: () => void;
-    addItem: (input: AddToCartInput) => void;
-    increaseQty: (menuItemId: string) => void;
-    decreaseQty: (menuItemId: string) => void;
-    removeItem: (menuItemId: string) => void;
-    clearCart: () => void;
-    isInCart: (menuItemId: string) => boolean;
-    getItemQty: (menuItemId: string) => number;
+  items: CartItem[];
+  isOpen: boolean;
+  itemCount: number;
+  subtotal: number;
+  hasItems: boolean;
+
+  openCart: () => void;
+  closeCart: () => void;
+  toggleCart: () => void;
+
+  addItem: (input: AddToCartInput) => void;
+  increaseQty: (menuItemId: string) => void;
+  decreaseQty: (menuItemId: string) => void;
+  removeItem: (menuItemId: string) => void;
+  clearCart: () => void;
+
+  isInCart: (menuItemId: string) => boolean;
+  getItemQty: (menuItemId: string) => number;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
 
 type CartProviderProps = {
-    children: ReactNode;
-    openBehavior?: CartOpenBehavior;
+  children: ReactNode;
+  openBehavior?: CartOpenBehavior;
 };
 
 export function CartProvider({
-                                 children,
-                                 openBehavior = "manual",
-                             }: CartProviderProps) {
-    const [items, setItems] = useState<CartItem[]>([]);
-    const [isOpen, setIsOpen] = useState(false);
+  children,
+  openBehavior = "manual",
+}: CartProviderProps) {
+  const [items, setItems] = useState<CartItem[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
 
-    const openCart = useCallback(() => {
-        setIsOpen(true);
-    }, []);
+  const openCart = useCallback(() => setIsOpen(true), []);
+  const closeCart = useCallback(() => setIsOpen(false), []);
+  const toggleCart = useCallback(() => setIsOpen((p) => !p), []);
 
-    const closeCart = useCallback(() => {
-        setIsOpen(false);
-    }, []);
+  const clearCart = useCallback(() => {
+    setItems([]);
+    setIsOpen(false);
+  }, []);
 
-    const toggleCart = useCallback(() => {
-        setIsOpen((prev) => !prev);
-    }, []);
+  const addItem = useCallback(
+    (input: AddToCartInput) => {
+      let wasEmpty = false;
 
-    const clearCart = useCallback(() => {
-        setItems([]);
-        setIsOpen(false);
-    }, []);
+      setItems((prev) => {
+        wasEmpty = prev.length === 0;
 
-    const addItem = useCallback(
-        (input: AddToCartInput) => {
-            let wasCartEmpty = false;
+        const existing = prev.find(
+          (i) => i.menuItemId === input.menuItemId
+        );
 
-            setItems((prev) => {
-                wasCartEmpty = prev.length === 0;
+        // ✅ update qty
+        if (existing) {
+          return prev.map((item) =>
+            item.menuItemId === input.menuItemId
+              ? {
+                  ...item,
+                  quantity: item.quantity + 1,
 
-                const existing = prev.find(
-                    (item) => item.menuItemId === input.menuItemId
-                );
-
-                if (existing) {
-                    return prev.map((item) =>
-                        item.menuItemId === input.menuItemId
-                            ? { ...item, quantity: item.quantity + 1 }
-                            : item
-                    );
+                  // 🔥 NEVER LOSE IMAGE
+                  imageUrl: item.imageUrl || input.imageUrl,
                 }
+              : item
+          );
+        }
 
-                return [
-                    ...prev,
-                    {
-                        id: `cart-${input.menuItemId}`,
-                        menuItemId: input.menuItemId,
-                        name: input.name,
-                        price: input.price,
-                        quantity: 1,
-                    },
-                ];
-            });
+        // ✅ new item
+        return [
+          ...prev,
+          {
+            id: `cart-${input.menuItemId}`,
+            menuItemId: input.menuItemId,
+            name: input.name,
+            price: input.price,
+            quantity: 1,
 
-            if (openBehavior === "always") {
-                setIsOpen(true);
-            } else if (openBehavior === "first-item" && wasCartEmpty) {
-                setIsOpen(true);
-            }
-        },
-        [openBehavior]
+            // 🔥 FIXED: always store image
+            imageUrl: input.imageUrl,
+
+            isSpicy: input.isSpicy,
+            isFeatured: input.isFeatured,
+          },
+        ];
+      });
+
+      // cart open behavior
+      if (openBehavior === "always") setIsOpen(true);
+      else if (openBehavior === "first-item" && wasEmpty) setIsOpen(true);
+    },
+    [openBehavior]
+  );
+
+  const increaseQty = useCallback((menuItemId: string) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.menuItemId === menuItemId
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      )
     );
+  }, []);
 
-    const increaseQty = useCallback((menuItemId: string) => {
-        setItems((prev) =>
-            prev.map((item) =>
-                item.menuItemId === menuItemId
-                    ? { ...item, quantity: item.quantity + 1 }
-                    : item
-            )
-        );
-    }, []);
-
-    const decreaseQty = useCallback((menuItemId: string) => {
-        setItems((prev) =>
-            prev
-                .map((item) =>
-                    item.menuItemId === menuItemId
-                        ? { ...item, quantity: item.quantity - 1 }
-                        : item
-                )
-                .filter((item) => item.quantity > 0)
-        );
-    }, []);
-
-    const removeItem = useCallback((menuItemId: string) => {
-        setItems((prev) => prev.filter((item) => item.menuItemId !== menuItemId));
-    }, []);
-
-    const isInCart = useCallback(
-        (menuItemId: string) => {
-            return items.some((item) => item.menuItemId === menuItemId);
-        },
-        [items]
+  const decreaseQty = useCallback((menuItemId: string) => {
+    setItems((prev) =>
+      prev
+        .map((item) =>
+          item.menuItemId === menuItemId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+        .filter((item) => item.quantity > 0)
     );
+  }, []);
 
-    const getItemQty = useCallback(
-        (menuItemId: string) => {
-            const item = items.find((cartItem) => cartItem.menuItemId === menuItemId);
-            return item?.quantity ?? 0;
-        },
-        [items]
+  const removeItem = useCallback((menuItemId: string) => {
+    setItems((prev) =>
+      prev.filter((item) => item.menuItemId !== menuItemId)
     );
+  }, []);
 
-    const itemCount = useMemo(
-        () => items.reduce((sum, item) => sum + item.quantity, 0),
-        [items]
-    );
+  const isInCart = useCallback(
+    (menuItemId: string) =>
+      items.some((item) => item.menuItemId === menuItemId),
+    [items]
+  );
 
-    const subtotal = useMemo(
-        () => items.reduce((sum, item) => sum + item.price * item.quantity, 0),
-        [items]
-    );
+  const getItemQty = useCallback(
+    (menuItemId: string) => {
+      return items.find((i) => i.menuItemId === menuItemId)?.quantity ?? 0;
+    },
+    [items]
+  );
 
-    const hasItems = items.length > 0;
+  const itemCount = useMemo(
+    () => items.reduce((s, i) => s + i.quantity, 0),
+    [items]
+  );
 
-    const value = useMemo<CartContextValue>(
-        () => ({
-            items,
-            isOpen,
-            itemCount,
-            subtotal,
-            hasItems,
-            openCart,
-            closeCart,
-            toggleCart,
-            addItem,
-            increaseQty,
-            decreaseQty,
-            removeItem,
-            clearCart,
-            isInCart,
-            getItemQty,
-        }),
-        [
-            items,
-            isOpen,
-            itemCount,
-            subtotal,
-            hasItems,
-            openCart,
-            closeCart,
-            toggleCart,
-            addItem,
-            increaseQty,
-            decreaseQty,
-            removeItem,
-            clearCart,
-            isInCart,
-            getItemQty,
-        ]
-    );
+  const subtotal = useMemo(
+    () => items.reduce((s, i) => s + i.price * i.quantity, 0),
+    [items]
+  );
 
-    return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  const hasItems = items.length > 0;
+
+  const value = useMemo(
+    () => ({
+      items,
+      isOpen,
+      itemCount,
+      subtotal,
+      hasItems,
+
+      openCart,
+      closeCart,
+      toggleCart,
+
+      addItem,
+      increaseQty,
+      decreaseQty,
+      removeItem,
+      clearCart,
+
+      isInCart,
+      getItemQty,
+    }),
+    [
+      items,
+      isOpen,
+      itemCount,
+      subtotal,
+      hasItems,
+      openCart,
+      closeCart,
+      toggleCart,
+      addItem,
+      increaseQty,
+      decreaseQty,
+      removeItem,
+      clearCart,
+      isInCart,
+      getItemQty,
+    ]
+  );
+
+  return (
+    <CartContext.Provider value={value}>{children}</CartContext.Provider>
+  );
 }
 
 export function useCart() {
-    const context = useContext(CartContext);
-
-    if (!context) {
-        throw new Error("useCart must be used within CartProvider");
-    }
-
-    return context;
+  const ctx = useContext(CartContext);
+  if (!ctx) throw new Error("useCart must be used within CartProvider");
+  return ctx;
 }

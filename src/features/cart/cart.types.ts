@@ -1,37 +1,37 @@
 export type CartItem = {
-    id: string;
-    menuItemId: string;
+  id: string;
+  menuItemId: string;
 
-    name: string;
-    price: number;
-    quantity: number;
+  name: string;
+  price: number;
+  quantity: number;
 
-    // UI Enhancements
-    imageUrl?: string;
+  // ✅ MUST be required (prevents broken images)
+  imageUrl: string;
 
-    // Tags / Badges
-    isSpicy?: boolean;
-    isFeatured?: boolean;
+  // UI tags
+  isSpicy?: boolean;
+  isFeatured?: boolean;
 
-    // Future extensibility (VERY IMPORTANT for SaaS)
-    notes?: string;            // e.g. "Less spicy"
-    variantId?: string;        // size/variant support later
-    variantName?: string;      // e.g. "Large", "Half"
+  // future
+  notes?: string;
+  variantId?: string;
+  variantName?: string;
 };
 
 export type AddToCartInput = {
-    menuItemId: string;
+  menuItemId: string;
 
-    name: string;
-    price: number;
+  name: string;
+  price: number;
 
-    // Optional UI
-    imageUrl?: string;
-    isSpicy?: boolean;
-    isFeatured?: boolean;
+  // ✅ make required to avoid missing images
+  imageUrl: string;
 
-    // Future-ready
-    notes?: string;
-    variantId?: string;
-    variantName?: string;
+  isSpicy?: boolean;
+  isFeatured?: boolean;
+
+  notes?: string;
+  variantId?: string;
+  variantName?: string;
 };

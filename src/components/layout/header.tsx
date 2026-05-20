@@ -1,108 +1,166 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Menu, ShoppingCart } from "lucide-react";
+import { Menu, ShoppingCart, X, User } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { useCart } from "@/features/cart/cart-context";
+import { AuthButton } from "@/components/auth/auth-buttton";
 
 type HeaderProps = {
     restaurantName: string;
 };
 
 const navItems = [
-    { label: "About", href: "#about" },
-    { label: "Menu", href: "#menu" },
+    { label: "Home", href: "/" },
+    { label: "Menu", href: "/menu" },
     { label: "Services", href: "#services" },
-    { label: "Contact", href: "#contact" },
 ];
 
 export function Header({ restaurantName }: HeaderProps) {
     const { itemCount, openCart } = useCart();
+
+    const [mobileOpen, setMobileOpen] = useState(false);
     const [animateCart, setAnimateCart] = useState(false);
+
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
         if (itemCount <= 0) return;
 
         setAnimateCart(true);
-
-        const timer = window.setTimeout(() => {
-            setAnimateCart(false);
-        }, 450);
-
-        return () => window.clearTimeout(timer);
+        const t = setTimeout(() => setAnimateCart(false), 400);
+        return () => clearTimeout(t);
     }, [itemCount]);
 
     return (
-        <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-white/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/75">
-            <Container className="flex h-16 items-center justify-between gap-4">
-                <a
-                    href="#top"
-                    className="shrink-0 text-lg font-bold tracking-tight text-[var(--color-primary)] sm:text-xl"
-                    style={{ fontFamily: "var(--font-heading, Poppins)" }}
-                    aria-label={`${restaurantName} home`}
-                >
-                    {restaurantName}
+        <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-white/80 backdrop-blur-md">
+
+            <Container className="relative flex h-16 items-center justify-between max-w-[1540px] px-3 lg:px-4 xl:px-6">
+
+                {/* LOGO */}
+                <a href="#top" className="flex items-center gap-2">
+                    <img
+                        src="/images/logo.png"
+                        alt="logo"
+                        className="h-8 w-8 object-contain"
+                    />
+
+                    <span className="text-xl font-bold text-[var(--color-primary)]">
+                        {restaurantName}
+                    </span>
                 </a>
 
-                <nav className="hidden items-center gap-6 md:flex">
+                {/* NAV */}
+                <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 gap-10">
                     {navItems.map((item) => (
                         <a
                             key={item.label}
                             href={item.href}
-                            className="text-sm font-medium text-[var(--color-text-muted)] transition hover:text-[var(--color-primary)]"
+                            className="text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
                         >
                             {item.label}
                         </a>
                     ))}
-
-                    <button
-                        type="button"
-                        onClick={openCart}
-                        aria-label={`Open cart${itemCount > 0 ? `, ${itemCount} items` : ""}`}
-                        className={`relative inline-flex items-center gap-2 rounded-full bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-95 ${
-                            animateCart ? "scale-105" : "scale-100"
-                        }`}
-                    >
-                        <ShoppingCart
-                            className={`h-4 w-4 ${animateCart ? "animate-bounce" : ""}`}
-                        />
-                        <span>Cart</span>
-
-                        {itemCount > 0 && (
-                            <span className="absolute -right-2 -top-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-cyan-500 px-1 text-[10px] font-bold text-white shadow">
-                {itemCount}
-              </span>
-                        )}
-                    </button>
                 </nav>
 
-                <div className="flex items-center gap-2 md:hidden">
-                    <button
-                        type="button"
-                        aria-label="Open navigation"
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-border)] bg-white text-[var(--color-text)] shadow-sm"
-                    >
-                        <Menu className="h-5 w-5" />
-                    </button>
+                {/* RIGHT SIDE (DESKTOP) */}
+                <div className="hidden md:flex items-center gap-3">
 
+                    {/* AUTH */}
+                    {isLoggedIn ? (
+                        <button
+                            className="w-10 h-10 flex items-center justify-center rounded-full bg-[var(--color-primary)] text-white"
+                        >
+                            <User size={18} />
+                        </button>
+                    ) : (
+                        <AuthButton onLoginSuccess={() => setIsLoggedIn(true)} />
+                    )}
+
+                    {/* CART */}
                     <button
-                        type="button"
                         onClick={openCart}
-                        aria-label={`Open cart${itemCount > 0 ? `, ${itemCount} items` : ""}`}
-                        className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-primary)] text-white shadow-sm"
+                        className="relative bg-[var(--color-primary)] text-white px-4 py-2 rounded-full flex items-center gap-2"
                     >
-                        <ShoppingCart
-                            className={`h-5 w-5 ${animateCart ? "animate-bounce" : ""}`}
-                        />
+                        <ShoppingCart className={animateCart ? "animate-bounce" : ""} />
+                        Cart
 
                         {itemCount > 0 && (
-                            <span className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-cyan-500 px-1 text-[10px] font-bold text-white shadow">
-                {itemCount}
-              </span>
+                            <span className="absolute -top-2 -right-2 bg-cyan-500 text-white text-[10px] px-1 rounded-full">
+                                {itemCount}
+                            </span>
                         )}
                     </button>
+
+                </div>
+
+                {/* MOBILE */}
+                <div className="flex md:hidden items-center gap-2">
+
+                    {/* AUTH (ICON ONLY WHEN LOGGED IN) */}
+                    {isLoggedIn ? (
+                        <button className="p-2 rounded-full bg-[var(--color-primary)] text-white">
+                            <User size={18} />
+                        </button>
+                    ) : (
+                        <AuthButton onLoginSuccess={() => setIsLoggedIn(true)} />
+                    )}
+
+                    {/* CART */}
+                    <button
+                        onClick={openCart}
+                        className="relative p-2 bg-[var(--color-primary)] text-white rounded-full"
+                    >
+                        <ShoppingCart />
+                        {itemCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-cyan-500 text-[10px] px-1 rounded-full">
+                                {itemCount}
+                            </span>
+                        )}
+                    </button>
+
+                    {/* MENU */}
+                    <button
+                        onClick={() => setMobileOpen(!mobileOpen)}
+                        className="p-2 border rounded-full"
+                    >
+                        {mobileOpen ? <X /> : <Menu />}
+                    </button>
+
                 </div>
             </Container>
+
+            {/* MOBILE MENU */}
+            {mobileOpen && (
+                <div
+                    className="md:hidden"
+                    style={{ backgroundColor: "var(--color-primary)" }}
+                >
+                    <nav className="flex flex-col p-4 gap-4 text-white">
+
+                        {navItems.map((item) => (
+                            <a
+                                key={item.label}
+                                href={item.href}
+                                onClick={() => setMobileOpen(false)}
+                            >
+                                {item.label}
+                            </a>
+                        ))}
+
+                        <div className="border-t border-white/20 pt-3">
+                            {isLoggedIn ? (
+                                <div className="flex items-center gap-2 text-white">
+                                    <User size={18} />
+                                </div>
+                            ) : (
+                                <AuthButton onLoginSuccess={() => setIsLoggedIn(true)} />
+                            )}
+                        </div>
+
+                    </nav>
+                </div>
+            )}
         </header>
     );
 }
