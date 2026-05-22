@@ -27,11 +27,10 @@ const testimonials = [
 export function TestimonialsSection() {
     return (
         <section id="testimonials" className="section-plain section-divider-top py-16 md:py-20">
-            <Container>
+           <Container className="relative max-w-[1540px] px-3 lg:px-4 xl:px-6">
                 <SectionTitle
-                    eyebrow="Testimonials"
-                    title="Build trust before the customer even visits"
-                    description="Testimonials, social proof, and premium presentation help visitors feel confident about ordering, calling, or visiting."
+                   
+                    title="Testimonials"
                     align="center"
                 />
 

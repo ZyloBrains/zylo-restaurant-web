@@ -1,85 +1,54 @@
 "use client";
 
-import { Footer } from "@/components/layout/footer";
-import { Header } from "@/components/layout/header";
 import { MobileBottomBar } from "@/components/layout/mobile-bottom-bar";
 import { CartDrawer } from "@/components/cart/cart-drawer";
-import { AboutSection } from "@/components/sections/about-section";
-import { ContactSection } from "@/components/sections/contact-section";
-import { GallerySection } from "@/components/sections/gallery-section";
+
 import { HeroSection } from "@/components/sections/hero-section";
-import { MenuSection } from "@/components/sections/menu-section";
-import { OpeningHoursSection } from "@/components/sections/opening-hours-section";
+import { FevItems, MenuSection } from "@/components/sections/fav-items";
 import { ServicesSection } from "@/components/sections/services-section";
-import { TestimonialsSection } from "@/components/sections/testimonials-section";
-import { WhyChooseUsSection } from "@/components/sections/why-choose-us-section";
-import { CartProvider } from "@/features/cart/cart-context";
 import type { MenuData } from "@/features/menu/menu.types";
 import type { TenantInfo } from "@/features/tenant/tenant.types";
+import ExpoMenu from "./expo-menu";
 
 type MenuClientShellProps = {
-    tenant: TenantInfo;
-    menu: MenuData;
+  tenant: TenantInfo;
+  menu: MenuData;
 };
 
 export function MenuClientShell({ tenant, menu }: MenuClientShellProps) {
-    const address = `${tenant.addressLine1}, ${tenant.area}, ${tenant.city}, ${tenant.country}`;
+  const address = `${tenant.addressLine1}, ${tenant.area}, ${tenant.city}, ${tenant.country}`;
 
-    return (
-        <CartProvider>
-            <div className="min-h-screen bg-[var(--color-background)] pb-24 text-[var(--color-text)] md:pb-0">
-                <Header restaurantName={tenant.restaurantName} />
+  return (
+    <div className="min-h-screen bg-[var(--color-background)] pb-24 text-[var(--color-text)] md:pb-0">
 
-                <main>
-                    <HeroSection
-                        restaurantName={tenant.restaurantName}
-                        title={tenant.heroTitle}
-                        subtitle={tenant.heroSubtitle}
-                        phone={tenant.phone}
-                    />
+      {/* MAIN CONTENT ONLY */}
+      <main>
+        <HeroSection
+          restaurantName={tenant.restaurantName}
+          title={tenant.heroTitle}
+          subtitle={tenant.heroSubtitle}
+          phone={tenant.phone}
+        />
 
-                    <AboutSection
-                        description={tenant.description}
-                        address={address}
-                    />
+        <ExpoMenu menu={menu} />
 
-                    <WhyChooseUsSection />
+        <FevItems menu={menu} />
 
-                    <MenuSection menu={menu} />
+        <ServicesSection />
 
-                    <ServicesSection />
+      </main>
 
-                    <GallerySection />
+      {/* MOBILE ACTION BAR */}
+      <MobileBottomBar
+        phone={tenant.phone}
+        whatsappNumber={tenant.whatsappNumber}
+      />
 
-                    <TestimonialsSection />
-
-                    <OpeningHoursSection hours={tenant.openingHours} />
-
-                    <ContactSection
-                        phone={tenant.phone}
-                        whatsappNumber={tenant.whatsappNumber}
-                        email={tenant.email}
-                        address={address}
-                        mapsUrl={tenant.mapsUrl}
-                    />
-                </main>
-
-                <Footer
-                    restaurantName={tenant.restaurantName}
-                    address={address}
-                    phone={tenant.phone}
-                />
-
-                <MobileBottomBar
-                    phone={tenant.phone}
-                    whatsappNumber={tenant.whatsappNumber}
-                />
-
-                <CartDrawer
-                    restaurantName={tenant.restaurantName}
-                    whatsappNumber={tenant.whatsappNumber}
-                />
-            </div>
-        </CartProvider>
-    );
+      {/* CART SYSTEM */}
+      <CartDrawer
+        restaurantName={tenant.restaurantName}
+        whatsappNumber={tenant.whatsappNumber}
+      />
+    </div>
+  );
 }

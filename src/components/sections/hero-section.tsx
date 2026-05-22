@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Container } from "@/components/ui/container";
 import { fadeUp } from "@/lib/utils/animations";
 import { sectionImages } from "@/lib/constants/section-images";
+import { useEffect, useState } from "react";
 
 type HeroSectionProps = {
     restaurantName: string;
@@ -13,39 +14,78 @@ type HeroSectionProps = {
 };
 
 export function HeroSection({
-                                restaurantName,
-                                title,
-                                subtitle,
-                                phone,
-                            }: HeroSectionProps) {
+    restaurantName,
+    title,
+    subtitle,
+    phone,
+}: HeroSectionProps) {
+
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setIndex((prev) => (prev + 1) % sectionImages.gallery.length);
+        }, 3500);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const current = sectionImages.gallery[index];
+
     return (
         <section
             id="top"
-            className="relative overflow-hidden bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.18),transparent_24%),linear-gradient(135deg,#0A2540_0%,#0f2f52_50%,#1e3a5f_100%)] py-20 text-white md:py-28"
+            className="relative overflow-hidden py-20 md:py-28 text-white"
         >
-            {/* Background glow */}
+
+            {/* 🌄 BACKGROUND IMAGE (HIGH QUALITY FIXED) */}
+            <motion.img
+                key={current.src}
+                src={current.src}
+                alt={current.alt}
+                className="absolute inset-0 h-full w-full object-cover"
+                style={{
+                    transform: "translateZ(0)",
+                    backfaceVisibility: "hidden",
+                    willChange: "transform, opacity",
+                }}
+                initial={{ opacity: 0, scale: 1.08 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.9 }}
+                loading="eager"
+            />
+
+            {/* 🌫️ DARK OVERLAY */}
+            <div className="absolute inset-0 bg-black/55" />
+
+            {/* 🌟 GLOW EFFECT */}
             <div className="pointer-events-none absolute inset-0 opacity-30">
                 <div className="absolute left-1/2 top-0 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-cyan-400 blur-[120px]" />
             </div>
 
-            <Container>
-                <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+            {/* CONTENT */}
+            <Container className="relative max-w-[1540px] px-3 lg:px-4 xl:px-6">
+
+                <div className="flex items-center min-h-[70vh]">
 
                     {/* LEFT CONTENT */}
-                    <motion.div {...fadeUp}>
+                    <motion.div {...fadeUp} className="max-w-3xl">
+
                         <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
                             {restaurantName}
                         </p>
 
                         <h1
-                            className="max-w-4xl text-4xl font-bold tracking-tight md:text-6xl"
-                            style={{ fontFamily: "var(--font-heading, Poppins)" }}
+                            className="text-4xl md:text-6xl font-bold tracking-tight"
+                            style={{
+                                fontFamily: "var(--font-heading, Poppins)",
+                            }}
                         >
-                            {title}
+                            {current.title || title}
                         </h1>
 
-                        <p className="mt-5 max-w-2xl text-base text-slate-200 md:text-lg">
-                            {subtitle}
+                        <p className="mt-5 text-base md:text-lg text-slate-200">
+                            {current.description || subtitle}
                         </p>
 
                         <div className="mt-8 flex flex-wrap gap-3">
@@ -61,50 +101,11 @@ export function HeroSection({
                                 Call Now
                             </a>
                         </div>
+
                     </motion.div>
 
-                    {/* RIGHT IMAGE CARD */}
-                    <motion.div {...fadeUp}>
-                        <div className="rounded-[var(--radius-card)] border border-white/10 bg-white/5 p-4 backdrop-blur">
-
-                            {/* IMAGE */}
-                            <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl">
-                                <img
-                                    src={sectionImages.hero.src}
-                                    alt={sectionImages.hero.alt}
-                                    loading="eager"
-                                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                                />
-
-                                {/* Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-900/20 to-transparent" />
-
-                                {/* Badge */}
-                                <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[var(--color-primary)]">
-                                    Fresh Seafood Daily
-                                </div>
-                            </div>
-
-                            {/* TRUST CARDS */}
-                            <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-                                <div className="rounded-xl bg-white/10 p-3 backdrop-blur">
-                                    <p className="text-lg font-bold text-cyan-300">Fresh</p>
-                                    <p className="mt-1 text-xs text-slate-300">Seafood</p>
-                                </div>
-
-                                <div className="rounded-xl bg-white/10 p-3 backdrop-blur">
-                                    <p className="text-lg font-bold text-cyan-300">Fast</p>
-                                    <p className="mt-1 text-xs text-slate-300">Ordering</p>
-                                </div>
-
-                                <div className="rounded-xl bg-white/10 p-3 backdrop-blur">
-                                    <p className="text-lg font-bold text-cyan-300">Local</p>
-                                    <p className="mt-1 text-xs text-slate-300">Delivery</p>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div>
                 </div>
+
             </Container>
         </section>
     );

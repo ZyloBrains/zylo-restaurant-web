@@ -1,16 +1,21 @@
 import type { TenantThemeTokens } from "@/features/tenant/tenant.types";
+import React from "react";
 
-export function buildThemeStyle(tokens: TenantThemeTokens): React.CSSProperties {
+export function buildThemeStyle(
+  tokens?: TenantThemeTokens
+): React.CSSProperties {
+  if (!tokens) return {};
+
   return {
-    ["--color-primary" as string]: tokens.colorPrimary,
-    ["--color-secondary" as string]: tokens.colorSecondary,
-    ["--color-accent" as string]: tokens.colorAccent,
-    ["--color-background" as string]: tokens.colorBackground,
-    ["--color-surface" as string]: tokens.colorSurface,
-    ["--color-text" as string]: tokens.colorText,
-    ["--color-text-muted" as string]: tokens.colorTextMuted,
-    ["--radius-button" as string]: tokens.radiusButton,
-    ["--radius-card" as string]: tokens.radiusCard,
-    ["--shadow-card" as string]: tokens.shadowCard,
-  };
+    "--color-primary": tokens.colorPrimary,
+    "--color-secondary": tokens.colorSecondary,
+    "--color-accent": tokens.colorAccent,
+    "--color-background": tokens.colorBackground,
+    "--color-surface": tokens.colorSurface,
+    "--color-text": tokens.colorText,
+    "--color-text-muted": tokens.colorTextMuted,
+    "--radius-button": tokens.radiusButton,
+    "--radius-card": tokens.radiusCard,
+    "--shadow-card": tokens.shadowCard,
+  } as React.CSSProperties;
 }
