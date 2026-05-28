@@ -1,7 +1,7 @@
 export type PublicTenant = {
   tenantId: number;
   tenantCode: string;
-  restaurantName: string;
+  restaurantName: string; 
   planCode: string;
   currencyCode: string;
   timezone: string;

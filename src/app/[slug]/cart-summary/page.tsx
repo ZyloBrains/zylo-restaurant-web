@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Trash2, Minus, Plus } from "lucide-react";
 import { useCart } from "@/features/cart/cart-context";
 import { CheckoutModal } from "@/components/cart/checkout-modal";
+import { useTenantStore } from "@/features/tenant/tenant.store";
 
 function getSafeImage(src?: string) {
   if (!src || src.trim() === "") return "/images/placeholder-food.jpg";
@@ -21,8 +22,9 @@ export default function CartSummary() {
     subtotal,
   } = useCart();
 
-  const restaurantName = "Your Restaurant";
-  const whatsappNumber = "9800000000";
+  const tenantInfo= useTenantStore((s)=>s.tenant);
+
+ 
 
   return (
     <div className="bg-[var(--color-background)] min-h-screen py-10 px-4">
@@ -144,8 +146,8 @@ export default function CartSummary() {
             {/* CHECKOUT */}
             <div className="mt-6">
               <CheckoutModal
-                restaurantName={restaurantName}
-                whatsappNumber={whatsappNumber}
+                restaurantName={tenantInfo?.restaurantName as string}
+                whatsappNumber={tenantInfo?.whatsappNumber as string}
               />
             </div>
 

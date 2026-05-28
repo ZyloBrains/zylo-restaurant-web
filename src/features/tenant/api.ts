@@ -24,8 +24,8 @@ async function fetchWithTenant<T>(path: string): Promise<T> {
   return response.json();
 }
 
-export async function getPublicTenant() {
-  return fetchWithTenant<PublicTenant>('/api/v1/public/tenant');
+export async function getPublicTenant(tenantSlug:string) {
+  return fetchWithTenant<PublicTenant>(`/public/${tenantSlug}`);
 }
 
 export async function getPublicRestaurant() {

@@ -4,35 +4,32 @@ import { MobileBottomBar } from "@/components/layout/mobile-bottom-bar";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 
 import { HeroSection } from "@/components/sections/hero-section";
-import { FevItems, MenuSection } from "@/components/sections/fav-items";
+import { FevItems, } from "@/components/sections/fav-items";
 import { ServicesSection } from "@/components/sections/services-section";
-import type { MenuData } from "@/features/menu/menu.types";
-import type { TenantInfo } from "@/features/tenant/tenant.types";
+// import type { MenuData } from "@/features/menu/menu.types";
+// import type { TenantInfo } from "@/features/tenant/tenant.types";
 import ExpoMenu from "./expo-menu";
+import { useTenantStore } from "@/features/tenant/tenant.store";
 
-type MenuClientShellProps = {
-  tenant: TenantInfo;
-  menu: MenuData;
-};
 
-export function MenuClientShell({ tenant, menu }: MenuClientShellProps) {
-  const address = `${tenant.addressLine1}, ${tenant.area}, ${tenant.city}, ${tenant.country}`;
+export function MenuClientShell() {
 
+  const tenantInfo=useTenantStore((s)=>s.tenant);
   return (
     <div className="min-h-screen bg-[var(--color-background)] pb-24 text-[var(--color-text)] md:pb-0">
 
       {/* MAIN CONTENT ONLY */}
       <main>
         <HeroSection
-          restaurantName={tenant.restaurantName}
-          title={tenant.heroTitle}
-          subtitle={tenant.heroSubtitle}
-          phone={tenant.phone}
+          restaurantName={tenantInfo?.restaurantName as string}
+          title={tenantInfo?.heroTitle as string}
+          subtitle={tenantInfo?.heroSubtitle as string}
+          phone={tenantInfo?.phone as string}
         />
 
-        <ExpoMenu menu={menu} />
+        <ExpoMenu />
 
-        <FevItems menu={menu} />
+        <FevItems  />
 
         <ServicesSection />
 
@@ -40,14 +37,14 @@ export function MenuClientShell({ tenant, menu }: MenuClientShellProps) {
 
       {/* MOBILE ACTION BAR */}
       <MobileBottomBar
-        phone={tenant.phone}
-        whatsappNumber={tenant.whatsappNumber}
+        phone={tenantInfo?.phone as string}
+        whatsappNumber={tenantInfo?.whatsappNumber as string}
       />
 
       {/* CART SYSTEM */}
       <CartDrawer
-        restaurantName={tenant.restaurantName}
-        whatsappNumber={tenant.whatsappNumber}
+        restaurantName={tenantInfo?.restaurantName as string}
+        whatsappNumber={tenantInfo?.whatsappNumber as string}
       />
     </div>
   );

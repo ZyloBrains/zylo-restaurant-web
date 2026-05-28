@@ -4,43 +4,53 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { MobileBottomBar } from "@/components/layout/mobile-bottom-bar";
 import { CartDrawer } from "@/components/cart/cart-drawer";
+import React from "react";
+import { useTenantStore } from "@/features/tenant/tenant.store";
 
-import type { TenantInfo } from "@/features/tenant/tenant.types";
 
-type AppShellProps = {
-  tenant: TenantInfo;
-  children: React.ReactNode;
-};
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const tenant = useTenantStore((s)=>s.tenant);
+  const loading= useTenantStore((s)=>s.loading);
+   if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading restaurant...
+      </div>
+    );
+  }
 
-export function AppShell({ tenant, children }: AppShellProps) {
-  const address = `${tenant.addressLine1}, ${tenant.area}, ${tenant.city}, ${tenant.country}`;
+  if (!tenant) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Restaurant not found
+      </div>
+    );
+  }
+
+  const address = `${tenant?.addressLine1}, ${tenant?.area}, ${tenant?.city}, ${tenant?.country}`;
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] pb-24 text-[var(--color-text)] md:pb-0">
 
-      {/* HEADER (GLOBAL) */}
-      <Header restaurantName={tenant.restaurantName} />
+      <Header  />
 
-      {/* PAGE CONTENT */}
       <main>{children}</main>
 
-      {/* FOOTER (GLOBAL) */}
       <Footer
-        restaurantName={tenant.restaurantName}
+        restaurantName={tenant?.restaurantName as string}
         address={address}
-        phone={tenant.phone}
+        phone={tenant?.phone as string}
       />
 
-      {/* MOBILE BAR */}
       <MobileBottomBar
-        phone={tenant.phone}
-        whatsappNumber={tenant.whatsappNumber}
+        phone={tenant?.phone as string}
+        whatsappNumber={tenant?.whatsappNumber as string}
       />
 
-      {/* CART */}
+
       <CartDrawer
-        restaurantName={tenant.restaurantName}
-        whatsappNumber={tenant.whatsappNumber}
+        restaurantName={tenant?.restaurantName as string}
+        whatsappNumber={tenant?.whatsappNumber as string}
       />
     </div>
   );

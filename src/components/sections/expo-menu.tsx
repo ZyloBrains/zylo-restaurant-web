@@ -1,43 +1,88 @@
-
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-import type { MenuData } from "@/features/menu/menu.types";
+import { ItemResponse } from "@/features/menu/menu.types";
 import type { TenantThemeTokens } from "@/features/tenant/tenant.types";
 
 import { buildThemeStyle } from "@/lib/theme/theme.tokens";
 import { SectionTitle } from "../ui/section-title";
 import { Container } from "../ui/container";
+import { useEffect, useState } from "react";
+import { itemService } from "@/services/item.service";
+import { useTenantStore } from "@/features/tenant/tenant.store";
+import { p } from "framer-motion/client";
+import { getSafeImage } from "@/lib/utils/image.utils";
 
-type Props = {
-  menu: MenuData;
-  theme: TenantThemeTokens;
-};
 
-function getSafeImage(src?: string) {
-  if (!src || src.trim() === "") return "/images/placeholder-food.jpg";
-  if (src.startsWith("http")) return src;
-  if (!src.startsWith("/")) return `/${src}`;
-  return src;
-}
+export default function ExpoMenu() {
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+  const slug = useTenantStore((s) => s.tenantSlug);
+  const tenantTheme = useTenantStore((s) => s.tenantTheme);
+  const tenantLoading = useTenantStore((s) => s.loading);
 
-export default function ExpoMenu({ menu, theme }: Props) {
   const router = useRouter();
-  const items = menu.items.slice(0, 10);
+
+  const [items, setItems] = useState<ItemResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      
+      if (!slug) return;
+      setLoading(true);
+      setError(null);
+      console.log("The base url is: ",BASE_URL);
+      try {
+        const fetchItems = await itemService.getItemList(slug, 0, 10);
+        setItems(fetchItems);
+      } catch (err) {
+        console.error("Failed to fetch menu items: ", err);
+        setError("Failed to load menu items");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (slug) {
+      fetchItems();
+    }
+  }, [slug]);
+
+  if (tenantLoading || loading) {
+    return (
+      <section className="py-12">
+        <Container>
+          <div className="flex justify-center items-center h-64">
+            <p className="text-lg">Loading menu...</p>
+          </div>
+        </Container>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-12">
+        <Container>
+          <p className="text-center text-red-500">{error}</p>
+        </Container>
+      </section>
+    );
+  }
 
   return (
     <section
       className="py-12 relative bg-[var(--color-background)]"
-      style={buildThemeStyle(theme)}
+      style={buildThemeStyle(tenantTheme as TenantThemeTokens)}
     >
       <Container className="relative max-w-[1540px] px-3 lg:px-4 xl:px-6">
-        
         {/* TITLE */}
         <div className="mb-8">
           <SectionTitle title="Explore Menu" align="center" />
         </div>
 
-        {/* SLIDER */}
+        {/* ITEMS SLIDER */}
         <div className="relative">
           <div className="flex gap-8 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
             {items.map((item) => (
@@ -51,14 +96,33 @@ export default function ExpoMenu({ menu, theme }: Props) {
                   boxShadow: "var(--shadow-card)",
                 }}
               >
-                {/* IMAGE */}
                 <div className="relative mx-auto h-36 w-36 md:h-40 md:w-40">
-                  <Image
-                    src={getSafeImage(item.imageUrl)}
-                    alt={item.name}
-                    fill
-                    className="object-contain"
-                  />
+                  {item.imageUrl ? (
+                    <Image
+                      src={getSafeImage(item.imageUrl)}
+                      alt={item.name}
+                      fill
+                      sizes="160px"
+                      className="object-contain"
+                      unoptimized
+                    />
+                  ) : (
+                    <div
+                      className="
+                h-full
+                w-full
+                flex
+                items-center
+                justify-center
+                rounded-full
+                bg-slate-100
+                text-sm
+                text-slate-500
+              "
+                    >
+                      No Image
+                    </div>
+                  )}
                 </div>
 
                 {/* NAME */}

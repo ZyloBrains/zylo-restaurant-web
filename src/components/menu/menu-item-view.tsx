@@ -7,8 +7,8 @@ import { MenuItemCard } from "@/components/menu/menu-item-card";
 import type { MenuData } from "@/features/menu/menu.types";
 
 import { MenuSidebar } from "./MenuSidebar";
-import { useMenuScrollSpy } from "@/app/hook/useMenuScrollSpy";
-import { useGroupedMenuItems } from "@/app/hook/useGroupedMenuItems";
+import { useMenuScrollSpy } from "@/app/[slug]/hook/useMenuScrollSpy";
+import { useGroupedMenuItems } from "@/app/[slug]/hook/useGroupedMenuItems";
 
 type Props = {
   menu: MenuData;
@@ -39,7 +39,7 @@ export function MenuItemView({ menu }: Props) {
         {/* SIDEBAR */}
         <MenuSidebar
           categories={menu.categories}
-          activeCategoryId={activeCategoryId}
+          activeCategoryId={activeCategoryId.toString()}
           onSelect={scrollToCategory}
         />
 
@@ -65,9 +65,9 @@ export function MenuItemView({ menu }: Props) {
               >
                 {/* CATEGORY HEADER */}
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold">{cat.name}</h2>
+                  <h2 className="text-2xl font-bold">{cat.categoryName}</h2>
                   <p className="text-sm text-gray-500">
-                    {cat.description}
+                    {cat.categoryDescription}
                   </p>
                 </div>
 

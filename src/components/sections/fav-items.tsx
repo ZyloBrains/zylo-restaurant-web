@@ -1,49 +1,99 @@
-"use client";
+'use client';
 
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { Container } from "@/components/ui/container";
 import { SectionTitle } from "@/components/ui/section-title";
-import type { MenuData } from "@/features/menu/menu.types";
 import { MenuItemCard } from "@/components/menu/menu-item-card";
 
+import { itemService } from "@/services/item.service";
+import { CategoryService } from "@/services/category.service"; // ← Make sure this exists
+
 import { staggerContainer } from "@/lib/utils/animations";
+import type { CategoryResponse, ItemResponse } from "@/features/menu/menu.types";
+import { useTenantStore } from "@/features/tenant/tenant.store";
 
-type MenuSectionProps = {
-  menu: MenuData;
-};
 
-export function FevItems({ menu }: MenuSectionProps) {
+export function FevItems() {
+  const slug= useTenantStore((s)=>s.tenantSlug);
+  const tenantLoading= useTenantStore((s)=>s.loading);
+
+  const [categories, setCategories] = useState<CategoryResponse[]>([]);
+  const [items, setItems] = useState<ItemResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [activeCategoryId, setActiveCategoryId] = useState<string>("");
 
+  // Fetch Categories + Items
   useEffect(() => {
-    if (!menu?.categories?.length) {
-      setActiveCategoryId("");
-      return;
+    const fetchMenuData = async () => {
+      if (!slug) return;
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Fetch both in parallel
+        const [fetchedCategories, fetchedItems] = await Promise.all([
+          CategoryService.getCategoryList(slug, 0, 20),
+          itemService.getItemList(slug, 0, 10), // Increased size to get more items
+        ]);
+
+        setCategories(fetchedCategories);
+        setItems(fetchedItems);
+
+        // Set first category as active
+        if (fetchedCategories.length > 0) {
+          setActiveCategoryId(fetchedCategories[0].id.toString());
+        }
+      } catch (err) {
+        console.error("Failed to fetch menu data:", err);
+        setError("Failed to load menu");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (slug) {
+      fetchMenuData();
     }
+  }, [slug]);
 
-    const activeStillExists = menu.categories.some(
-      (category) => category.id === activeCategoryId
-    );
-
-    if (!activeStillExists) {
-      setActiveCategoryId(menu.categories[0].id);
-    }
-  }, [menu, activeCategoryId]);
-
+  // Active Category
   const activeCategory = useMemo(() => {
-    return menu.categories.find(
-      (category) => category.id === activeCategoryId
-    );
-  }, [menu.categories, activeCategoryId]);
+    return categories.find((cat) => cat.id.toString() === activeCategoryId);
+  }, [categories, activeCategoryId]);
 
+  // Filtered Items
   const filteredItems = useMemo(() => {
     if (!activeCategoryId) return [];
-    return menu.items.filter(
-      (item) => item.categoryId === activeCategoryId
+    return items.filter((item) => item.categoryId.toString() === activeCategoryId);
+  }, [items, activeCategoryId]);
+
+  // Loading State
+  if (tenantLoading || loading) {
+    return (
+      <section className="section-plain section-divider-top py-16 md:py-20">
+        <Container>
+          <div className="flex justify-center items-center h-64">
+            <p className="text-lg">Loading favorite items...</p>
+          </div>
+        </Container>
+      </section>
     );
-  }, [menu.items, activeCategoryId]);
+  }
+
+  if (error) {
+    return (
+      <section className="section-plain section-divider-top py-16 md:py-20">
+        <Container>
+          <p className="text-center text-red-500">{error}</p>
+        </Container>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -55,57 +105,55 @@ export function FevItems({ menu }: MenuSectionProps) {
 
         {/* CATEGORY BUTTONS */}
         <div className="mt-8 flex flex-wrap gap-3 justify-center">
-          {menu.categories.map((category) => {
-            const isActive = category.id === activeCategoryId;
+          {categories.map((category) => {
+            const isActive = category.id.toString() === activeCategoryId;
 
             return (
               <button
                 key={category.id}
                 type="button"
-                onClick={() => setActiveCategoryId(category.id)}
+                onClick={() => setActiveCategoryId(category.id.toString())}
                 className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
                   isActive
                     ? "bg-[var(--color-primary)] text-white shadow-sm"
                     : "border border-[var(--color-border)] bg-white text-[var(--color-text-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
                 }`}
               >
-                {category.name}
+                {category.categoryName}
               </button>
             );
           })}
         </div>
 
         {/* CATEGORY DESCRIPTION */}
-        {activeCategory?.description && (
+        {activeCategory?.categoryDescription && (
           <p className="mt-5 mx-auto max-w-2xl text-center text-sm text-[var(--color-text-muted)]">
-            {activeCategory.description}
+            {activeCategory.categoryDescription}
           </p>
         )}
 
-        {/* ITEMS */}
-        {!!menu.categories.length && (
-          <motion.div
-            key={activeCategoryId}
-            variants={staggerContainer}
-            initial="initial"
-            animate="animate"
-            className="mt-10"
-          >
-            {filteredItems.length === 0 ? (
-              <p className="text-sm text-[var(--color-text-muted)]">
-                No items available in this category.
-              </p>
-            ) : (
-              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                <AnimatePresence mode="wait">
-                  {filteredItems.map((item) => (
-                    <MenuItemCard key={item.id} item={item} />
-                  ))}
-                </AnimatePresence>
-              </div>
-            )}
-          </motion.div>
-        )}
+        {/* ITEMS GRID */}
+        <motion.div
+          key={activeCategoryId}
+          variants={staggerContainer}
+          initial="initial"
+          animate="animate"
+          className="mt-10"
+        >
+          {filteredItems.length === 0 ? (
+            <p className="text-sm text-[var(--color-text-muted)] text-center py-10">
+              No items available in this category.
+            </p>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              <AnimatePresence mode="wait">
+                {filteredItems.map((item) => (
+                  <MenuItemCard key={item.id} item={item} />
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+        </motion.div>
       </Container>
     </section>
   );

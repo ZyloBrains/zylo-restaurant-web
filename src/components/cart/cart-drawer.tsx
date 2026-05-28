@@ -6,18 +6,12 @@ import { useRouter } from "next/navigation";
 import { CheckoutModal } from "@/components/cart/checkout-modal";
 import { useCart } from "@/features/cart/cart-context";
 import Link from "next/link";
+import { getSafeImage } from "@/lib/utils/image.utils";
 
 type CartDrawerProps = {
   restaurantName: string;
   whatsappNumber: string;
 };
-
-function getSafeImage(src?: string): string {
-  if (!src || src.trim() === "") return "/images/placeholder-food.jpg";
-  if (src.startsWith("http://") || src.startsWith("https://")) return src;
-  if (!src.startsWith("/")) return `/${src}`;
-  return src;
-}
 
 export function CartDrawer({
   restaurantName,
@@ -95,13 +89,32 @@ export function CartDrawer({
                   <div className="flex gap-4">
                     {/* IMAGE */}
                     <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-gray-100">
-                      <Image
-                        src={getSafeImage(item.imageUrl)}
-                        alt={item.name}
-                        fill
-                        sizes="64px"
-                        className="object-cover"
-                      />
+                      {item.imageUrl ? (
+                        <Image
+                          src={getSafeImage(item.imageUrl)}
+                          alt={item.name}
+                          fill
+                          sizes="160px"
+                          className="object-contain"
+                          unoptimized
+                        />
+                      ) : (
+                        <div
+                          className="
+                                               h-full
+                                               w-full
+                                               flex
+                                               items-center
+                                               justify-center
+                                               rounded-full
+                                               bg-slate-100
+                                               text-sm
+                                               text-slate-500
+                                             "
+                        >
+                          No Image
+                        </div>
+                      )}
                     </div>
 
                     {/* CONTENT */}
@@ -156,33 +169,32 @@ export function CartDrawer({
           )}
         </div>
 
-      {/* FOOTER */}
-{items.length > 0 && (
-  <div className="border-t border-[var(--color-border)] p-5 space-y-3">
-    
-    <div className="flex justify-between text-sm">
-      <span className="text-[var(--color-text-muted)]">Total</span>
-      <span className="text-lg font-bold text-[var(--color-primary)]">
-        NPR {total}
-      </span>
-    </div>
+        {/* FOOTER */}
+        {items.length > 0 && (
+          <div className="border-t border-[var(--color-border)] p-5 space-y-3">
+            <div className="flex justify-between text-sm">
+              <span className="text-[var(--color-text-muted)]">Total</span>
+              <span className="text-lg font-bold text-[var(--color-primary)]">
+                NPR {total}
+              </span>
+            </div>
 
-    {/* VIEW CART SUMMARY BUTTON */}
-    <Link
-  href="/cart-summary"
-  onClick={closeCart}
-  className="btn-secondary w-full text-center block"
->
-  View Cart Summary
-</Link>
+            {/* VIEW CART SUMMARY BUTTON */}
+            <Link
+              href="/cart-summary"
+              onClick={closeCart}
+              className="btn-secondary w-full text-center block"
+            >
+              View Cart Summary
+            </Link>
 
-    {/* CHECKOUT */}
-    <CheckoutModal
-      restaurantName={restaurantName}
-      whatsappNumber={whatsappNumber}
-    />
-  </div>
-)}
+            {/* CHECKOUT */}
+            <CheckoutModal
+              restaurantName={restaurantName}
+              whatsappNumber={whatsappNumber}
+            />
+          </div>
+        )}
       </aside>
     </>
   );

@@ -7,15 +7,15 @@ export function buildThemeStyle(
   if (!tokens) return {};
 
   return {
-    "--color-primary": tokens.colorPrimary,
-    "--color-secondary": tokens.colorSecondary,
-    "--color-accent": tokens.colorAccent,
-    "--color-background": tokens.colorBackground,
-    "--color-surface": tokens.colorSurface,
-    "--color-text": tokens.colorText,
-    "--color-text-muted": tokens.colorTextMuted,
-    "--radius-button": tokens.radiusButton,
-    "--radius-card": tokens.radiusCard,
-    "--shadow-card": tokens.shadowCard,
+    "--color-primary": tokens.colorPrimary || "#0A2540",
+    "--color-secondary": tokens.colorSecondary || "#1E40AF",
+    "--color-accent": tokens.colorAccent || "#F59E0B",
+    "--color-background": tokens.colorBackground || "#FFFFFF",
+    "--color-surface": tokens.colorSurface || "#F8FAFC",
+    "--color-text": tokens.colorText || "#0F172A",
+    "--color-text-muted": tokens.colorTextMuted || "#64748B",
+    "--radius-button": tokens.radiusButton || "8px",
+    "--radius-card": tokens.radiusCard || "12px",
+    "--shadow-card": tokens.shadowCard || "0 4px 6px -1px rgb(0 0 0 / 0.1)",
   } as React.CSSProperties;
 }

@@ -1,7 +1,9 @@
 "use client";
 
+import { CategoryResponse } from "@/features/menu/menu.types";
+
 type Props = {
-  categories: { id: string; name: string }[];
+  categories: CategoryResponse[];
   activeCategoryId: string;
   onSelect: (id: string) => void;
 };
@@ -26,12 +28,12 @@ export function MenuSidebar({
 
         <div className="flex flex-col gap-2">
           {categories.map((cat) => {
-            const isActive = cat.id === activeCategoryId;
+            const isActive = cat.id.toString() === activeCategoryId;
 
             return (
               <button
                 key={cat.id}
-                onClick={() => onSelect(cat.id)}
+                onClick={() => onSelect(cat.id.toString())}
                 className="text-left px-4 py-3 rounded-xl transition"
                 style={{
                   backgroundColor: isActive
@@ -60,7 +62,7 @@ export function MenuSidebar({
                   }
                 }}
               >
-                {cat.name}
+                {cat.categoryName}
               </button>
             );
           })}

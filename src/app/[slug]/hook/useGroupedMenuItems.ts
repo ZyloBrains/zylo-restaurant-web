@@ -1,3 +1,4 @@
+
 import { useMemo } from "react";
 import type { MenuData } from "@/features/menu/menu.types";
 

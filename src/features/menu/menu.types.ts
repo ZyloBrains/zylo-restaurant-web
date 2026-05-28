@@ -1,25 +1,25 @@
-export type MenuCategory = {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-};
+export interface CategoryResponse{
+    id:number;
+    categoryName:string;
+    categoryDescription:string;
+    menuName:string,
+    menuId:number
+}
 
-export type MenuItem = {
-  id: string;
-  categoryId: string;
-  name: string;
-  slug: string;
-  shortDescription: string;
-  description?: string;
-  imageUrl: string;
-  price: number;
-  isSpicy?: boolean;
-  isFeatured?: boolean;
-  isAvailable?: boolean;
-};
+export interface ItemResponse{
+    id:number;
+    name:string;
+    description:string;
+    price: number;
+    imageUrl?:string;
+    tags?:string[];
+    active:boolean;
+    categoryName:string,
+    categoryId:number,
+    menuName:string
+}
 
 export type MenuData = {
-  categories: MenuCategory[];
-  items: MenuItem[];
+  categories: CategoryResponse[];
+  items: ItemResponse[];
 };

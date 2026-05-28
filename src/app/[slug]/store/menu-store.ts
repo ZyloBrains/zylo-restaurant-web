@@ -1,9 +1,9 @@
+import { ItemResponse } from "@/features/menu/menu.types";
 import { create } from "zustand";
-import type { MenuItem } from "@/features/menu/menu.types";
 
 type MenuStore = {
-  selectedItem: MenuItem | null;
-  setSelectedItem: (item: MenuItem) => void;
+  selectedItem: ItemResponse | null;
+  setSelectedItem: (item: ItemResponse) => void;
   clearSelectedItem: () => void;
 };
 

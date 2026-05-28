@@ -4,7 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
-import { useMenuStore } from "@/app/store/menu-store";
+import { useMenuStore } from "@/app/[slug]/store/menu-store";
 import { useCart } from "@/features/cart/cart-context";
 
 function getSafeImage(src?: string) {
