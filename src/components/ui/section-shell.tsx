@@ -18,7 +18,7 @@ export function SectionShell({
             ? "bg-[var(--color-surface)]"
             : tone === "dark"
                 ? "bg-[var(--color-primary)] text-white"
-                : "bg-white";
+                : "bg-[var(--color-card)]";
 
     return (
         <section id={id} className={cn("py-16 md:py-20", toneClass, className)}>

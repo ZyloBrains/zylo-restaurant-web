@@ -35,11 +35,11 @@ export default function CartSummary() {
         <div className="grid lg:grid-cols-3 gap-8">
 
           {/* LEFT SIDE */}
-          <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
+          <div className="lg:col-span-2 bg-[var(--color-surface)] rounded-2xl p-6 shadow-[var(--shadow-card)]">
 
             <div className="flex justify-between mb-6">
               <h2 className="font-semibold">Your Bucket</h2>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-[var(--color-text-muted)]">
                 {items.length} items
               </span>
             </div>
@@ -54,9 +54,9 @@ export default function CartSummary() {
                     flex flex-col md:grid 
                     md:grid-cols-[1fr_120px_120px_40px]
                     gap-4
-                    border rounded-xl
+                    border border-[var(--color-border)] rounded-xl
                     p-4
-                    bg-white
+                    bg-[var(--color-card)]
                   "
                 >
 
@@ -72,7 +72,7 @@ export default function CartSummary() {
 
                     <div>
                       <h3 className="font-semibold">{item.name}</h3>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-[var(--color-text-muted)]">
                         NRS {item.price}
                       </p>
                     </div>
@@ -118,7 +118,7 @@ export default function CartSummary() {
           </div>
 
           {/* RIGHT SIDE */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm h-fit">
+          <div className="bg-[var(--color-surface)] rounded-2xl p-6 shadow-[var(--shadow-card)] h-fit">
 
             <h2 className="font-semibold mb-4">Order Summary</h2>
 

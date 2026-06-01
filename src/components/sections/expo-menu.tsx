@@ -88,7 +88,7 @@ export default function ExpoMenu() {
             {items.map((item) => (
               <button
                 key={item.id}
-                onClick={() => router.push("/menu")}
+                onClick={() => router.push(`/${slug}/menu/${item.id}`)}
                 className="snap-start min-w-[220px] md:min-w-[260px] px-6 py-10 text-center transition duration-300 hover:-translate-y-2"
                 style={{
                   background: "var(--color-surface)",
@@ -115,9 +115,9 @@ export default function ExpoMenu() {
                 items-center
                 justify-center
                 rounded-full
-                bg-slate-100
+                bg-[var(--color-surface)]
                 text-sm
-                text-slate-500
+                text-[var(--color-text-muted)]
               "
                     >
                       No Image

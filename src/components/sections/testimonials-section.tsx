@@ -47,7 +47,7 @@ export function TestimonialsSection() {
                             variants={fadeUp}
                             className="card-base card-hover h-full p-6"
                         >
-                            <div className="mb-4 flex items-center gap-1 text-amber-500">
+                            <div className="mb-4 flex items-center gap-1 text-[var(--color-accent)]">
                                 <Star className="h-4 w-4 fill-current" />
                                 <Star className="h-4 w-4 fill-current" />
                                 <Star className="h-4 w-4 fill-current" />
@@ -60,7 +60,7 @@ export function TestimonialsSection() {
                             </p>
 
                             <div className="mt-6 flex items-center gap-3">
-                                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-cyan-50 text-sm font-bold text-[var(--color-accent)]">
+                                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-accent)]/10 text-sm font-bold text-[var(--color-accent)]">
                                     {testimonial.name.charAt(0)}
                                 </div>
 

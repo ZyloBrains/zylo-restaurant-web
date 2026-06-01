@@ -116,7 +116,7 @@ export function FevItems() {
                 className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
                   isActive
                     ? "bg-[var(--color-primary)] text-white shadow-sm"
-                    : "border border-[var(--color-border)] bg-white text-[var(--color-text-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+                    : "border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-text-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
                 }`}
               >
                 {category.categoryName}

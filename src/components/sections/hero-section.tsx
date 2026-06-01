@@ -58,9 +58,8 @@ export function HeroSection({
             {/* 🌫️ DARK OVERLAY */}
             <div className="absolute inset-0 bg-black/55" />
 
-            {/* 🌟 GLOW EFFECT */}
             <div className="pointer-events-none absolute inset-0 opacity-30">
-                <div className="absolute left-1/2 top-0 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-cyan-400 blur-[120px]" />
+                <div className="absolute left-1/2 top-0 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-[var(--color-accent)] blur-[120px]" />
             </div>
 
             {/* CONTENT */}
@@ -71,7 +70,7 @@ export function HeroSection({
                     {/* LEFT CONTENT */}
                     <motion.div {...fadeUp} className="max-w-3xl">
 
-                        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
+                        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-accent)]">
                             {restaurantName}
                         </p>
 

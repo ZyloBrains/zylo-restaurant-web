@@ -22,6 +22,19 @@ export const CategoryService={
             throw error;
         }
     },
+    async getCategoryById(
+        slug:string,
+        id:number
+    ): Promise<CategoryResponse>{
+        try{
+            const response= await api.get<ApiResponse<CategoryResponse>>(`/public/${slug}/category/${id}`);
+           return response.data.data;
+    
+        }catch(error){
+            console.error(`Failed to fetch category for tenant ${slug}`, error);
+            throw error;
+        }
+    },
     async getCategoryListByMenuId(
         slug:string,
         menuId:string,

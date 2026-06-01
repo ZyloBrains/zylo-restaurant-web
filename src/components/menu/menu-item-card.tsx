@@ -7,12 +7,14 @@ import { useRouter } from "next/navigation";
 
 import { ItemResponse } from "../../features/menu/menu.types";
 import { useCart } from "@/features/cart/cart-context";
-import { useMenuStore } from "@/app/[slug]/store/menu-store";
 import { getSafeImage } from "@/lib/utils/image.utils";
+import { useMenuItemStore } from "@/app/[slug]/store/menu-store";
+import { useTenantStore } from "@/features/tenant/tenant.store";
 
 export function MenuItemCard({ item }: { item: ItemResponse }) {
   const { addItem, getItemQty } = useCart();
-  const setSelectedItem = useMenuStore((s) => s.setSelectedItem);
+  const slug=useTenantStore((s)=>s.tenantSlug);
+  const setSelectedItem = useMenuItemStore((s) => s.setSelectedItem);
   const router = useRouter();
 
   const qty = getItemQty(item?.id.toString());
@@ -20,8 +22,8 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
   const showAddToCartToast = (qtyAfter: number) => {
     toast.custom(
       () => (
-        <div className="flex w-[340px] items-center gap-3 rounded-2xl border border-white/10 bg-white p-3 shadow-xl">
-          <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-gray-100">
+        <div className="flex w-[340px] items-center gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] p-3 shadow-[var(--shadow-card)]">
+          <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-[var(--color-surface)]">
             {item.imageUrl ? (
               <Image
                 src={getSafeImage(item.imageUrl)}
@@ -40,9 +42,9 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
                           items-center
                           justify-center
                           rounded-full
-                          bg-slate-100
+                          bg-[var(--color-surface)]
                           text-sm
-                          text-slate-500
+                          text-[var(--color-text-muted)]
                         "
               >
                 No Image
@@ -51,15 +53,15 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-slate-900">
+            <p className="truncate text-sm font-semibold text-[var(--color-text)]">
               {item.name} added to cart
             </p>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <p className="mt-0.5 text-xs text-[var(--color-text-muted)]">
               Qty in cart: {qtyAfter}
             </p>
           </div>
 
-          <div className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+          <div className="rounded-full bg-[var(--color-accent)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--color-accent)]">
             NPR {item.price}
           </div>
         </div>
@@ -85,7 +87,7 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
     <motion.div
       onClick={() => {
         setSelectedItem(item);
-        router.push(`/menu/${item.id}`);
+        router.push(`${slug}/menu/${item.id}`);
       }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -93,7 +95,7 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
       className="card-base card-hover group p-5 cursor-pointer"
     >
       {/* IMAGE */}
-      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gray-100">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[var(--color-surface)]">
        {item.imageUrl ? (
               <Image
                 src={getSafeImage(item.imageUrl)}
@@ -112,9 +114,9 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
                           items-center
                           justify-center
                           rounded-full
-                          bg-slate-100
+                          bg-[var(--color-surface)]
                           text-sm
-                          text-slate-500
+                          text-[var(--color-text-muted)]
                         "
               >
                 No Image

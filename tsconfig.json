@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "src/components/bootstrap/menu-category-bootstrap.jsx", "src/components/bootstrap/menu-item-bootstrap.jsx"  ],
   "exclude": ["node_modules"]
 }

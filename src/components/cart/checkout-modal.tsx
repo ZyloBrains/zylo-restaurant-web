@@ -54,7 +54,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber }: Props) {
             {/* MODAL */}
             {open && (
                 <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur md:items-center">
-                    <div className="w-full max-w-3xl rounded-3xl bg-white shadow-2xl">
+                    <div className="w-full max-w-3xl rounded-3xl bg-[var(--color-card)] shadow-2xl">
                         {/* HEADER */}
                         <div className="flex justify-between border-b p-4">
                             <h2 className="font-semibold">Checkout</h2>
@@ -65,7 +65,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber }: Props) {
 
                         {success ? (
                             <div className="p-6 text-center">
-                                <CheckCircle2 className="mx-auto text-green-600" size={32} />
+                                <CheckCircle2 className="mx-auto text-[var(--color-accent)]" size={32} />
                                 <p className="mt-3 font-semibold">
                                     Demo order placed successfully
                                 </p>

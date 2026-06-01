@@ -59,7 +59,7 @@ export interface TenantResponse {
 
 
 export interface OpeningHours{
-    days: Record<string,string>;
+    days?: Record<string,string>;
 }
 
 

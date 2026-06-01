@@ -16,8 +16,8 @@ export function MenuClientShell() {
 
   const tenantInfo=useTenantStore((s)=>s.tenant);
   return (
+    
     <div className="min-h-screen bg-[var(--color-background)] pb-24 text-[var(--color-text)] md:pb-0">
-
       {/* MAIN CONTENT ONLY */}
       <main>
         <HeroSection

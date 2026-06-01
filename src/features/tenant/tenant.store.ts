@@ -1,165 +1,200 @@
-import { tenantService } from "@/services/tenant.service";
-import { TenantResponse, TenantTheme } from "@/types/tenant.types"
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 
-type TenantStore={
+import { tenantService } from "@/services/tenant.service";
+import { TenantResponse, TenantTheme } from "@/types/tenant.types";
+import { normalizeThemeTokens } from "@/lib/theme/theme.tokens";
 
-    //State
-    tenant:TenantResponse | null;
-    tenantSlug: string | null;
-    tenantTheme:TenantTheme|null;
-    loading: boolean;
-    initialized: boolean;
-    error: string|null;
+const TTL = 1000 * 60 * 60 * 24; // 24 hours
 
-    //Actions
-    fetchTenant:(slug:string)=>Promise<void>;
-    setTenant:(tenant: TenantResponse)=>void;
-    clearTenant:()=>void;
-
+type TenantCache = {
+  data: TenantResponse;
+  timestamp: number;
 };
 
-export const useTenantStore= create<TenantStore>()(
-    persist(
-        (set,get)=>({
-            tenant:null,
-            tenantSlug: null,
-            tenantTheme:null,
+type TenantStore = {
+  tenant: TenantResponse | null;
+  tenantSlug: string | null;
+  tenantTheme: TenantTheme | null;
 
-            loading: false,
-            initialized: false,
-            error: null,
+  cache: Record<string, TenantCache>;
+  darkModeBySlug: Record<string, boolean>;
 
-            //FETCH TENANT
-            fetchTenant: async(slug:string)=>{
-                const state = get();
+  loading: boolean;
+  error: string | null;
 
-                //Cache Check
-                //prevent duplicate API calls
+  fetchTenant: (slug: string) => Promise<void>;
+  toggleDarkMode: () => void;
+  clearTenant: () => void;
+};
 
-                if(
-                    state.initialized &&
-                    state.tenant &&
-                    state.tenantSlug === slug
-                ){
-                    return;
-                }
+/* ---------------- THEME APPLY ---------------- */
+function applyThemeToDom(
+  theme: TenantTheme | null | undefined,
+  isDarkMode?: boolean
+) {
+  if (!theme || typeof window === "undefined") return;
 
-                try{
-                    set({
-                        loading: true,
-                        error: null,
-                    });
+  const root = document.documentElement;
+  const t = normalizeThemeTokens(theme);
 
-                    const response = await tenantService.getTenantBySlug(slug);
+  root.style.setProperty("--color-primary", t.colorPrimary);
+  root.style.setProperty("--color-secondary", t.colorSecondary);
+  root.style.setProperty("--color-accent", t.colorAccent);
 
-                    //APPLY THEME VARIABLES
+  root.style.setProperty("--color-background", t.colorBackground);
+  root.style.setProperty("--color-surface", t.colorSurface);
+  root.style.setProperty("--color-text", t.colorText);
+  root.style.setProperty("--color-text-muted", t.colorTextMuted);
 
-                    if(response.theme && typeof window !== "undefined"){
-                        const root = document.documentElement;
+  root.style.setProperty("--radius-button", t.radiusButton);
+  root.style.setProperty("--radius-card", t.radiusCard);
+  root.style.setProperty("--shadow-card", t.shadowCard);
 
-                        root.style.setProperty(
-                            "--color-primary",
-                            response.theme.colorPrimary || "#0A2540"
-                        );
-                        root.style.setProperty(
-                            "--color-secondary",
-                            response.theme.colorSecondary || "#00696E"
-                        );
+  if (isDarkMode) {
+    root.setAttribute("data-dark-mode", "true");
+  } else {
+    root.removeAttribute("data-dark-mode");
+  }
+}
 
-                        root.style.setProperty(
-                            "--color-accent",
-                            response.theme.colorAccent || "#6FF6FF"
-                        );
+/* ---------------- STORE ---------------- */
+export const useTenantStore = create<TenantStore>()(
+  persist(
+    (set, get) => ({
+      tenant: null,
+      tenantSlug: null,
+      tenantTheme: null,
 
-                        root.style.setProperty(
-                            "--color-background",
-                            response.theme.colorBackground || "#FFFFFF"
-                        )
-                         root.style.setProperty(
-              "--color-surface",
-              response.theme.colorSurface || "#F8FAFC"
-            );
+      cache: {},
+      darkModeBySlug: {},
 
-            root.style.setProperty(
-              "--color-text",
-              response.theme.colorText || "#0F172A"
-            );
+      loading: false,
+      error: null,
 
-            root.style.setProperty(
-              "--color-text-muted",
-              response.theme.colorTextMuted || "#64748B"
-            );
+      /* ---------------- FETCH TENANT (SWR + TTL) ---------------- */
+      fetchTenant: async (slug: string) => {
+        const state = get();
+        const now = Date.now();
 
-            root.style.setProperty(
-              "--radius-button",
-              response.theme.radiusButton || "12px"
-            );
+        const cached = state.cache[slug];
+        const isDark = state.darkModeBySlug[slug] ?? false;
 
-            root.style.setProperty(
-              "--radius-card",
-              response.theme.radiusCard || "20px"
-            );
-
-            root.style.setProperty(
-              "--shadow-card",
-              response.theme.shadowCard ||
-                "0 10px 30px rgba(0,0,0,0.08)"
-            );
-                    
-        }
-
-        set({
-            tenant:response,
+        // ✅ 1. FRESH CACHE
+        if (cached && now - cached.timestamp < TTL) {
+          set({
+            tenant: cached.data,
             tenantSlug: slug,
-            tenantTheme: response.theme || null,
-
+            tenantTheme: cached.data.theme,
             loading: false,
-            initialized: true,
-            error: null,
-        });
-                }catch(error){
-                    console.error("Tenant fetch failed",error);
+          });
 
-                    set({
-                        loading: false,
-                        initialized: true,
-                        error: 'Failed to load tenant',
-                    });
-                }
-            },
-
-            setTenant:(tenant:TenantResponse)=>{
-                set({
-                    tenant,
-                    tenantSlug: tenant.tenantSlug,
-                    tenantTheme: tenant.theme || null,
-                    initialized: true,
-                    error: null,
-                });
-            },
-            clearTenant:()=>{
-                set({
-                    tenant:null,
-                    tenantSlug: null,
-                    tenantTheme: null,
-
-                    loading: false,
-                    initialized: false,
-                    error: null,
-                });
-            },
-        }),
-        {
-            name: 'tenant-storage',
-            storage: createJSONStorage(()=>localStorage),
-            partialize:(state)=>({
-                tenant: state.tenant,
-                tenantSlug: state.tenantSlug,
-                tenantTheme: state.tenantTheme
-            }),
+          applyThemeToDom(cached.data.theme, isDark);
+          return;
         }
-        
-    )
+
+        // ⚡ 2. STALE CACHE (show old + refresh background)
+        if (cached) {
+          set({
+            tenant: cached.data,
+            tenantSlug: slug,
+            tenantTheme: cached.data.theme,
+            loading: false,
+          });
+
+          applyThemeToDom(cached.data.theme, isDark);
+
+          tenantService
+            .getTenantBySlug(slug)
+            .then((response) => {
+              set((state) => ({
+                cache: {
+                  ...state.cache,
+                  [slug]: {
+                    data: response,
+                    timestamp: Date.now(),
+                  },
+                },
+                tenant: response,
+                tenantTheme: response.theme,
+              }));
+
+              applyThemeToDom(response.theme, get().darkModeBySlug[slug]);
+            })
+            .catch((err) => {
+              console.error("Background refresh failed:", err);
+            });
+
+          return;
+        }
+
+        // ❌ 3. NO CACHE
+        try {
+          set({ loading: true, error: null });
+
+          const response = await tenantService.getTenantBySlug(slug);
+
+          set((state) => ({
+            tenant: response,
+            tenantSlug: slug,
+            tenantTheme: response.theme,
+            cache: {
+              ...state.cache,
+              [slug]: {
+                data: response,
+                timestamp: now,
+              },
+            },
+            loading: false,
+          }));
+
+          applyThemeToDom(response.theme, state.darkModeBySlug[slug]);
+        } catch (err) {
+          set({
+            loading: false,
+            error: "Failed to load tenant",
+          });
+        }
+      },
+
+      /* ---------------- DARK MODE PER TENANT ---------------- */
+      toggleDarkMode: () => {
+        const { tenantSlug, darkModeBySlug, tenantTheme } = get();
+        if (!tenantSlug) return;
+
+        const current = darkModeBySlug[tenantSlug] ?? false;
+        const next = !current;
+
+        const updated = {
+          ...darkModeBySlug,
+          [tenantSlug]: next,
+        };
+
+        set({ darkModeBySlug: updated });
+
+        applyThemeToDom(tenantTheme, next);
+      },
+
+      /* ---------------- CLEAR ---------------- */
+      clearTenant: () =>
+        set({
+          tenant: null,
+          tenantSlug: null,
+          tenantTheme: null,
+          loading: false,
+          error: null,
+        }),
+    }),
+
+    /* ---------------- PERSIST CONFIG ---------------- */
+    {
+      name: "tenant-cache",
+      storage: createJSONStorage(() => localStorage),
+
+      partialize: (state) => ({
+        cache: state.cache,
+        darkModeBySlug: state.darkModeBySlug,
+      }),
+    }
+  )
 );

@@ -1,48 +1,59 @@
-import { MapPin, PhoneCall, Clock } from "lucide-react";
+import { MapPin, PhoneCall, Clock, XCircle } from "lucide-react";
 import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
 
 import { Container } from "@/components/ui/container";
+import { useTenantStore } from "@/features/tenant/tenant.store";
 
-type FooterProps = {
-  restaurantName: string;
-  address: string;
-  phone: string;
-};
-
-export function Footer({ restaurantName, address, phone }: FooterProps) {
+export function Footer() {
+  const tenant = useTenantStore((s) => s.tenant);
   return (
     <footer className="border-t border-[var(--color-border)] bg-[var(--color-surface)] py-12">
-
       <Container className="relative max-w-[1540px] px-3 lg:px-4 xl:px-6">
-
         <div className="grid gap-10 md:grid-cols-3">
-
           {/* LEFT - INFO */}
           <div>
             <h3
               className="text-lg font-semibold text-[var(--color-primary)]"
               style={{ fontFamily: "var(--font-heading, Poppins)" }}
             >
-              {restaurantName}
+              {tenant?.restaurantName}
             </h3>
 
             <div className="mt-4 space-y-3 text-sm text-[var(--color-text-muted)]">
-
               <div className="flex items-start gap-3">
                 <MapPin className="mt-0.5 h-4 w-4 text-[var(--color-accent)]" />
-                <span>{address}</span>
+                <span>{`${tenant?.addressLine1},${tenant?.addressLine2},${tenant?.area},${tenant?.city},${tenant?.country}`}</span>
               </div>
 
               <div className="flex items-center gap-3">
                 <PhoneCall className="h-4 w-4 text-[var(--color-accent)]" />
-                <span>{phone}</span>
+                <span>{tenant?.phone}</span>
               </div>
 
-              <div className="flex items-center gap-3">
-                <Clock className="h-4 w-4 text-[var(--color-accent)]" />
-                <span>Open Daily: 10:00 AM – 10:00 PM</span>
-              </div>
+              <div className="flex items-start gap-3">
+                <Clock className="mt-0.5 h-4 w-4 text-[var(--color-accent)]" />
 
+                <div className="text-sm text-[var(--color-text-muted)]">
+                  {tenant?.openingHours?.days ? (
+                    Object.entries(tenant.openingHours.days).map(
+                      ([day, time]) => (
+                        <div
+                          key={day}
+                          className="flex items-center justify-between gap-3"
+                        >
+                          <span className="font-medium">{day}</span>
+                          <span>{time}</span>
+                        </div>
+                      ),
+                    )
+                  ) : (
+                    <div className="flex items-center gap-2 text-red-500">
+                      <XCircle className="h-4 w-4" />
+                      <span>Closed</span>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -53,7 +64,6 @@ export function Footer({ restaurantName, address, phone }: FooterProps) {
             </h4>
 
             <div className="flex gap-4">
-
               {/* Facebook */}
               <a
                 href="#"
@@ -77,7 +87,6 @@ export function Footer({ restaurantName, address, phone }: FooterProps) {
               >
                 <FaTwitter size={16} />
               </a>
-
             </div>
 
             <p className="mt-4 text-xs text-[var(--color-text-muted)]">
@@ -87,13 +96,13 @@ export function Footer({ restaurantName, address, phone }: FooterProps) {
 
           {/* RIGHT - COPYRIGHT */}
           <div className="text-sm text-[var(--color-text-muted)] md:text-right">
-
             <p className="text-[var(--color-text)] font-medium">
-              © {new Date().getFullYear()} {restaurantName}
+              © {new Date().getFullYear()} {tenant?.restaurantName}
             </p>
 
             <p className="mt-2 text-xs">
-              Built for fast ordering, local convenience, and premium dining experience.
+              Built for fast ordering, local convenience, and premium dining
+              experience.
             </p>
 
             <div className="mt-4 flex md:justify-end gap-2 text-xs">
@@ -107,9 +116,7 @@ export function Footer({ restaurantName, address, phone }: FooterProps) {
                 Easy Order
               </span>
             </div>
-
           </div>
-
         </div>
       </Container>
     </footer>

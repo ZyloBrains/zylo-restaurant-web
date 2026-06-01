@@ -11,6 +11,7 @@ export type TenantThemeTokens = {
   radiusButton: string;
   radiusCard: string;
   shadowCard: string;
+  defaultDarkMode: string;
 };
 
 export type TenantInfo = {

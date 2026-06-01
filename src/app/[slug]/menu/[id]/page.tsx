@@ -4,54 +4,61 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
-import { useMenuStore } from "@/app/[slug]/store/menu-store";
+import { useMenuItemStore } from "@/app/[slug]/store/menu-store";
 import { useCart } from "@/features/cart/cart-context";
-
-function getSafeImage(src?: string) {
-  if (!src || src.trim() === "") return "/images/placeholder-food.jpg";
-  if (src.startsWith("http")) return src;
-  if (!src.startsWith("/")) return `/${src}`;
-  return src;
-}
+import { getSafeImage } from "@/lib/utils/image.utils";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function MenuItemPage() {
-  const item = useMenuStore((s) => s.selectedItem);
+  const params= useParams();
+  const slug= params?.slug as string;
+  const id= params?.id as string;
+  const fetchItemById = useMenuItemStore((s) => s.fetchItemById);
+  const item= useMenuItemStore((s)=>s.selectedItem);
   const { addItem, getItemQty } = useCart();
+
+  
+  useEffect(()=>{
+    if(!slug || !id) return;
+    fetchItemById(slug,id);
+  },[slug,id]);
 
   if (!item) {
     return (
-      <div className="p-10 text-center text-gray-500">
+      <div className="p-10 text-center text-[var(--color-text-muted)]">
         Loading item...
       </div>
     );
   }
 
-  const qty = getItemQty(item.id);
+  const qty = getItemQty(item.id.toString());
 
   const showToast = (qtyAfter: number) => {
     toast.custom(
       () => (
-        <div className="flex w-[340px] items-center gap-3 rounded-2xl border border-white/10 bg-white p-3 shadow-xl">
-          <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-gray-100">
+        <div className="flex w-[340px] items-center gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] p-3 shadow-[var(--shadow-card)]">
+          <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-[var(--color-surface)]">
             <Image
               src={getSafeImage(item.imageUrl)}
               alt={item.name}
               fill
               className="object-cover"
               sizes="56px"
+              unoptimized
             />
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-slate-900">
+            <p className="truncate text-sm font-semibold text-[var(--color-text)]">
               {item.name} added to cart
             </p>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <p className="mt-0.5 text-xs text-[var(--color-text-muted)]">
               Qty in cart: {qtyAfter}
             </p>
           </div>
 
-          <div className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+          <div className="rounded-full bg-[var(--color-accent)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--color-accent)]">
             NPR {item.price}
           </div>
         </div>
@@ -62,12 +69,12 @@ export default function MenuItemPage() {
 
   const handleAdd = () => {
     addItem({
-      menuItemId: item.id,
+      menuItemId: item.id.toString(),
       name: item.name,
       price: item.price,
-      imageUrl: item.imageUrl,
-      isSpicy: item.isSpicy,
-      isFeatured: item.isFeatured,
+      imageUrl: item.imageUrl || "",
+      isSpicy: item.tags?.includes("spicy"),
+      isFeatured: item.tags?.includes("featured"),
     });
 
     showToast(qty + 1);
@@ -90,6 +97,7 @@ export default function MenuItemPage() {
             alt={item.name}
             fill
             className="object-cover"
+            unoptimized
           />
 
           {/* QTY BADGE */}
@@ -111,7 +119,7 @@ export default function MenuItemPage() {
           </h1>
 
           <p className="mt-3 text-[var(--color-text-muted)]">
-            {item.shortDescription}
+            {item.description}
           </p>
 
           <p className="mt-5 text-3xl font-bold text-[var(--color-primary)]">
@@ -120,13 +128,13 @@ export default function MenuItemPage() {
 
           {/* BADGES */}
           <div className="mt-4 flex gap-2">
-            {item.isSpicy && (
+            {item.tags?.includes("spicy") && (
               <span className="px-3 py-1 rounded-full bg-orange-100 text-orange-600 text-xs">
                 🌶 Spicy
               </span>
             )}
 
-            {item.isFeatured && (
+            {item.tags?.includes("featured") && (
               <span className="px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xs">
                 ⭐ Popular
               </span>

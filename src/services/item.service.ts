@@ -49,4 +49,19 @@ export const itemService = {
       throw error;
     }
   },
+  async getItemsById(
+    slug: string,
+    id:number
+  ): Promise<ItemResponse> {
+    try {
+      const response = await api.get<
+        ApiResponse<ItemResponse>
+      >(`/public/${slug}/items/${id}`);
+
+      return response.data.data;
+    } catch (error) {
+      console.error(`Failed to fetch items for tenant ${slug}:`, error);
+      throw error;
+    }
+  },
 };

@@ -3,7 +3,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Menu, ShoppingCart, X, User } from "lucide-react";
+import { Menu, ShoppingCart, X, User, Sun, Moon } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { useCart } from "@/features/cart/cart-context";
 import { TenantResponse } from "@/types/tenant.types";
@@ -22,6 +22,11 @@ export function Header() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const slug = useTenantStore((s) => s.tenantSlug);
   const tenant = useTenantStore((s) => s.tenant);
+  const darkModeBySlug = useTenantStore((s) => s.darkModeBySlug);
+  const tenantTheme = useTenantStore((s) => s.tenantTheme);
+  const toggleDarkMode = useTenantStore((s) => s.toggleDarkMode);
+
+  const isDarkMode = slug ? (darkModeBySlug[slug] ?? (tenantTheme?.defaultDarkMode === "dark" || tenantTheme?.defaultDarkMode === "true")) : false;
   const [user, setUser] = useState<{ email: string } | null>(null);
 
   const { itemCount, openCart } = useCart();
@@ -51,7 +56,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-white/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[var(--color-card)]/80 backdrop-blur-md">
       <Container className="relative flex h-16 items-center justify-between max-w-[1540px] px-3 lg:px-4 xl:px-6">
         {/* LOGO */}
         <a href="#top" className="flex items-center gap-2">
@@ -86,6 +91,13 @@ export function Header() {
 
         {/* RIGHT SIDE (DESKTOP) */}
         <div className="hidden md:flex items-center gap-3">
+          <button
+            onClick={toggleDarkMode}
+            className="p-2 rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] transition"
+            title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
           {user ? (
             <button className="w-10 h-10 flex items-center justify-center rounded-full bg-[var(--color-primary)] text-white">
               <User size={18} />
@@ -101,7 +113,7 @@ export function Header() {
             <ShoppingCart className={animateCart ? "animate-bounce" : ""} />
             Cart
             {itemCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-cyan-500 text-white text-[10px] px-1.5 rounded-full">
+              <span className="absolute -top-2 -right-2 bg-[var(--color-accent)] text-white text-[10px] px-1.5 rounded-full">
                 {itemCount}
               </span>
             )}
@@ -110,6 +122,13 @@ export function Header() {
 
         {/* MOBILE */}
         <div className="flex md:hidden items-center gap-2">
+          <button
+            onClick={toggleDarkMode}
+            className="p-2 rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)]"
+            title="Toggle dark mode"
+          >
+            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
           {isLoggedIn ? (
             <button className="p-2 rounded-full bg-[var(--color-primary)] text-white">
               <User size={18} />
@@ -126,7 +145,7 @@ export function Header() {
           >
             <ShoppingCart className={animateCart ? "animate-bounce" : ""} />
             {itemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-cyan-500 text-[10px] px-1 rounded-full">
+              <span className="absolute -top-1 -right-1 bg-[var(--color-accent)] text-[10px] px-1 rounded-full">
                 {itemCount}
               </span>
             )}

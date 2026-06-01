@@ -44,7 +44,7 @@ export function CartDrawer({
 
       {/* DRAWER */}
       <aside
-        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l border-[var(--color-border)] bg-white shadow-2xl transition-transform duration-300 ${
+        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l border-[var(--color-border)] bg-[var(--color-card)] shadow-2xl transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -58,7 +58,7 @@ export function CartDrawer({
 
             <button
               onClick={closeCart}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--color-border)] hover:bg-slate-50"
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--color-border)] hover:bg-[var(--color-surface)]"
             >
               <X className="h-4 w-4" />
             </button>
@@ -88,7 +88,7 @@ export function CartDrawer({
                 <div key={item.menuItemId} className="card-base p-4">
                   <div className="flex gap-4">
                     {/* IMAGE */}
-                    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-gray-100">
+                    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-[var(--color-surface)]">
                       {item.imageUrl ? (
                         <Image
                           src={getSafeImage(item.imageUrl)}
@@ -107,9 +107,9 @@ export function CartDrawer({
                                                items-center
                                                justify-center
                                                rounded-full
-                                               bg-slate-100
+                                               bg-[var(--color-surface)]
                                                text-sm
-                                               text-slate-500
+                                               text-[var(--color-text-muted)]
                                              "
                         >
                           No Image

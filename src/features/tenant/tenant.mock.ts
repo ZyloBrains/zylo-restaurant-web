@@ -50,5 +50,6 @@ export const fishStationTenant: TenantInfo = {
     radiusButton: "14px",
     radiusCard: "20px",
     shadowCard: "0 10px 30px rgba(0,0,0,0.08)",
+    defaultDarkMode: "false",
   },
 };

@@ -8,11 +8,13 @@ export function TenantBootstrap({
 }:{
     tenantSlug:string
 }){
+    const tenant= useTenantStore((s)=>s.tenant);
     const fetchTenant=useTenantStore((s)=>s.fetchTenant);
 
     useEffect(()=>{
         if(!tenantSlug) return;
+        if(tenant?.tenantSlug=== tenantSlug) return;
         fetchTenant(tenantSlug);
-    },[tenantSlug]);
+    },[tenantSlug,tenant?.tenantSlug]);
     return null;
 }

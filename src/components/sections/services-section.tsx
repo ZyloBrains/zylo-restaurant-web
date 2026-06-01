@@ -64,7 +64,7 @@ export function ServicesSection() {
                                 className="card-base card-hover flex h-full flex-col p-6"
                             >
                                 {/* ICON */}
-                                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-50 text-[var(--color-accent)]">
+                                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
                                     <Icon className="h-6 w-6" />
                                 </div>
 

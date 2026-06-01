@@ -6,6 +6,10 @@ import "../globals.css";
 import { CartProvider } from "@/features/cart/cart-context";
 import { AppShell } from "@/components/layout/app-shell";
 import { TenantBootstrap } from "@/components/bootstrap/tenant-bootstrap";
+import { generateTenantMetadata } from "@/seo/tenant-metadata";
+import { MenuItemBootStrap } from "@/components/bootstrap/menu-item-bootstrap";
+import { MenuCategoryBootStrap } from "@/components/bootstrap/menu-category-bootstrap";
+import { param } from "framer-motion/client";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,17 +24,22 @@ const poppins = Poppins({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Fish Station | Seafood in Kathmandu",
-  description:
-    "Fresh seafood restaurant in Kathmandu. Order online or visit us.",
-};
 
 export const viewport: Viewport = {
   themeColor: "#0A2540",
   width: "device-width",
   initialScale: 1,
 };
+
+export async function generateMetadata({
+  params,
+}:{
+  params:Promise<{slug:string}>
+}):Promise<Metadata>{
+  const {slug} = await params;
+  console.log("GenerateMetaData called: ",slug);
+  return generateTenantMetadata(slug);
+}
 
 export default async function TenantLayout({
   children,
@@ -46,7 +55,8 @@ export default async function TenantLayout({
     >
 
       <TenantBootstrap tenantSlug={slug} />
-
+      <MenuItemBootStrap slug={slug} />
+      <MenuCategoryBootStrap slug={slug} />
         <CartProvider>
           <AppShell>{children}</AppShell>
         </CartProvider>
