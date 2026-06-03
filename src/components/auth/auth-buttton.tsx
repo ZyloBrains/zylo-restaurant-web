@@ -3,17 +3,10 @@
 import { User } from "lucide-react";
 import { LoginModal } from "@/components/auth/login-modal";
 import { useState } from "react";
+import { useAuthStore } from "@/features/auth/auth.store";
 
-type UserType = {
-  email: string;
-};
-
-type Props = {
-  user: UserType | null;
-  onLoginSuccess: (user: UserType) => void;
-};
-
-export function AuthButton({ user, onLoginSuccess }: Props) {
+export function AuthButton() {
+  const user = useAuthStore((s) => s.user);
   const [open, setOpen] = useState(false);
 
   return (
@@ -21,10 +14,8 @@ export function AuthButton({ user, onLoginSuccess }: Props) {
       {!user ? (
         <button
           onClick={() => setOpen(true)}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-full border text-sm font-medium"
-          style={{
-            borderColor: "var(--color-primary)",
-          }}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full border text-sm font-medium text-[var(--color-primary)]"
+          style={{ borderColor: "var(--color-primary)" }}
         >
           <User size={18} />
           Login / Register
@@ -32,10 +23,7 @@ export function AuthButton({ user, onLoginSuccess }: Props) {
       ) : (
         <div
           className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium"
-          style={{
-            backgroundColor: "var(--color-primary)",
-            color: "white",
-          }}
+          style={{ backgroundColor: "var(--color-primary)", color: "white" }}
         >
           <User size={18} />
           {user.email}
@@ -43,13 +31,7 @@ export function AuthButton({ user, onLoginSuccess }: Props) {
       )}
 
       {open && (
-        <LoginModal
-          onClose={() => setOpen(false)}
-          onSuccess={(email) => {
-            onLoginSuccess({ email });
-            setOpen(false);
-          }}
-        />
+        <LoginModal onClose={() => setOpen(false)} onSuccess={() => {}} />
       )}
     </>
   );

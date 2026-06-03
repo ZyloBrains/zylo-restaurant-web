@@ -38,7 +38,7 @@ export default function MenuItemPage() {
     toast.custom(
       () => (
         <div className="flex w-[340px] items-center gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] p-3 shadow-[var(--shadow-card)]">
-          <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-[var(--color-surface)]">
+          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)]">
             <Image
               src={getSafeImage(item.imageUrl)}
               alt={item.name}
@@ -70,6 +70,7 @@ export default function MenuItemPage() {
   const handleAdd = () => {
     addItem({
       menuItemId: item.id.toString(),
+      itemId: item.id,
       name: item.name,
       price: item.price,
       imageUrl: item.imageUrl || "",
@@ -90,13 +91,14 @@ export default function MenuItemPage() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4 }}
-          className="relative h-[450px] rounded-3xl overflow-hidden shadow-lg"
+          className="relative h-[300px] md:h-[450px] rounded-3xl overflow-hidden shadow-lg border border-[var(--color-border)]/50"
         >
           <Image
             src={getSafeImage(item.imageUrl)}
             alt={item.name}
             fill
-            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover transition duration-500 hover:scale-105"
             unoptimized
           />
 
@@ -129,13 +131,13 @@ export default function MenuItemPage() {
           {/* BADGES */}
           <div className="mt-4 flex gap-2">
             {item.tags?.includes("spicy") && (
-              <span className="px-3 py-1 rounded-full bg-orange-100 text-orange-600 text-xs">
+              <span className="px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400 text-xs">
                 🌶 Spicy
               </span>
             )}
 
             {item.tags?.includes("featured") && (
-              <span className="px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xs">
+              <span className="px-3 py-1 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-400 text-xs">
                 ⭐ Popular
               </span>
             )}

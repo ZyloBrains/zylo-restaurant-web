@@ -9,6 +9,7 @@ import { useCart } from "@/features/cart/cart-context";
 import { TenantResponse } from "@/types/tenant.types";
 import { AuthButton } from "../auth/auth-buttton";
 import { useTenantStore } from "@/features/tenant/tenant.store";
+import { useAuthStore } from "@/features/auth/auth.store";
 import Image from "next/image";
 import { getSafeImage } from "@/lib/utils/image.utils";
 
@@ -27,13 +28,12 @@ export function Header() {
   const toggleDarkMode = useTenantStore((s) => s.toggleDarkMode);
 
   const isDarkMode = slug ? (darkModeBySlug[slug] ?? (tenantTheme?.defaultDarkMode === "dark" || tenantTheme?.defaultDarkMode === "true")) : false;
-  const [user, setUser] = useState<{ email: string } | null>(null);
+  const user = useAuthStore((s) => s.user);
 
   const { itemCount, openCart } = useCart();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [animateCart, setAnimateCart] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Cart animation
   useEffect(() => {
@@ -47,9 +47,9 @@ export function Header() {
   // Fallback if tenant is null
   if (!tenant) {
     return (
-      <header className="sticky top-0 z-40 border-b bg-white/80 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[var(--color-card)]/80 backdrop-blur-md">
         <Container className="h-16 flex items-center">
-          <div className="text-lg font-bold">Loading...</div>
+          <div className="text-lg font-bold text-[var(--color-text)]">Loading...</div>
         </Container>
       </header>
     );
@@ -98,13 +98,7 @@ export function Header() {
           >
             {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
-          {user ? (
-            <button className="w-10 h-10 flex items-center justify-center rounded-full bg-[var(--color-primary)] text-white">
-              <User size={18} />
-            </button>
-          ) : (
-            <AuthButton user={user} onLoginSuccess={(u) => setUser(u)} />
-          )}
+          <AuthButton />
 
           <button
             onClick={openCart}
@@ -129,15 +123,7 @@ export function Header() {
           >
             {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
-          {isLoggedIn ? (
-            <button className="p-2 rounded-full bg-[var(--color-primary)] text-white">
-              <User size={18} />
-            </button>
-          ) : (
-            <AuthButton
-            user={user}
-            onLoginSuccess={(u)=>setUser(u)} />
-          )}
+          <AuthButton />
 
           <button
             onClick={openCart}
@@ -153,7 +139,7 @@ export function Header() {
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 border rounded-full"
+            className="p-2 border border-[var(--color-border)] rounded-full text-[var(--color-text)]"
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -176,17 +162,7 @@ export function Header() {
             ))}
 
             <div className="border-t border-white/20 pt-4">
-              {isLoggedIn ? (
-                <div className="flex items-center gap-2">
-                  <User size={18} />
-                  <span>Account</span>
-                </div>
-              ) : (
-                <AuthButton
-                user={user}
-                onLoginSuccess={(u)=>setUser(u)}
-                />
-              )}
+              <AuthButton />
             </div>
           </nav>
         </div>

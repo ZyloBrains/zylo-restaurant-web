@@ -4,11 +4,14 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
 import type { AddToCartInput, CartItem } from "./cart.types";
+import { cartService } from "@/services/cart.service";
 
 type CartOpenBehavior = "manual" | "first-item" | "always";
 
@@ -31,21 +34,73 @@ type CartContextValue = {
 
   isInCart: (menuItemId: string) => boolean;
   getItemQty: (menuItemId: string) => number;
+  checkoutCart: (slug: string) => Promise<void>;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
 
 type CartProviderProps = {
   children: ReactNode;
+  slug: string;
   openBehavior?: CartOpenBehavior;
 };
 
+function generateSessionId(): string {
+  const existing = localStorage.getItem("cart_session_id");
+  if (existing) return existing;
+  const id = `sess_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+  localStorage.setItem("cart_session_id", id);
+  return id;
+}
+
+function mapBackendItem(
+  item: import("@/services/cart.service").CartItemResponse
+): CartItem {
+  return {
+    id: `cart-${item.itemId}`,
+    menuItemId: item.itemId.toString(),
+    itemId: item.itemId,
+    name: item.itemName,
+    price: item.price,
+    quantity: item.quantity,
+    imageUrl: item.imageUrl || "",
+    cartItemId: item.id,
+  };
+}
+
 export function CartProvider({
   children,
+  slug,
   openBehavior = "manual",
 }: CartProviderProps) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const sessionIdRef = useRef<string>("");
+  const cartIdRef = useRef<number | null>(null);
+  const loadedRef = useRef(false);
+
+  useEffect(() => {
+    sessionIdRef.current = generateSessionId();
+  }, []);
+
+  useEffect(() => {
+    if (!slug || loadedRef.current) return;
+    loadedRef.current = true;
+    const sessionId = sessionIdRef.current;
+    if (!sessionId) return;
+
+    cartService
+      .getActiveCart(slug, undefined, sessionId)
+      .then((res) => {
+        if (res) {
+          cartIdRef.current = res.id;
+          if (res.items?.length) {
+            setItems(res.items.map(mapBackendItem));
+          }
+        }
+      })
+      .catch(() => {});
+  }, [slug]);
 
   const openCart = useCallback(() => setIsOpen(true), []);
   const closeCart = useCallback(() => setIsOpen(false), []);
@@ -54,6 +109,18 @@ export function CartProvider({
   const clearCart = useCallback(() => {
     setItems([]);
     setIsOpen(false);
+    const cartId = cartIdRef.current;
+    if (cartId && slug) {
+      cartIdRef.current = null;
+      cartService.clearCart(slug,cartId).catch(() => {});
+    }
+  }, []);
+
+  const checkoutCart = useCallback(async (slug: string) => {
+    const cartId = cartIdRef.current;
+    if (cartId) {
+      await cartService.checkout(slug, cartId);
+    }
   }, []);
 
   const addItem = useCallback(
@@ -62,79 +129,124 @@ export function CartProvider({
 
       setItems((prev) => {
         wasEmpty = prev.length === 0;
-
-        const existing = prev.find(
-          (i) => i.menuItemId === input.menuItemId
-        );
-
-        // ✅ update qty
+        const existing = prev.find((i) => i.menuItemId === input.menuItemId);
         if (existing) {
           return prev.map((item) =>
             item.menuItemId === input.menuItemId
-              ? {
-                  ...item,
-                  quantity: item.quantity + 1,
-
-                  // 🔥 NEVER LOSE IMAGE
-                  imageUrl: item.imageUrl || input.imageUrl,
-                }
+              ? { ...item, quantity: item.quantity + 1, imageUrl: item.imageUrl || input.imageUrl }
               : item
           );
         }
-
-        // ✅ new item
         return [
           ...prev,
           {
             id: `cart-${input.menuItemId}`,
             menuItemId: input.menuItemId,
+            itemId: input.itemId,
             name: input.name,
             price: input.price,
             quantity: 1,
-
-            // 🔥 FIXED: always store image
             imageUrl: input.imageUrl,
-
             isSpicy: input.isSpicy,
             isFeatured: input.isFeatured,
+            cartItemId: null,
           },
         ];
       });
 
-      // cart open behavior
       if (openBehavior === "always") setIsOpen(true);
       else if (openBehavior === "first-item" && wasEmpty) setIsOpen(true);
+
+      cartService
+        .addItem(slug, input.itemId, 1, undefined, sessionIdRef.current)
+        .then((res) => {
+          cartIdRef.current = res.id;
+          const backendItem = res.items.find(
+            (i) => i.itemId === input.itemId
+          );
+          if (backendItem) {
+            setItems((prev) =>
+              prev.map((item) =>
+                item.menuItemId === input.menuItemId
+                  ? { ...item, cartItemId: backendItem.id }
+                  : item
+              )
+            );
+          }
+        })
+        .catch(() => {});
     },
-    [openBehavior]
+    [slug, openBehavior]
   );
 
-  const increaseQty = useCallback((menuItemId: string) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.menuItemId === menuItemId
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
-    );
-  }, []);
+  const increaseQty = useCallback(
+    (menuItemId: string) => {
+      const target = items.find((i) => i.menuItemId === menuItemId);
+      if (!target) return;
 
-  const decreaseQty = useCallback((menuItemId: string) => {
-    setItems((prev) =>
-      prev
-        .map((item) =>
+      const newQty = target.quantity + 1;
+      setItems((prev) =>
+        prev.map((item) =>
           item.menuItemId === menuItemId
-            ? { ...item, quantity: item.quantity - 1 }
+            ? { ...item, quantity: newQty }
             : item
         )
-        .filter((item) => item.quantity > 0)
-    );
-  }, []);
+      );
 
-  const removeItem = useCallback((menuItemId: string) => {
-    setItems((prev) =>
-      prev.filter((item) => item.menuItemId !== menuItemId)
-    );
-  }, []);
+      if (slug &&target.cartItemId) {
+        cartService
+          .updateItem(target.cartItemId, slug,newQty)
+          .catch(() => {});
+      }
+    },
+    [items]
+  );
+
+  const decreaseQty = useCallback(
+    (menuItemId: string) => {
+      const target = items.find((i) => i.menuItemId === menuItemId);
+      if (!target) return;
+
+      const newQty = target.quantity - 1;
+      setItems((prev) =>
+        prev
+          .map((item) =>
+            item.menuItemId === menuItemId
+              ? { ...item, quantity: newQty }
+              : item
+          )
+          .filter((item) => item.quantity > 0)
+      );
+
+      if (newQty > 0 && target.cartItemId && slug) {
+        cartService
+          .updateItem(target.cartItemId, slug, newQty)
+          .catch(() => {});
+      } else if (newQty === 0 && target.cartItemId && slug) {
+        cartService
+          .removeItem(slug,target.cartItemId)
+          .catch(() => {});
+      }
+    },
+    [items]
+  );
+
+  const removeItem = useCallback(
+    (menuItemId: string) => {
+      const target = items.find((i) => i.menuItemId === menuItemId);
+
+      setItems((prev) =>
+        prev.filter((item) => item.menuItemId !== menuItemId)
+      );
+
+      if ( slug && target?.cartItemId) {
+        cartService
+          .removeItem(slug,target.cartItemId)
+          .catch(() => {});
+      }
+    },
+    [items]
+  );
 
   const isInCart = useCallback(
     (menuItemId: string) =>
@@ -177,11 +289,12 @@ export function CartProvider({
       increaseQty,
       decreaseQty,
       removeItem,
-      clearCart,
+  clearCart,
 
-      isInCart,
-      getItemQty,
-    }),
+  isInCart,
+  getItemQty,
+  checkoutCart,
+  }),
     [
       items,
       isOpen,
@@ -196,6 +309,7 @@ export function CartProvider({
       decreaseQty,
       removeItem,
       clearCart,
+      checkoutCart,
       isInCart,
       getItemQty,
     ]

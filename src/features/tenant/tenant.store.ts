@@ -42,20 +42,23 @@ function applyThemeToDom(
   root.style.setProperty("--color-secondary", t.colorSecondary);
   root.style.setProperty("--color-accent", t.colorAccent);
 
-  root.style.setProperty("--color-background", t.colorBackground);
-  root.style.setProperty("--color-surface", t.colorSurface);
-  root.style.setProperty("--color-text", t.colorText);
-  root.style.setProperty("--color-text-muted", t.colorTextMuted);
+  if (isDarkMode) {
+    // In dark mode, let the data-dark-mode CSS selector control structural
+    // colors (text, background, surface, card, border, text-muted) for proper
+    // visibility. Only brand colors and layout values are set from the tenant.
+    root.setAttribute("data-dark-mode", "true");
+  } else {
+    // Light mode – apply the full backend tenant theme as inline styles
+    root.style.setProperty("--color-background", t.colorBackground);
+    root.style.setProperty("--color-surface", t.colorSurface);
+    root.style.setProperty("--color-text", t.colorText);
+    root.style.setProperty("--color-text-muted", t.colorTextMuted);
+    root.removeAttribute("data-dark-mode");
+  }
 
   root.style.setProperty("--radius-button", t.radiusButton);
   root.style.setProperty("--radius-card", t.radiusCard);
   root.style.setProperty("--shadow-card", t.shadowCard);
-
-  if (isDarkMode) {
-    root.setAttribute("data-dark-mode", "true");
-  } else {
-    root.removeAttribute("data-dark-mode");
-  }
 }
 
 /* ---------------- STORE ---------------- */

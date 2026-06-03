@@ -5,12 +5,16 @@ import { Container } from "@/components/ui/container";
 import { fadeUp } from "@/lib/utils/animations";
 import { sectionImages } from "@/lib/constants/section-images";
 import { useEffect, useState } from "react";
+import { heroImageService } from "@/services/hero-image.service";
+import { HeroImageResponse } from "@/types/hero-image.types";
+import { getSafeImage } from "@/lib/utils/image.utils";
 
 type HeroSectionProps = {
     restaurantName: string;
     title: string;
     subtitle: string;
     phone: string;
+    tenantSlug: string;
 };
 
 export function HeroSection({
@@ -18,19 +22,34 @@ export function HeroSection({
     title,
     subtitle,
     phone,
+    tenantSlug,
 }: HeroSectionProps) {
 
+    const [heroImages, setHeroImages] = useState<HeroImageResponse[]>([]);
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
+        heroImageService.getHeroImagesBySlug(tenantSlug).then(setHeroImages).catch(() => {});
+    }, [tenantSlug]);
+
+    const images = heroImages.length > 0
+        ? heroImages.map((img) => ({
+              src: getSafeImage(img.fileUrl),
+              alt: img.title || `Hero image ${img.sortOrder + 1}`,
+              title: img.title || null,
+              description: img.description || null,
+          }))
+        : sectionImages.gallery;
+
+    useEffect(() => {
+        if (images.length === 0) return;
         const interval = setInterval(() => {
-            setIndex((prev) => (prev + 1) % sectionImages.gallery.length);
+            setIndex((prev) => (prev + 1) % images.length);
         }, 3500);
-
         return () => clearInterval(interval);
-    }, []);
+    }, [images.length]);
 
-    const current = sectionImages.gallery[index];
+    const current = images[index] || images[0];
 
     return (
         <section
@@ -38,7 +57,6 @@ export function HeroSection({
             className="relative overflow-hidden py-20 md:py-28 text-white"
         >
 
-            {/* 🌄 BACKGROUND IMAGE (HIGH QUALITY FIXED) */}
             <motion.img
                 key={current.src}
                 src={current.src}
@@ -55,19 +73,16 @@ export function HeroSection({
                 loading="eager"
             />
 
-            {/* 🌫️ DARK OVERLAY */}
             <div className="absolute inset-0 bg-black/55" />
 
             <div className="pointer-events-none absolute inset-0 opacity-30">
                 <div className="absolute left-1/2 top-0 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-[var(--color-accent)] blur-[120px]" />
             </div>
 
-            {/* CONTENT */}
             <Container className="relative max-w-[1540px] px-3 lg:px-4 xl:px-6">
 
                 <div className="flex items-center min-h-[70vh]">
 
-                    {/* LEFT CONTENT */}
                     <motion.div {...fadeUp} className="max-w-3xl">
 
                         <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-accent)]">

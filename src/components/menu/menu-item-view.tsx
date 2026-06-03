@@ -46,7 +46,7 @@ export function MenuItemView({ menu }: Props) {
         {/* MAIN */}
         <div className="flex-1">
           <div className="text-center py-6">
-            <h1 className="text-3xl font-bold">🍗 Our Menu</h1>
+            <h1 className="text-3xl font-bold text-[var(--color-text)]">🍗 Our Menu</h1>
             <p className="text-[var(--color-text-muted)] text-sm mt-1">
               Fresh food, fast service, premium taste
             </p>

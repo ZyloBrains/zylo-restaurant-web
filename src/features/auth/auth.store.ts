@@ -1,0 +1,43 @@
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+
+import type { AuthUser } from "@/types/auth.types";
+import { authService } from "@/services/auth.service";
+import type { RegisterInput } from "@/types/auth.types";
+
+type AuthStore = {
+  user: AuthUser | null;
+  token: string | null;
+
+  login: (email: string, password: string) => Promise<void>;
+  register: (input: RegisterInput) => Promise<void>;
+  logout: () => void;
+};
+
+export const useAuthStore = create<AuthStore>()(
+  persist(
+    (set) => ({
+      user: null,
+      token: null,
+
+      login: async (email: string, password: string) => {
+        const res = await authService.login({ email, password });
+        set({ user: res.user, token: res.token });
+      },
+
+      register: async (input: RegisterInput) => {
+        const res = await authService.register(input);
+        set({ user: res.user, token: res.token });
+      },
+
+      logout: () => {
+        set({ user: null, token: null });
+      },
+    }),
+    {
+      name: "auth-storage",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ user: state.user, token: state.token }),
+    }
+  )
+);

@@ -27,18 +27,18 @@ export default function CartSummary() {
  
 
   return (
-    <div className="bg-[var(--color-background)] min-h-screen py-10 px-4">
+    <div className="bg-(--color-background) min-h-screen py-10 px-4">
       <div className="max-w-6xl mx-auto">
 
-        <h1 className="text-3xl font-bold mb-6">Cart</h1>
+        <h1 className="text-3xl font-bold mb-6 text-(--color-text)">Cart</h1>
 
         <div className="grid lg:grid-cols-3 gap-8">
 
           {/* LEFT SIDE */}
           <div className="lg:col-span-2 bg-[var(--color-surface)] rounded-2xl p-6 shadow-[var(--shadow-card)]">
 
-            <div className="flex justify-between mb-6">
-              <h2 className="font-semibold">Your Bucket</h2>
+              <div className="flex justify-between mb-6">
+              <h2 className="font-semibold text-[var(--color-text)]">Your Bucket</h2>
               <span className="text-sm text-[var(--color-text-muted)]">
                 {items.length} items
               </span>
@@ -62,16 +62,19 @@ export default function CartSummary() {
 
                   {/* PRODUCT */}
                   <div className="flex items-center gap-4">
-                    <Image
-                      src={getSafeImage(item.imageUrl)}
-                      alt={item.name}
-                      width={80}
-                      height={80}
-                      className="rounded-xl object-cover"
-                    />
+                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)] shadow-inner">
+                      <Image
+                        src={getSafeImage(item.imageUrl)}
+                        alt={item.name}
+                        fill
+                        sizes="80px"
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
 
-                    <div>
-                      <h3 className="font-semibold">{item.name}</h3>
+                      <div>
+                      <h3 className="font-semibold text-[var(--color-text)]">{item.name}</h3>
                       <p className="text-sm text-[var(--color-text-muted)]">
                         NRS {item.price}
                       </p>
@@ -81,9 +84,9 @@ export default function CartSummary() {
                   {/* QTY (UNCHANGED BUTTONS) */}
                   <div className="
                     flex items-center justify-between md:justify-center
-                    gap-3 border rounded-lg px-3 py-2
+                    gap-3 border border-[var(--color-border)] rounded-lg px-3 py-2 text-[var(--color-text)]
                   ">
-                    <button onClick={() => decreaseQty(item.menuItemId)}>
+                    <button onClick={() => decreaseQty(item.menuItemId)} className="text-[var(--color-text-muted)]">
                       <Minus size={14} />
                     </button>
 
@@ -91,13 +94,13 @@ export default function CartSummary() {
                       {item.quantity}
                     </span>
 
-                    <button onClick={() => increaseQty(item.menuItemId)}>
+                    <button onClick={() => increaseQty(item.menuItemId)} className="text-[var(--color-text-muted)]">
                       <Plus size={14} />
                     </button>
                   </div>
 
                   {/* SUBTOTAL */}
-                  <div className="font-semibold text-left md:text-center">
+                  <div className="font-semibold text-left md:text-center text-[var(--color-text)]">
                     NRS {item.price * item.quantity}
                   </div>
 
@@ -120,22 +123,22 @@ export default function CartSummary() {
           {/* RIGHT SIDE */}
           <div className="bg-[var(--color-surface)] rounded-2xl p-6 shadow-[var(--shadow-card)] h-fit">
 
-            <h2 className="font-semibold mb-4">Order Summary</h2>
+            <h2 className="font-semibold mb-4 text-[var(--color-text)]">Order Summary</h2>
 
-            <div className="space-y-2 text-sm">
+            <div className="space-y-2 text-sm text-[var(--color-text)]">
               <div className="flex justify-between">
-                <span>Item Total</span>
+                <span className="text-[var(--color-text-muted)]">Item Total</span>
                 <span>NRS {subtotal}</span>
               </div>
 
               <div className="flex justify-between">
-                <span>Sub Total</span>
+                <span className="text-[var(--color-text-muted)]">Sub Total</span>
                 <span>NRS {subtotal}</span>
               </div>
 
-              <hr className="my-3" />
+              <hr className="my-3 border-[var(--color-border)]" />
 
-              <div className="flex justify-between font-bold text-lg">
+              <div className="flex justify-between font-bold text-lg text-[var(--color-text)]">
                 <span>Total</span>
                 <span className="text-[var(--color-primary)]">
                   NPR {subtotal}
@@ -148,6 +151,7 @@ export default function CartSummary() {
               <CheckoutModal
                 restaurantName={tenantInfo?.restaurantName as string}
                 whatsappNumber={tenantInfo?.whatsappNumber as string}
+                tenantSlug={tenantInfo?.tenantSlug as string}
               />
             </div>
 

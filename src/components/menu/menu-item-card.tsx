@@ -23,30 +23,18 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
     toast.custom(
       () => (
         <div className="flex w-[340px] items-center gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] p-3 shadow-[var(--shadow-card)]">
-          <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-[var(--color-surface)]">
+          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)]">
             {item.imageUrl ? (
               <Image
                 src={getSafeImage(item.imageUrl)}
                 alt={item.name}
                 fill
-                sizes="160px"
-                className="object-contain"
+                sizes="56px"
+                className="object-cover"
                 unoptimized
               />
             ) : (
-              <div
-                className="
-                          h-full
-                          w-full
-                          flex
-                          items-center
-                          justify-center
-                          rounded-full
-                          bg-[var(--color-surface)]
-                          text-sm
-                          text-[var(--color-text-muted)]
-                        "
-              >
+              <div className="flex h-full w-full items-center justify-center text-xs text-[var(--color-text-muted)]">
                 No Image
               </div>
             )}
@@ -73,6 +61,7 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
   const handleAdd = () => {
     addItem({
       menuItemId: item.id.toString(),
+      itemId: item.id,
       name: item.name,
       price: item.price,
       imageUrl: item.imageUrl as string,
@@ -87,7 +76,7 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
     <motion.div
       onClick={() => {
         setSelectedItem(item);
-        router.push(`${slug}/menu/${item.id}`);
+        router.push(`/${slug}/menu/${item.id}`);
       }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -95,14 +84,14 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
       className="card-base card-hover group p-5 cursor-pointer"
     >
       {/* IMAGE */}
-      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[var(--color-surface)]">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)] shadow-inner">
        {item.imageUrl ? (
               <Image
                 src={getSafeImage(item.imageUrl)}
                 alt={item.name}
                 fill
-                sizes="160px"
-                className="object-contain"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover transition duration-500 group-hover:scale-105"
                 unoptimized
               />
             ) : (
@@ -113,8 +102,6 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
                           flex
                           items-center
                           justify-center
-                          rounded-full
-                          bg-[var(--color-surface)]
                           text-sm
                           text-[var(--color-text-muted)]
                         "
@@ -148,23 +135,23 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
 
         <div className="mt-4 flex flex-wrap gap-2">
           {item.tags?.includes("spicy") && (
-            <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-600">
+            <span className="rounded-full bg-orange-50 dark:bg-orange-950 px-3 py-1 text-xs font-semibold text-orange-600 dark:text-orange-400">
               🌶 Spicy
             </span>
           )}
 
           {item.active && (
-            <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+            <span className="rounded-full bg-sky-50 dark:bg-sky-950 px-3 py-1 text-xs font-semibold text-sky-700 dark:text-sky-400">
               ⭐ Popular
             </span>
           )}
 
           {item.active ? (
-            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+            <span className="rounded-full bg-emerald-50 dark:bg-emerald-950 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
               ✔ Available
             </span>
           ) : (
-            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
+            <span className="rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400">
               Unavailable
             </span>
           )}

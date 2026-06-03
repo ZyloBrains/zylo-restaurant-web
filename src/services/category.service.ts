@@ -48,6 +48,7 @@ export const CategoryService={
                     size
                 }
             });
+            console.log("category Data are ",response.data.data);
            return response.data?.data?.content || [];
     
         }catch(error){

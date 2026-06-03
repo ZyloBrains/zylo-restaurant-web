@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "sonner";
 
-const API_BASE_URL=process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL=process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8082/api';
 
 
 export const api= axios.create({
@@ -14,7 +14,18 @@ export const api= axios.create({
 
 api.interceptors.request.use(
     (config)=>{
-
+        const raw = localStorage.getItem("auth-storage");
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            const token: string | undefined = parsed?.state?.token;
+            if (token) {
+              config.headers.Authorization = `Bearer ${token}`;
+            }
+          } catch {
+            // ignore parse error
+          }
+        }
         return config;
     },
     (error)=>Promise.reject(error)

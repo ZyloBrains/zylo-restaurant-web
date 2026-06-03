@@ -51,10 +51,10 @@ export default function ExpoMenu() {
 
   if (tenantLoading || loading) {
     return (
-      <section className="py-12">
+      <section className="py-12 bg-(--color-background)">
         <Container>
           <div className="flex justify-center items-center h-64">
-            <p className="text-lg">Loading menu...</p>
+            <p className="text-lg text-(--color-text-muted)">Loading menu...</p>
           </div>
         </Container>
       </section>
@@ -63,7 +63,7 @@ export default function ExpoMenu() {
 
   if (error) {
     return (
-      <section className="py-12">
+      <section className="py-12 bg-(--color-background)">
         <Container>
           <p className="text-center text-red-500">{error}</p>
         </Container>
@@ -73,10 +73,10 @@ export default function ExpoMenu() {
 
   return (
     <section
-      className="py-12 relative bg-[var(--color-background)]"
+      className="py-12 relative bg-(--color-background)"
       style={buildThemeStyle(tenantTheme as TenantThemeTokens)}
     >
-      <Container className="relative max-w-[1540px] px-3 lg:px-4 xl:px-6">
+      <Container className="relative max-w-385 px-3 lg:px-4 xl:px-6">
         {/* TITLE */}
         <div className="mb-8">
           <SectionTitle title="Explore Menu" align="center" />
@@ -89,21 +89,21 @@ export default function ExpoMenu() {
               <button
                 key={item.id}
                 onClick={() => router.push(`/${slug}/menu/${item.id}`)}
-                className="snap-start min-w-[220px] md:min-w-[260px] px-6 py-10 text-center transition duration-300 hover:-translate-y-2"
+                className="snap-start min-w-55 md:min-w-65 px-4 py-6 text-center transition duration-300 hover:-translate-y-2"
                 style={{
                   background: "var(--color-surface)",
                   borderRadius: "var(--radius-card)",
                   boxShadow: "var(--shadow-card)",
                 }}
               >
-                <div className="relative mx-auto h-36 w-36 md:h-40 md:w-40">
+                <div className="relative mx-auto w-full aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)] shadow-inner">
                   {item.imageUrl ? (
                     <Image
                       src={getSafeImage(item.imageUrl)}
                       alt={item.name}
                       fill
-                      sizes="160px"
-                      className="object-contain"
+                      sizes="(max-width: 768px) 50vw, 260px"
+                      className="object-cover transition duration-500 group-hover:scale-105"
                       unoptimized
                     />
                   ) : (
@@ -114,10 +114,8 @@ export default function ExpoMenu() {
                 flex
                 items-center
                 justify-center
-                rounded-full
-                bg-[var(--color-surface)]
                 text-sm
-                text-[var(--color-text-muted)]
+                text-(--color-text-muted)
               "
                     >
                       No Image
@@ -126,7 +124,7 @@ export default function ExpoMenu() {
                 </div>
 
                 {/* NAME */}
-                <p className="mt-6 text-lg font-semibold text-[var(--color-text)]">
+                <p className="mt-5 text-lg font-semibold text-(--color-text)">
                   {item.name}
                 </p>
               </button>

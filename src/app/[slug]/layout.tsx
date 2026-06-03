@@ -57,7 +57,7 @@ export default async function TenantLayout({
       <TenantBootstrap tenantSlug={slug} />
       <MenuItemBootStrap slug={slug} />
       <MenuCategoryBootStrap slug={slug} />
-        <CartProvider>
+        <CartProvider slug={slug}>
           <AppShell>{children}</AppShell>
         </CartProvider>
       

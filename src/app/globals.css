@@ -44,9 +44,7 @@ body {
   font-family: var(--font-body, Inter, sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background:
-          radial-gradient(circle at top, rgba(14, 165, 168, 0.06), transparent 28%),
-          linear-gradient(to bottom, #ffffff, #f8fafc 65%, #ffffff);
+  background: var(--color-background);
   color: var(--color-text);
 }
 
@@ -85,7 +83,7 @@ section {
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center rounded-[var(--radius-button)] border border-[var(--color-border)] bg-white px-5 py-3 text-sm font-semibold text-[var(--color-primary)] transition duration-200 hover:border-[var(--color-primary)] hover:bg-slate-50;
+  @apply inline-flex items-center justify-center rounded-[var(--radius-button)] border border-[var(--color-border)] bg-[var(--color-card)] px-5 py-3 text-sm font-semibold text-[var(--color-primary)] transition duration-200 hover:border-[var(--color-primary)] hover:bg-[var(--color-surface)];
 }
 
 .btn-outline-dark {
@@ -104,32 +102,32 @@ section {
 
 .section-surface {
   background:
-          linear-gradient(to bottom, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.98)),
+          linear-gradient(to bottom, var(--color-surface), var(--color-background)),
           radial-gradient(circle at top right, rgba(14, 165, 168, 0.05), transparent 30%);
 }
 
 .section-soft-gradient {
   background:
-          linear-gradient(180deg, #ffffff 0%, #f8fafc 52%, #ffffff 100%);
+          linear-gradient(180deg, var(--color-surface) 0%, var(--color-background) 52%, var(--color-surface) 100%);
 }
 
 .section-mesh {
   background:
           radial-gradient(circle at 15% 20%, rgba(14, 165, 168, 0.08), transparent 20%),
           radial-gradient(circle at 85% 25%, rgba(10, 37, 64, 0.06), transparent 24%),
-          linear-gradient(180deg, #ffffff 0%, #f8fafc 48%, #ffffff 100%);
+          linear-gradient(180deg, var(--color-surface) 0%, var(--color-background) 48%, var(--color-surface) 100%);
 }
 
 .bg-soft-pattern {
   background-image:
-          radial-gradient(rgba(15, 23, 42, 0.035) 0.8px, transparent 0.8px);
+          radial-gradient(color-mix(in srgb, var(--color-text) 4%, transparent) 0.8px, transparent 0.8px);
   background-size: 20px 20px;
 }
 
 .bg-grid-fade {
   background-image:
-          linear-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+          linear-gradient(color-mix(in srgb, var(--color-text) 4%, transparent) 1px, transparent 1px),
+          linear-gradient(90deg, color-mix(in srgb, var(--color-text) 4%, transparent) 1px, transparent 1px);
   background-size: 24px 24px;
   mask-image: radial-gradient(circle at center, black 45%, transparent 95%);
   -webkit-mask-image: radial-gradient(circle at center, black 45%, transparent 95%);
@@ -145,7 +143,7 @@ section {
   background: linear-gradient(
           90deg,
           transparent,
-          rgba(148, 163, 184, 0.45),
+          color-mix(in srgb, var(--color-text-muted) 45%, transparent),
           transparent
   );
 }
@@ -156,7 +154,7 @@ section {
   inset: 0;
   pointer-events: none;
   background:
-          radial-gradient(circle at 20% 15%, rgba(14, 165, 168, 0.08), transparent 22%);
+          radial-gradient(circle at 20% 15%, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 22%);
 }
 
 .section-glow-navy::after {
@@ -165,7 +163,7 @@ section {
   inset: 0;
   pointer-events: none;
   background:
-          radial-gradient(circle at 80% 20%, rgba(10, 37, 64, 0.07), transparent 24%);
+          radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 24%);
 }
 
 .section-glow-both::after {
@@ -174,8 +172,8 @@ section {
   inset: 0;
   pointer-events: none;
   background:
-          radial-gradient(circle at 18% 18%, rgba(14, 165, 168, 0.07), transparent 20%),
-          radial-gradient(circle at 84% 24%, rgba(10, 37, 64, 0.06), transparent 24%);
+          radial-gradient(circle at 18% 18%, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent 20%),
+          radial-gradient(circle at 84% 24%, color-mix(in srgb, var(--color-primary) 10%, transparent), transparent 24%);
 }
 
 .section-glow-cyan::after,

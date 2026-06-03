@@ -11,11 +11,13 @@ import { getSafeImage } from "@/lib/utils/image.utils";
 type CartDrawerProps = {
   restaurantName: string;
   whatsappNumber: string;
+  tenantSlug: string;
 };
 
 export function CartDrawer({
   restaurantName,
   whatsappNumber,
+  tenantSlug,
 }: CartDrawerProps) {
   const router = useRouter();
 
@@ -53,7 +55,7 @@ export function CartDrawer({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ShoppingCart className="h-5 w-5 text-[var(--color-primary)]" />
-              <h2 className="text-lg font-semibold">Your Order</h2>
+              <h2 className="text-lg font-semibold text-[var(--color-text)]">Your Order</h2>
             </div>
 
             <button
@@ -88,30 +90,18 @@ export function CartDrawer({
                 <div key={item.menuItemId} className="card-base p-4">
                   <div className="flex gap-4">
                     {/* IMAGE */}
-                    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-[var(--color-surface)]">
+                    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)]">
                       {item.imageUrl ? (
                         <Image
                           src={getSafeImage(item.imageUrl)}
                           alt={item.name}
                           fill
-                          sizes="160px"
-                          className="object-contain"
+                          sizes="64px"
+                          className="object-cover"
                           unoptimized
                         />
                       ) : (
-                        <div
-                          className="
-                                               h-full
-                                               w-full
-                                               flex
-                                               items-center
-                                               justify-center
-                                               rounded-full
-                                               bg-[var(--color-surface)]
-                                               text-sm
-                                               text-[var(--color-text-muted)]
-                                             "
-                        >
+                        <div className="flex h-full w-full items-center justify-center text-xs text-[var(--color-text-muted)]">
                           No Image
                         </div>
                       )}
@@ -120,8 +110,8 @@ export function CartDrawer({
                     {/* CONTENT */}
                     <div className="flex-1">
                       <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <h3 className="font-semibold">{item.name}</h3>
+                          <div>
+                          <h3 className="font-semibold text-[var(--color-text)]">{item.name}</h3>
                           <p className="mt-1 text-sm text-[var(--color-text-muted)]">
                             NPR {item.price}
                           </p>
@@ -140,20 +130,20 @@ export function CartDrawer({
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => decreaseQty(item.menuItemId)}
-                            className="h-8 w-8 rounded-lg border"
+                            className="h-8 w-8 rounded-lg border border-[var(--color-border)]"
                           >
-                            <Minus className="h-3 w-3 mx-auto" />
+                            <Minus className="h-3 w-3 mx-auto text-[var(--color-text)]" />
                           </button>
 
-                          <span className="min-w-[28px] text-center font-semibold">
+                          <span className="min-w-[28px] text-center font-semibold text-[var(--color-text)]">
                             {item.quantity}
                           </span>
 
                           <button
                             onClick={() => increaseQty(item.menuItemId)}
-                            className="h-8 w-8 rounded-lg border"
+                            className="h-8 w-8 rounded-lg border border-[var(--color-border)]"
                           >
-                            <Plus className="h-3 w-3 mx-auto" />
+                            <Plus className="h-3 w-3 mx-auto text-[var(--color-text)]" />
                           </button>
                         </div>
 
@@ -192,6 +182,7 @@ export function CartDrawer({
             <CheckoutModal
               restaurantName={restaurantName}
               whatsappNumber={whatsappNumber}
+              tenantSlug={tenantSlug}
             />
           </div>
         )}

@@ -25,6 +25,7 @@ export function MenuClientShell() {
           title={tenantInfo?.heroTitle as string}
           subtitle={tenantInfo?.heroSubtitle as string}
           phone={tenantInfo?.phone as string}
+          tenantSlug={tenantInfo?.tenantSlug as string}
         />
 
         <ExpoMenu />
@@ -45,6 +46,7 @@ export function MenuClientShell() {
       <CartDrawer
         restaurantName={tenantInfo?.restaurantName as string}
         whatsappNumber={tenantInfo?.whatsappNumber as string}
+        tenantSlug={tenantInfo?.tenantSlug as string}
       />
     </div>
   );

@@ -100,7 +100,7 @@ export function FevItems() {
       id="menu"
       className="section-plain section-divider-top py-16 md:py-20"
     >
-      <Container className="relative max-w-[1540px] px-3 lg:px-4 xl:px-6">
+      <Container className="relative max-w-385 px-3 lg:px-4 xl:px-6">
         <SectionTitle title="Favorite" align="center" />
 
         {/* CATEGORY BUTTONS */}

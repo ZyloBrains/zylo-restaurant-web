@@ -16,13 +16,13 @@ export function MenuSidebar({
   return (
     <aside className="hidden md:block w-72 sticky top-0 h-screen p-4">
       <div
-        className="rounded-2xl shadow-lg border p-4 h-full"
+        className="rounded-2xl shadow-lg border border-[var(--color-border)] p-4 h-full"
         style={{
           backgroundColor: "var(--color-surface)",
           color: "var(--color-text)",
         }}
       >
-        <h2 className="text-xl font-bold mb-6 px-2">
+        <h2 className="text-xl font-bold mb-6 px-2 text-[var(--color-text)]">
           🍗 Menu Categories
         </h2>
 
