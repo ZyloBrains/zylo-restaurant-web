@@ -7,6 +7,7 @@ import { CheckoutModal } from "@/components/cart/checkout-modal";
 import { useCart } from "@/features/cart/cart-context";
 import Link from "next/link";
 import { getSafeImage } from "@/lib/utils/image.utils";
+import { useTenantStore } from "@/features/tenant/tenant.store";
 
 type CartDrawerProps = {
   restaurantName: string;
@@ -20,6 +21,7 @@ export function CartDrawer({
   tenantSlug,
 }: CartDrawerProps) {
   const router = useRouter();
+  const slug= useTenantStore((s)=>s.tenantSlug) as string;
 
   const {
     items,
@@ -171,7 +173,7 @@ export function CartDrawer({
 
             {/* VIEW CART SUMMARY BUTTON */}
             <Link
-              href="/cart-summary"
+              href={`/${slug}/cart-summary`}
               onClick={closeCart}
               className="btn-secondary w-full text-center block"
             >

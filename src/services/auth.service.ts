@@ -1,6 +1,6 @@
 import { api } from "@/lib/axios";
 import type { ApiResponse } from "@/types/api.types";
-import type { AuthRequest, AuthResponse, RegisterInput } from "@/types/auth.types";
+import type { AuthRequest, AuthResponse, RegisterInput, UserResponse } from "@/types/auth.types";
 
 export const authService = {
   async login(input: AuthRequest): Promise<AuthResponse> {
@@ -11,9 +11,9 @@ export const authService = {
     return data.data;
   },
 
-  async register(input: RegisterInput): Promise<AuthResponse> {
-    const { data } = await api.post<ApiResponse<AuthResponse>>(
-      "/auth/register",
+  async register(slug:string,input: RegisterInput): Promise<UserResponse> {
+    const { data } = await api.post<ApiResponse<UserResponse>>(
+      `/public/${slug}/users/register`,
       input
     );
     return data.data;

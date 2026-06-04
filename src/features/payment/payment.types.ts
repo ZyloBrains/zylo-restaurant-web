@@ -30,7 +30,7 @@ export type KhaltiPaymentResponse = {
 };
 
 export type CashPaymentResponse = {
-  transactionId: string;
+  transaction_uuid: string;
   amount: number;
   status: PaymentStatus;
   message: string;

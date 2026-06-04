@@ -24,6 +24,8 @@ import {
 import { paymentService } from "@/services/payment.service";
 import { orderService } from "@/services/order.service";
 import { notificationService } from "@/services/notification.service";
+import { useTenantStore } from "@/features/tenant/tenant.store";
+import Link from "next/link";
 
 type Props = {
   restaurantName: string;
@@ -39,7 +41,7 @@ const initialForm: CheckoutFormData = {
   paymentMethod: "cash",
 };
 
-type Step = "details" | "processing" | "success";
+type Step = "details" | "confirm" | "processing" | "success";
 
 const paymentOptions: {
   value: PaymentMethod;
@@ -69,6 +71,7 @@ const paymentOptions: {
 
 export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Props) {
   const { items, subtotal, clearCart, closeCart } = useCart();
+  const slug=useTenantStore((s)=>s.tenantSlug) as string;
   const isLoggedIn = !!useAuthStore((s) => s.user);
 
   const [open, setOpen] = useState(false);
@@ -95,8 +98,6 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
     () => buildWhatsAppLink(whatsappNumber, message),
     [whatsappNumber, message]
   );
-
-  const orderId = useMemo(() => `order-${Date.now()}`, []);
 
   function updateField<K extends keyof CheckoutFormData>(
     key: K,
@@ -136,33 +137,31 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
         await handleKhaltiFlow(order.id, currentUser.id);
       }
 
-      // 3. Notify system users (only for cash – wallet users get notified on return)
-      if (form.paymentMethod === "cash") {
-        setStatusText("Sending notification...");
-        try {
-          await notificationService.sendOrderNotification({
-            tenantSlug,
-            orderId: order.orderNumber,
-            customerName: form.customerName,
-            customerPhone: form.customerPhone,
-            customerAddress: form.customerAddress,
-            customerNotes: form.customerNotes,
-            paymentMethod: form.paymentMethod,
-            items: items.map((i) => ({
-              name: i.name,
-              quantity: i.quantity,
-              price: i.price,
-            })),
-            totalAmount: subtotal,
-            restaurantName,
-          });
-        } catch {
-          // best-effort
-        }
-
-        setStep("success");
-        setProcessing(false);
+      // 3. Send notification to system users
+      setStatusText("Sending notification...");
+      try {
+        await notificationService.sendOrderNotification({
+          tenantSlug,
+          orderId: order.orderNumber,
+          customerName: form.customerName,
+          customerPhone: form.customerPhone,
+          customerAddress: form.customerAddress,
+          customerNotes: form.customerNotes,
+          paymentMethod: form.paymentMethod,
+          items: items.map((i) => ({
+            name: i.name,
+            quantity: i.quantity,
+            price: i.price,
+          })),
+          totalAmount: subtotal,
+          restaurantName,
+        });
+      } catch {
+        // best-effort
       }
+
+      setStep("success");
+      setProcessing(false);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Something went wrong";
       setStatusText(msg);
@@ -174,31 +173,31 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
     }
   }
 
-  async function handleCashFlow(_orderId: number, _userId: number) {
+  async function handleCashFlow(orderId: number, _userId: number) {
     setStatusText("Registering cash payment...");
     const cashResult = await paymentService.initiateCash(tenantSlug, {
       amount: subtotal,
-      orderId,
+      orderId: String(orderId),
       userId: _userId,
       description: `Order from ${restaurantName}`,
     });
 
     setStatusText("Confirming payment...");
-    await paymentService.confirmCash(tenantSlug, cashResult.transactionId);
+    await paymentService.confirmCash(tenantSlug, cashResult.transaction_uuid);
   }
 
-  async function handleEsewaFlow(_orderId: number, _userId: number) {
+  async function handleEsewaFlow(orderId: number, _userId: number) {
     setStatusText("Initiating eSewa payment...");
     const result = await paymentService.initiateEsewa(tenantSlug, {
       amount: subtotal,
-      orderId,
+      orderId: String(orderId),
       userId: _userId,
       description: `Order from ${restaurantName}`,
     });
 
     const formEl = document.createElement("form");
     formEl.method = "POST";
-    formEl.action = "https://rc.esewa.com.np/api/epay/v2/form";
+    formEl.action = "https://rc-epay.esewa.com.np/api/epay/main/v2/form";
 
     const fields: Record<string, string> = {
       amount: result.amount,
@@ -226,11 +225,11 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
     formEl.submit();
   }
 
-  async function handleKhaltiFlow(_orderId: number, _userId: number) {
+  async function handleKhaltiFlow(orderId: number, _userId: number) {
     setStatusText("Initiating Khalti payment...");
     const result = await paymentService.initiateKhalti(tenantSlug, {
       amount: subtotal,
-      orderId,
+      orderId: String(orderId),
       userId: _userId,
       description: `Order from ${restaurantName}`,
     });
@@ -272,6 +271,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
             <div className="flex items-center justify-between border-b border-[var(--color-border)] px-6 py-4">
               <h2 className="text-lg font-semibold text-[var(--color-text)]">
                 {step === "details" && "Checkout"}
+                {step === "confirm" && "Confirm Order"}
                 {step === "processing" && (
                   <span className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -342,13 +342,141 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                         Send via WhatsApp
                       </a>
                     )}
-                    <button onClick={handleDone} className="btn-secondary">
+                    <Link 
+                    href={`/${slug}`}
+                    className="btn-secondary">
                       Done
-                    </button>
+                    </Link>
                   </div>
                 </div>
               )}
 
+              {step === "confirm" && (
+                <div className="grid md:grid-cols-2">
+                  {/* LEFT - ORDER & CUSTOMER SUMMARY */}
+                  <div className="space-y-5 p-6">
+                    {/* CUSTOMER DETAILS */}
+                    <div>
+                      <h3 className="mb-1 text-sm font-semibold text-[var(--color-text)]">
+                        Customer Details
+                      </h3>
+                      <div className="space-y-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-[var(--color-text-muted)]">Name</span>
+                          <span className="font-medium text-[var(--color-text)]">{form.customerName}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-[var(--color-text-muted)]">Phone</span>
+                          <span className="font-medium text-[var(--color-text)]">{form.customerPhone}</span>
+                        </div>
+                        {form.customerAddress && (
+                          <div className="flex justify-between">
+                            <span className="text-[var(--color-text-muted)]">Address</span>
+                            <span className="font-medium text-[var(--color-text)]">{form.customerAddress}</span>
+                          </div>
+                        )}
+                        {form.customerNotes && (
+                          <div className="flex justify-between">
+                            <span className="text-[var(--color-text-muted)]">Notes</span>
+                            <span className="font-medium text-[var(--color-text)]">{form.customerNotes}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* PAYMENT METHOD */}
+                    <div>
+                      <h3 className="mb-1 text-sm font-semibold text-[var(--color-text)]">
+                        Payment Method
+                      </h3>
+                      <div className="flex items-center gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3">
+                        {form.paymentMethod === "cash" ? (
+                          <DollarSign className="h-5 w-5 text-emerald-500" />
+                        ) : (
+                          <Wallet className="h-5 w-5 text-[var(--color-primary)]" />
+                        )}
+                        <div>
+                          <p className="text-sm font-medium text-[var(--color-text)]">
+                            {paymentOptions.find((o) => o.value === form.paymentMethod)?.label}
+                          </p>
+                          <p className="text-xs text-[var(--color-text-muted)]">
+                            {paymentOptions.find((o) => o.value === form.paymentMethod)?.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* WALLET TEST CREDENTIALS */}
+                    {form.paymentMethod === "esewa" && (
+                      <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/50 p-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Info size={14} className="text-amber-600 dark:text-amber-400" />
+                          <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
+                            eSewa Test Credentials
+                          </span>
+                        </div>
+                        <ul className="space-y-1 text-xs text-amber-600 dark:text-amber-400">
+                          <li>Merchant: <strong>merchant@esewa.com.np</strong></li>
+                          <li>OTP: <strong>123456</strong></li>
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* RIGHT - ORDER SUMMARY */}
+                  <div className="border-t border-[var(--color-border)] bg-[var(--color-surface)] p-6 md:border-l md:border-t-0">
+                    <h3 className="mb-1 text-sm font-semibold text-[var(--color-text)]">
+                      Order Summary
+                    </h3>
+                    <p className="mb-4 text-xs text-[var(--color-text-muted)]">
+                      {items.length} item{items.length !== 1 ? "s" : ""}
+                    </p>
+
+                    <div className="space-y-3">
+                      {items.map((item) => (
+                        <div
+                          key={item.menuItemId}
+                          className="flex items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-2.5"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium text-[var(--color-text)]">
+                              {item.name}
+                            </p>
+                            <p className="text-xs text-[var(--color-text-muted)]">
+                              Qty: {item.quantity}
+                            </p>
+                          </div>
+                          <span className="ml-3 text-sm font-semibold text-[var(--color-primary)]">
+                            NPR {item.price * item.quantity}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <hr className="my-4 border-[var(--color-border)]" />
+
+                    <div className="space-y-1.5 text-sm">
+                      <div className="flex justify-between text-[var(--color-text-muted)]">
+                        <span>Subtotal</span>
+                        <span>NPR {subtotal}</span>
+                      </div>
+                      <div className="flex justify-between text-[var(--color-text-muted)]">
+                        <span>Delivery</span>
+                        <span>Free</span>
+                      </div>
+                    </div>
+
+                    <hr className="my-4 border-[var(--color-border)]" />
+
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-[var(--color-text)]">Total</span>
+                      <span className="text-lg font-bold text-[var(--color-primary)]">
+                        NPR {subtotal}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
               {step === "details" && (
                 <div className="grid md:grid-cols-2">
                   {/* LEFT - FORM */}
@@ -542,8 +670,14 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
             {step === "details" && (
               <div className="border-t border-[var(--color-border)] px-6 py-4">
                 <button
-                  onClick={handlePlaceOrder}
-                  disabled={!isValid || processing}
+                  onClick={() => {
+                    if (!isLoggedIn) {
+                      setShowLogin(true);
+                      return;
+                    }
+                    setStep("confirm");
+                  }}
+                  disabled={!isValid}
                   className="btn-primary w-full disabled:opacity-50"
                 >
                   {!isLoggedIn ? (
@@ -552,7 +686,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                       Login to Place Order
                     </span>
                   ) : (
-                    `Place Order – NPR ${subtotal}`
+                    `Continue – NPR ${subtotal}`
                   )}
                 </button>
                 {!isValid && (
@@ -560,6 +694,32 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                     Name and phone number are required
                   </p>
                 )}
+              </div>
+            )}
+
+            {step === "confirm" && (
+              <div className="flex items-center justify-between gap-3 border-t border-[var(--color-border)] px-6 py-4">
+                <button
+                  onClick={() => setStep("details")}
+                  className="btn-secondary flex items-center gap-2 px-5"
+                >
+                  <ArrowLeft size={16} />
+                  Back
+                </button>
+                <button
+                  onClick={handlePlaceOrder}
+                  disabled={processing}
+                  className="btn-primary flex-1 disabled:opacity-50"
+                >
+                  {processing ? (
+                    <span className="inline-flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Processing...
+                    </span>
+                  ) : (
+                    `Confirm & Place Order – NPR ${subtotal}`
+                  )}
+                </button>
               </div>
             )}
 

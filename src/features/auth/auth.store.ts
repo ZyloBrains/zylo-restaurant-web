@@ -10,7 +10,7 @@ type AuthStore = {
   token: string | null;
 
   login: (email: string, password: string) => Promise<void>;
-  register: (input: RegisterInput) => Promise<void>;
+  register: (slug: string, input: RegisterInput) => Promise<void>;
   logout: () => void;
 };
 
@@ -22,12 +22,11 @@ export const useAuthStore = create<AuthStore>()(
 
       login: async (email: string, password: string) => {
         const res = await authService.login({ email, password });
-        set({ user: res.user, token: res.token });
+        set({ user: res.userResponse, token: res.accessToken });
       },
 
-      register: async (input: RegisterInput) => {
-        const res = await authService.register(input);
-        set({ user: res.user, token: res.token });
+      register: async (slug: string, input: RegisterInput) => {
+        await authService.register(slug, input);
       },
 
       logout: () => {

@@ -45,9 +45,21 @@ type CartProviderProps = {
   openBehavior?: CartOpenBehavior;
 };
 
+function getAuthState(): { userId?: number; token?: string } {
+  try {
+    const raw = localStorage.getItem("auth-storage");
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return {
+      userId: parsed?.state?.user?.id ?? undefined,
+      token: parsed?.state?.token ?? undefined,
+    };
+  } catch {
+    return {};
+  }
+}
+
 function generateSessionId(): string {
-  const existing = localStorage.getItem("cart_session_id");
-  if (existing) return existing;
   const id = `sess_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
   localStorage.setItem("cart_session_id", id);
   return id;
@@ -79,27 +91,40 @@ export function CartProvider({
   const cartIdRef = useRef<number | null>(null);
   const loadedRef = useRef(false);
 
-  useEffect(() => {
-    sessionIdRef.current = generateSessionId();
-  }, []);
-
+  // Load existing cart on mount
   useEffect(() => {
     if (!slug || loadedRef.current) return;
     loadedRef.current = true;
-    const sessionId = sessionIdRef.current;
-    if (!sessionId) return;
 
-    cartService
-      .getActiveCart(slug, undefined, sessionId)
-      .then((res) => {
-        if (res) {
-          cartIdRef.current = res.id;
-          if (res.items?.length) {
-            setItems(res.items.map(mapBackendItem));
+    const { userId } = getAuthState();
+    const storedSessionId = localStorage.getItem("cart_session_id");
+
+    if (userId) {
+      cartService
+        .getActiveCart(slug, userId)
+        .then((res) => {
+          if (res) {
+            cartIdRef.current = res.id;
+            if (res.items?.length) {
+              setItems(res.items.map(mapBackendItem));
+            }
           }
-        }
-      })
-      .catch(() => {});
+        })
+        .catch(() => {});
+    } else if (storedSessionId) {
+      cartService
+        .getActiveCart(slug, undefined, storedSessionId)
+        .then((res) => {
+          if (res) {
+            cartIdRef.current = res.id;
+            sessionIdRef.current = storedSessionId;
+            if (res.items?.length) {
+              setItems(res.items.map(mapBackendItem));
+            }
+          }
+        })
+        .catch(() => {});
+    }
   }, [slug]);
 
   const openCart = useCallback(() => setIsOpen(true), []);
@@ -125,6 +150,17 @@ export function CartProvider({
 
   const addItem = useCallback(
     (input: AddToCartInput) => {
+      const { userId } = getAuthState();
+      const isAuthed = !!userId;
+      let sessionId = sessionIdRef.current;
+
+      // Guest: generate sessionId once on first add
+      if (!isAuthed && !sessionId) {
+        sessionId = generateSessionId();
+        sessionIdRef.current = sessionId;
+      }
+
+      const identifier = isAuthed ? { userId } : { sessionId };
       let wasEmpty = false;
 
       setItems((prev) => {
@@ -158,7 +194,7 @@ export function CartProvider({
       else if (openBehavior === "first-item" && wasEmpty) setIsOpen(true);
 
       cartService
-        .addItem(slug, input.itemId, 1, undefined, sessionIdRef.current)
+        .addItem(slug, input.itemId, 1, identifier.userId, identifier.sessionId)
         .then((res) => {
           cartIdRef.current = res.id;
           const backendItem = res.items.find(

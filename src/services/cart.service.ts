@@ -54,7 +54,7 @@ export const cartService = {
     quantity: number
   ): Promise<CartResponse> {
     const { data } = await api.put<ApiResponse<CartResponse>>(
-      `/public/cart/item/${cartItemId}`,
+      `/public/${slug}/cart/item/${cartItemId}`,
       { quantity }
     );
     return data.data;

@@ -23,8 +23,21 @@ export type AuthUser = {
 };
 
 export type AuthResponse = {
-  token: string;
-  type: string;
+  accessToken: string;
+  tokenType: string;
   expiresIn: number;
-  user: AuthUser;
+  userResponse: AuthUser;
+};
+
+export type UserResponse = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  userType: string;
+  active: boolean;
+  roles: string[];
+  permissions: string[];
+  tenantCode: string | null;
+  tenantSlug: string | null;
 };

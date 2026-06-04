@@ -5,13 +5,8 @@ import { Trash2, Minus, Plus } from "lucide-react";
 import { useCart } from "@/features/cart/cart-context";
 import { CheckoutModal } from "@/components/cart/checkout-modal";
 import { useTenantStore } from "@/features/tenant/tenant.store";
+import { getSafeImage } from "@/lib/utils/image.utils";
 
-function getSafeImage(src?: string) {
-  if (!src || src.trim() === "") return "/images/placeholder-food.jpg";
-  if (src.startsWith("http://") || src.startsWith("https://")) return src;
-  if (!src.startsWith("/")) return `/${src}`;
-  return src;
-}
 
 export default function CartSummary() {
   const {

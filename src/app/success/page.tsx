@@ -7,6 +7,16 @@ import { CheckCircle2, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { paymentService } from "@/services/payment.service";
 
+type EsewaCallback = {
+  transaction_code: string;
+  status: string;
+  total_amount: number;
+  transaction_uuid: string;
+  product_code: string;
+  signed_field_names: string;
+  signature: string;
+};
+
 export default function PaymentSuccessPage() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -18,20 +28,28 @@ export default function PaymentSuccessPage() {
 
   useEffect(() => {
     const verify = async () => {
-      const transaction_uuid = searchParams.get("transaction_uuid");
-      const total_amount = searchParams.get("total_amount");
+      const dataParam = searchParams.get("data");
 
-      if (!transaction_uuid || !total_amount) {
+      if (!dataParam) {
         setStatus("error");
-        setMessage("Invalid payment response. Missing transaction details.");
+        setMessage("Invalid payment response. Missing transaction data.");
         return;
       }
 
       try {
+        const decoded = atob(dataParam);
+        const callback: EsewaCallback = JSON.parse(decoded);
+
+        if (callback.status !== "COMPLETE") {
+          setStatus("error");
+          setMessage("Payment was not completed. Please try again.");
+          return;
+        }
+
         await paymentService.verifyEsewa(
           slug,
-          transaction_uuid,
-          total_amount
+          callback.transaction_uuid,
+          String(callback.total_amount)
         );
         setStatus("success");
         setMessage("Payment verified successfully!");
@@ -114,11 +132,6 @@ export default function PaymentSuccessPage() {
               transition={{ delay: 0.6 }}
               className="mt-4 w-full space-y-3"
             >
-              {searchParams.get("ref_id") && (
-                <p className="text-xs text-[var(--color-text-muted)]">
-                  Reference: {searchParams.get("ref_id")}
-                </p>
-              )}
               <Link
                 href={`/${slug}`}
                 className="btn-primary inline-flex w-full items-center justify-center gap-2"
