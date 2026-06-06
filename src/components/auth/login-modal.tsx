@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { X } from "lucide-react";
+import { X, ArrowLeft } from "lucide-react";
 
 import { LoginForm } from "@/components/auth/login-form";
 import { RegisterForm } from "@/components/auth/register-form";
+import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 
 export function LoginModal({
     onClose,
@@ -14,7 +15,7 @@ export function LoginModal({
     onClose: () => void;
     onSuccess: () => void;
 }) {
-    const [mode, setMode] = useState<"login" | "register">("login");
+    const [mode, setMode] = useState<"login" | "register" | "forgot">("login");
 
     return createPortal(
         <div className="fixed inset-0 z-[9999]">
@@ -30,19 +31,29 @@ export function LoginModal({
                         color: "var(--color-text)",
                     }}
                 >
-                    <button
-                        onClick={onClose}
-                        className="absolute right-5 top-5"
-                        style={{ color: "var(--color-text-muted)" }}
-                    >
-                        <X size={22} />
-                    </button>
-
-                    <h2 className="text-2xl font-bold text-center mb-8">
-                        {mode === "login"
-                            ? "Login To Your Account"
-                            : "Create Your Account"}
-                    </h2>
+                    {/* HEADER */}
+                    <div className="flex items-center justify-between mb-8">
+                        {mode === "forgot" && (
+                            <button
+                                onClick={() => setMode("login")}
+                                className="flex items-center gap-1 text-sm"
+                                style={{ color: "var(--color-text-muted)" }}
+                            >
+                                <ArrowLeft size={16} />
+                            </button>
+                        )}
+                        <h2 className="text-2xl font-bold text-center flex-1">
+                            {mode === "login" && "Login To Your Account"}
+                            {mode === "register" && "Create Your Account"}
+                            {mode === "forgot" && "Reset Password"}
+                        </h2>
+                        <button
+                            onClick={onClose}
+                            style={{ color: "var(--color-text-muted)" }}
+                        >
+                            <X size={22} />
+                        </button>
+                    </div>
 
                     {mode === "login" ? (
                         <LoginForm
@@ -51,8 +62,9 @@ export function LoginModal({
                                 onClose();
                             }}
                             onSwitch={() => setMode("register")}
+                            onForgot={() => setMode("forgot")}
                         />
-                    ) : (
+                    ) : mode === "register" ? (
                         <RegisterForm
                             onSuccess={() => {
                                 onSuccess();
@@ -60,6 +72,8 @@ export function LoginModal({
                             }}
                             onSwitch={() => setMode("login")}
                         />
+                    ) : (
+                        <ForgotPasswordForm onBack={() => setMode("login")} />
                     )}
                 </div>
             </div>

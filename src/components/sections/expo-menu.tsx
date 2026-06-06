@@ -1,55 +1,26 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-import { ItemResponse } from "@/features/menu/menu.types";
 import type { TenantThemeTokens } from "@/features/tenant/tenant.types";
 
 import { buildThemeStyle } from "@/lib/theme/theme.tokens";
 import { SectionTitle } from "../ui/section-title";
 import { Container } from "../ui/container";
-import { useEffect, useState } from "react";
-import { itemService } from "@/services/item.service";
+import { useMenuItemStore } from "@/app/[slug]/store/menu-store";
 import { useTenantStore } from "@/features/tenant/tenant.store";
-import { p } from "framer-motion/client";
 import { getSafeImage } from "@/lib/utils/image.utils";
 
 
 export default function ExpoMenu() {
-  const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
   const slug = useTenantStore((s) => s.tenantSlug);
   const tenantTheme = useTenantStore((s) => s.tenantTheme);
-  const tenantLoading = useTenantStore((s) => s.loading);
+  const items = useMenuItemStore((s) => s.items);
+  const initialized = useMenuItemStore((s) => s.initialized);
+  const storeLoading = useMenuItemStore((s) => s.loading);
 
   const router = useRouter();
 
-  const [items, setItems] = useState<ItemResponse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      
-      if (!slug) return;
-      setLoading(true);
-      setError(null);
-      console.log("The base url is: ",BASE_URL);
-      try {
-        const fetchItems = await itemService.getItemList(slug, 0, 10);
-        setItems(fetchItems);
-      } catch (err) {
-        console.error("Failed to fetch menu items: ", err);
-        setError("Failed to load menu items");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (slug) {
-      fetchItems();
-    }
-  }, [slug]);
-
-  if (tenantLoading || loading) {
+  if (!initialized && storeLoading) {
     return (
       <section className="py-12 bg-(--color-background)">
         <Container>
@@ -61,14 +32,8 @@ export default function ExpoMenu() {
     );
   }
 
-  if (error) {
-    return (
-      <section className="py-12 bg-(--color-background)">
-        <Container>
-          <p className="text-center text-red-500">{error}</p>
-        </Container>
-      </section>
-    );
+  if (initialized && items.length === 0) {
+    return null;
   }
 
   return (

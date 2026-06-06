@@ -7,9 +7,11 @@ import { useAuthStore } from "@/features/auth/auth.store";
 export function LoginForm({
     onSuccess,
     onSwitch,
+    onForgot,
 }: {
     onSuccess: () => void;
     onSwitch: () => void;
+    onForgot?: () => void;
 }) {
     const login = useAuthStore((s) => s.login);
     const [form, setForm] = useState({ email: "", password: "" });
@@ -75,7 +77,10 @@ export function LoginForm({
             </div>
 
             <div className="text-right text-sm">
-                <button style={{ color: "var(--color-text-muted)" }}>
+                <button
+                    onClick={onForgot}
+                    style={{ color: "var(--color-text-muted)" }}
+                >
                     Forgot Password?
                 </button>
             </div>

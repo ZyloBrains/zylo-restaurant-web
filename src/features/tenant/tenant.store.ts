@@ -43,9 +43,12 @@ function applyThemeToDom(
   root.style.setProperty("--color-accent", t.colorAccent);
 
   if (isDarkMode) {
-    // In dark mode, let the data-dark-mode CSS selector control structural
-    // colors (text, background, surface, card, border, text-muted) for proper
-    // visibility. Only brand colors and layout values are set from the tenant.
+    // Dark mode: let the CSS [data-dark-mode] selector handle structural colors.
+    // Remove any previously inlined light mode values so the CSS can take over.
+    root.style.removeProperty("--color-background");
+    root.style.removeProperty("--color-surface");
+    root.style.removeProperty("--color-text");
+    root.style.removeProperty("--color-text-muted");
     root.setAttribute("data-dark-mode", "true");
   } else {
     // Light mode – apply the full backend tenant theme as inline styles

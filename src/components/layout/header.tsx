@@ -4,6 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { Menu, ShoppingCart, X, User, Sun, Moon } from "lucide-react";
+import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { useCart } from "@/features/cart/cart-context";
 import { TenantResponse } from "@/types/tenant.types";
@@ -34,6 +35,9 @@ export function Header() {
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [animateCart, setAnimateCart] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => { setHydrated(true); }, []);
 
   // Cart animation
   useEffect(() => {
@@ -44,8 +48,8 @@ export function Header() {
     return () => clearTimeout(t);
   }, [itemCount]);
 
-  // Fallback if tenant is null
-  if (!tenant) {
+  // Fallback if tenant is null (before hydration, server and client render identically)
+  if (!tenant || !hydrated) {
     return (
       <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[var(--color-card)]/80 backdrop-blur-md">
         <Container className="h-16 flex items-center">
@@ -79,13 +83,13 @@ export function Header() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 gap-10">
           {navItems.map((item) => (
-            <a
+            <Link
               key={item.label}
               href={`/${slug}/${item.href}`}
               className="text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -151,14 +155,14 @@ export function Header() {
         <div className="md:hidden bg-[var(--color-primary)] text-white">
           <nav className="flex flex-col p-4 gap-4">
             {navItems.map((item) => (
-              <a
+              <Link
                 key={item.label}
-                href={item.href}
+                href={`/${slug}/${item.href}`}
                 onClick={() => setMobileOpen(false)}
                 className="py-2"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
 
             <div className="border-t border-white/20 pt-4">

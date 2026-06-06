@@ -1,79 +1,42 @@
 'use client';
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { Container } from "@/components/ui/container";
 import { SectionTitle } from "@/components/ui/section-title";
 import { MenuItemCard } from "@/components/menu/menu-item-card";
 
-import { itemService } from "@/services/item.service";
-import { CategoryService } from "@/services/category.service"; // ← Make sure this exists
-
 import { staggerContainer } from "@/lib/utils/animations";
-import type { CategoryResponse, ItemResponse } from "@/features/menu/menu.types";
-import { useTenantStore } from "@/features/tenant/tenant.store";
+import { useMenuItemStore } from "@/app/[slug]/store/menu-store";
+import { useMenuCategoryStore } from "@/app/[slug]/store/menu-category-store";
 
 
 export function FevItems() {
-  const slug= useTenantStore((s)=>s.tenantSlug);
-  const tenantLoading= useTenantStore((s)=>s.loading);
+  const categories = useMenuCategoryStore((s) => s.categories);
+  const catInitialized = useMenuCategoryStore((s) => s.initialized);
+  const catLoading = useMenuCategoryStore((s) => s.loading);
 
-  const [categories, setCategories] = useState<CategoryResponse[]>([]);
-  const [items, setItems] = useState<ItemResponse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const items = useMenuItemStore((s) => s.items);
+  const itemInitialized = useMenuItemStore((s) => s.initialized);
+  const itemLoading = useMenuItemStore((s) => s.loading);
 
-  const [activeCategoryId, setActiveCategoryId] = useState<string>("");
+  const [activeCategoryId, setActiveCategoryId] = useState<string>(
+    categories.length > 0 ? categories[0].id.toString() : ""
+  );
 
-  // Fetch Categories + Items
-  useEffect(() => {
-    const fetchMenuData = async () => {
-      if (!slug) return;
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        // Fetch both in parallel
-        const [fetchedCategories, fetchedItems] = await Promise.all([
-          CategoryService.getCategoryList(slug, 0, 20),
-          itemService.getItemList(slug, 0, 10), // Increased size to get more items
-        ]);
-
-        setCategories(fetchedCategories);
-        setItems(fetchedItems);
-
-        // Set first category as active
-        if (fetchedCategories.length > 0) {
-          setActiveCategoryId(fetchedCategories[0].id.toString());
-        }
-      } catch (err) {
-        console.error("Failed to fetch menu data:", err);
-        setError("Failed to load menu");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (slug) {
-      fetchMenuData();
-    }
-  }, [slug]);
-
-  // Active Category
   const activeCategory = useMemo(() => {
     return categories.find((cat) => cat.id.toString() === activeCategoryId);
   }, [categories, activeCategoryId]);
 
-  // Filtered Items
   const filteredItems = useMemo(() => {
     if (!activeCategoryId) return [];
     return items.filter((item) => item.categoryId.toString() === activeCategoryId);
   }, [items, activeCategoryId]);
 
-  // Loading State
-  if (tenantLoading || loading) {
+  const loading = (!catInitialized && catLoading) || (!itemInitialized && itemLoading);
+
+  if (loading) {
     return (
       <section className="section-plain section-divider-top py-16 md:py-20">
         <Container>
@@ -85,14 +48,8 @@ export function FevItems() {
     );
   }
 
-  if (error) {
-    return (
-      <section className="section-plain section-divider-top py-16 md:py-20">
-        <Container>
-          <p className="text-center text-red-500">{error}</p>
-        </Container>
-      </section>
-    );
+  if (categories.length === 0) {
+    return null;
   }
 
   return (

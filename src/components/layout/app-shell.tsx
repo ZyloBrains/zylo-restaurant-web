@@ -4,7 +4,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { MobileBottomBar } from "@/components/layout/mobile-bottom-bar";
 import { CartDrawer } from "@/components/cart/cart-drawer";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTenantStore } from "@/features/tenant/tenant.store";
 
 export function Skeleton() {
@@ -67,15 +67,15 @@ export function Skeleton() {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const tenant = useTenantStore((s) => s.tenant);
-  const loading = useTenantStore((s) => s.loading);
-  // if (loading) {
-  //   <Skeleton />
-  // }
+  const [hydrated, setHydrated] = useState(false);
 
-  if (!tenant) {
+  useEffect(() => { setHydrated(true); }, []);
+
+  if (!tenant || !hydrated) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-       <Skeleton />
+      <div className="min-h-screen bg-[var(--color-background)] pb-24 text-[var(--color-text)] md:pb-0">
+        <Header />
+        <main>{children}</main>
       </div>
     );
   }

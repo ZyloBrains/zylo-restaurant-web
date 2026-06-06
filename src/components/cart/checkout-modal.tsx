@@ -260,7 +260,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="btn-primary w-full">
+      <button onClick={() => setOpen(true)} className="btn-primary  w-full">
         Place Order
       </button>
 
