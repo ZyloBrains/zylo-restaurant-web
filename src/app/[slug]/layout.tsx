@@ -9,7 +9,6 @@ import { TenantBootstrap } from "@/components/bootstrap/tenant-bootstrap";
 import { generateTenantMetadata } from "@/seo/tenant-metadata";
 import { MenuItemBootStrap } from "@/components/bootstrap/menu-item-bootstrap";
 import { MenuCategoryBootStrap } from "@/components/bootstrap/menu-category-bootstrap";
-import { param } from "framer-motion/client";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -51,7 +50,7 @@ export default async function TenantLayout({
   const {slug}= await params;
   return (
     <div
-      className={`${inter.variable} ${poppins.variable} font-[var(--font-body)] antialiased bg-[var(--color-background)] text-[var(--color-text)] min-h-screen`}
+      className={`${inter.variable} ${poppins.variable} font-(--font-body)] antialiased bg-(--color-background)] text-(--color-text)] min-h-screen`}
     >
 
       <TenantBootstrap tenantSlug={slug} />
