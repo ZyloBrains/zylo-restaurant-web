@@ -4,6 +4,7 @@ import { User } from "lucide-react";
 import { LoginModal } from "@/components/auth/login-modal";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/features/auth/auth.store";
+import { UserDropdown } from "@/components/auth/user-dropdown";
 
 export function AuthButton() {
   const user = useAuthStore((s) => s.user);
@@ -34,13 +35,7 @@ export function AuthButton() {
           Login / Register
         </button>
       ) : (
-        <div
-          className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium"
-          style={{ backgroundColor: "var(--color-primary)", color: "white" }}
-        >
-          <User size={18} />
-          {user.email}
-        </div>
+        <UserDropdown />
       )}
 
       {open && (

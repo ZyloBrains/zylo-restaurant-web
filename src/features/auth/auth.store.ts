@@ -4,6 +4,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import type { AuthUser } from "@/types/auth.types";
 import { authService } from "@/services/auth.service";
 import type { RegisterInput } from "@/types/auth.types";
+import { createTenantScopedStorage } from "@/lib/tenant-storage";
 
 type AuthStore = {
   user: AuthUser | null;
@@ -35,7 +36,7 @@ export const useAuthStore = create<AuthStore>()(
     }),
     {
       name: "auth-storage",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => createTenantScopedStorage()),
       partialize: (state) => ({ user: state.user, token: state.token }),
     }
   )

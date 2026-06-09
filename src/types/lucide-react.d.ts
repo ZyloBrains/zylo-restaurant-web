@@ -8,6 +8,7 @@ declare module "lucide-react" {
 
   export const ArrowLeft: Icon;
   export const Bike: Icon;
+  export const ChevronDown: Icon;
   export const CheckCircle: Icon;
   export const CheckCircle2: Icon;
   export const ChevronDown: Icon;
@@ -28,7 +29,9 @@ declare module "lucide-react" {
   export const Menu: Icon;
   export const MessageCircle: Icon;
   export const Minus: Icon;
+  export const LogOut: Icon;
   export const Moon: Icon;
+  export const Package: Icon;
   export const PackageCheck: Icon;
   export const Phone: Icon;
   export const PhoneCall: Icon;

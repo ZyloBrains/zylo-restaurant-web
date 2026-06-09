@@ -7,6 +7,7 @@ export type CheckoutFormData = {
   customerAddress: string;
   customerNotes: string;
   paymentMethod: PaymentMethod;
+  promoCode: string;
 };
 
 export type CheckoutPayload = CheckoutFormData & {

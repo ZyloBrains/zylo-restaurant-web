@@ -18,6 +18,10 @@ export type CartItem = {
 
   // Backend sync
   cartItemId?: number | null;
+
+  // Discount
+  discountPercent?: number;
+  discountAmount?: number;
 };
 
 export type AddToCartInput = {

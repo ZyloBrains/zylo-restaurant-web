@@ -30,6 +30,11 @@ export interface TenantResponse {
 
   mapsUrl?: string;
 
+  facebookUrl?: string;
+  instagramUrl?: string;
+  twitterUrl?: string;
+  tiktokUrl?: string;
+
   heroTitle?: string;
 
   heroSubtitle?: string;

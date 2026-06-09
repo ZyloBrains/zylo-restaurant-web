@@ -1,5 +1,5 @@
 import { MapPin, PhoneCall, Clock, XCircle } from "lucide-react";
-import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaTwitter, FaTiktok } from "react-icons/fa";
 
 import { Container } from "@/components/ui/container";
 import { useTenantStore } from "@/features/tenant/tenant.store";
@@ -19,10 +19,10 @@ export function Footer() {
               {tenant?.restaurantName}
             </h3>
 
-            <div className="mt-4 space-y-3 text-sm text-[var(--color-text-muted)]">
+            <div className="mt-4 space-y-3 text-sm text-[var(--color-text)]">
               <div className="flex items-start gap-3">
                 <MapPin className="mt-0.5 h-4 w-4 text-[var(--color-accent)]" />
-                <span>{`${tenant?.addressLine1},${tenant?.addressLine2},${tenant?.area},${tenant?.city},${tenant?.country}`}</span>
+                <span>{[tenant?.addressLine1, tenant?.addressLine2, tenant?.area, tenant?.city, tenant?.country].filter(Boolean).join(", ")}</span>
               </div>
 
               <div className="flex items-center gap-3">
@@ -33,7 +33,7 @@ export function Footer() {
               <div className="flex items-start gap-3">
                 <Clock className="mt-0.5 h-4 w-4 text-[var(--color-accent)]" />
 
-                <div className="text-sm text-[var(--color-text-muted)]">
+                <div className="text-sm text-[var(--color-text)]">
                   {tenant?.openingHours?.days ? (
                     Object.entries(tenant.openingHours.days).map(
                       ([day, time]) => (
@@ -58,64 +58,55 @@ export function Footer() {
           </div>
 
           {/* MIDDLE - SOCIAL */}
-          <div>
-            <h4 className="text-sm font-semibold text-[var(--color-text)] mb-4">
-              Follow Us
-            </h4>
+          {(() => {
+            const links = [
+              { url: tenant?.facebookUrl, icon: FaFacebookF, label: "Facebook" },
+              { url: tenant?.instagramUrl, icon: FaInstagram, label: "Instagram" },
+              { url: tenant?.twitterUrl, icon: FaTwitter, label: "Twitter" },
+              { url: tenant?.tiktokUrl, icon: FaTiktok, label: "TikTok" },
+            ].filter((l) => l.url);
 
-            <div className="flex gap-4">
-              {/* Facebook */}
-              <a
-                href="#"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-primary)] text-white hover:scale-110 transition"
-              >
-                <FaFacebookF size={16} />
-              </a>
+            if (links.length === 0) return null;
 
-              {/* Instagram */}
-              <a
-                href="#"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-primary)] text-white hover:scale-110 transition"
-              >
-                <FaInstagram size={16} />
-              </a>
+            return (
+              <div>
+                <h4 className="text-sm font-semibold text-[var(--color-primary)] mb-4">
+                  Follow Us
+                </h4>
 
-              {/* Twitter */}
-              <a
-                href="#"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-primary)] text-white hover:scale-110 transition"
-              >
-                <FaTwitter size={16} />
-              </a>
-            </div>
+                <div className="flex gap-4">
+                  {links.map((link) => (
+                    <a
+                      key={link.label}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-primary)] text-white hover:scale-110 transition"
+                    >
+                      <link.icon size={16} />
+                    </a>
+                  ))}
+                </div>
 
-            <p className="mt-4 text-xs text-[var(--color-text-muted)]">
-              Stay connected for offers & updates
-            </p>
-          </div>
+                <p className="mt-4 text-xs text-[var(--color-text)]">
+                  Stay connected for offers & updates
+                </p>
+              </div>
+            );
+          })()}
 
           {/* RIGHT - COPYRIGHT */}
           <div className="text-sm text-[var(--color-text-muted)] md:text-right">
-            <p className="text-[var(--color-text)] font-medium">
+            <p className="text-[var(--color-primary)] font-medium">
               © {new Date().getFullYear()} {tenant?.restaurantName}
             </p>
 
-            <p className="mt-2 text-xs">
+            <p className="mt-2 text-xs text-[var(--color-text)]">
               Built for fast ordering, local convenience, and premium dining
               experience.
             </p>
 
-            <div className="mt-4 flex md:justify-end gap-2 text-xs">
-              <span className="px-2 py-1 rounded bg-[var(--color-background)] border border-[var(--color-border)]">
-                Fast Delivery
-              </span>
-              <span className="px-2 py-1 rounded bg-[var(--color-background)] border border-[var(--color-border)]">
-                Fresh Food
-              </span>
-              <span className="px-2 py-1 rounded bg-[var(--color-background)] border border-[var(--color-border)]">
-                Easy Order
-              </span>
-            </div>
+
           </div>
         </div>
       </Container>

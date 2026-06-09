@@ -6,12 +6,15 @@ export const orderService = {
   async placeOrder(
     tenantSlug: string,
     userId: number,
+    sessionId: string | null,
     request: CreateOrderRequest
   ): Promise<OrderResponse> {
+    const params: Record<string, string | number> = { userId };
+    if (sessionId) params.sessionId = sessionId;
     const { data } = await api.post<ApiResponse<OrderResponse>>(
       `/public/${tenantSlug}/order`,
       request,
-      { params: { userId } }
+      { params }
     );
     return data.data;
   },

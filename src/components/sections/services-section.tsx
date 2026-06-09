@@ -1,51 +1,23 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { UtensilsCrossed, PackageCheck, Trees, Bike } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { SectionTitle } from "@/components/ui/section-title";
 import { fadeUp, staggerContainer } from "@/lib/utils/animations";
-
-const services = [
-    {
-        title: "Dine-in",
-        description:
-            "Enjoy a clean, comfortable, and premium seafood dining experience.",
-        icon: UtensilsCrossed,
-        tag: "Comfort Dining",
-    },
-    {
-        title: "Takeout",
-        description:
-            "Quick pickup for customers who want great seafood on the go.",
-        icon: PackageCheck,
-        tag: "Fast Pickup",
-    },
-    {
-        title: "Outdoor Seating",
-        description:
-            "Relaxed seating option for customers who enjoy open-air dining.",
-        icon: Trees,
-        tag: "Open Air",
-    },
-    {
-        title: "Home Delivery",
-        description:
-            "Fast and convenient delivery for nearby Kathmandu customers.",
-        icon: Bike,
-        tag: "Quick Delivery",
-    },
-];
+import { useServicesStore } from "@/app/[slug]/store/services-store";
+import { useTenantStore } from "@/features/tenant/tenant.store";
 
 export function ServicesSection() {
+    const services = useServicesStore((s) => s.services);
+    const slug = useTenantStore((s) => s.tenantSlug);
+
+    if (!slug) return null;
+    if (services.length === 0) return null;
+
     return (
         <section id="services" className="section-plain section-divider-top py-16 md:py-20">
             <Container className="relative max-w-[1540px] px-3 lg:px-4 xl:px-6">
-                <SectionTitle
-                   
-                    title="Services"
-                    align="center"
-                />
+                <SectionTitle title="Services" align="center" />
 
                 <motion.div
                     variants={staggerContainer}
@@ -54,42 +26,49 @@ export function ServicesSection() {
                     viewport={{ once: true, amount: 0.2 }}
                     className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-4"
                 >
-                    {services.map((service) => {
-                        const Icon = service.icon;
+                    {services.map((service) => (
+                        <motion.div
+                            key={service.id}
+                            variants={fadeUp}
+                            className="card-base card-hover flex h-full flex-col p-6"
+                        >
+                            {service.iconUrl && (
+                                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--color-accent)]/10 text-[var(--color-accent)] overflow-hidden">
+                                    <img
+                                        src={service.iconUrl}
+                                        alt={service.title}
+                                        className="h-full w-full object-cover"
+                                    />
+                                </div>
+                            )}
 
-                        return (
-                            <motion.div
-                                key={service.title}
-                                variants={fadeUp}
-                                className="card-base card-hover flex h-full flex-col p-6"
+                            <h3
+                                className="text-lg font-semibold text-[var(--color-text)]"
+                                style={{ fontFamily: "var(--font-heading, Poppins)" }}
                             >
-                                {/* ICON */}
-                                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
-                                    <Icon className="h-6 w-6" />
-                                </div>
+                                {service.title}
+                            </h3>
 
-                                {/* TITLE */}
-                                <h3
-                                    className="text-lg font-semibold text-[var(--color-text)]"
-                                    style={{ fontFamily: "var(--font-heading, Poppins)" }}
-                                >
-                                    {service.title}
-                                </h3>
-
-                                {/* DESCRIPTION */}
+                            {service.shortDetails && (
                                 <p className="mt-3 text-sm leading-6 text-[var(--color-text-muted)]">
-                                    {service.description}
+                                    {service.shortDetails}
                                 </p>
+                            )}
 
-                                {/* TAG */}
-                                <div className="mt-auto pt-5">
-                  <span className="inline-flex rounded-full bg-[var(--color-surface)] px-3 py-1 text-xs font-semibold text-[var(--color-primary)]">
-                    {service.tag}
-                  </span>
+                            {service.tags && service.tags.length > 0 && (
+                                <div className="mt-auto pt-5 flex flex-wrap gap-2">
+                                    {service.tags.map((tag) => (
+                                        <span
+                                            key={tag}
+                                            className="inline-flex rounded-full bg-[var(--color-surface)] px-3 py-1 text-xs font-semibold text-[var(--color-primary)]"
+                                        >
+                                            {tag}
+                                        </span>
+                                    ))}
                                 </div>
-                            </motion.div>
-                        );
-                    })}
+                            )}
+                        </motion.div>
+                    ))}
                 </motion.div>
             </Container>
         </section>

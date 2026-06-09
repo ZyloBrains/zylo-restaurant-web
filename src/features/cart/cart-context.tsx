@@ -65,10 +65,20 @@ function generateSessionId(): string {
   return id;
 }
 
-function mapBackendItem(
-  item: import("@/services/cart.service").CartItemResponse
-): CartItem {
-  return {
+function deduplicateBackendItems(
+  items: import("@/services/cart.service").CartItemResponse[]
+): CartItem[] {
+  const map = new Map<string, import("@/services/cart.service").CartItemResponse>();
+  for (const item of items) {
+    const key = item.itemId.toString();
+    const existing = map.get(key);
+    if (existing) {
+      existing.quantity += item.quantity;
+    } else {
+      map.set(key, { ...item });
+    }
+  }
+  return Array.from(map.values()).map((item) => ({
     id: `cart-${item.itemId}`,
     menuItemId: item.itemId.toString(),
     itemId: item.itemId,
@@ -77,7 +87,9 @@ function mapBackendItem(
     quantity: item.quantity,
     imageUrl: item.imageUrl || "",
     cartItemId: item.id,
-  };
+    discountPercent: item.discountPercent,
+    discountAmount: item.discountAmount,
+  }));
 }
 
 export function CartProvider({
@@ -106,7 +118,7 @@ export function CartProvider({
           if (res) {
             cartIdRef.current = res.id;
             if (res.items?.length) {
-              setItems(res.items.map(mapBackendItem));
+              setItems(deduplicateBackendItems(res.items));
             }
           }
         })
@@ -119,7 +131,7 @@ export function CartProvider({
             cartIdRef.current = res.id;
             sessionIdRef.current = storedSessionId;
             if (res.items?.length) {
-              setItems(res.items.map(mapBackendItem));
+              setItems(deduplicateBackendItems(res.items));
             }
           }
         })

@@ -4,6 +4,7 @@ export type CreateOrderRequest = {
   customerAddress: string;
   customerNote?: string;
   paymentMethod: string;
+  promoCode?: string;
 };
 
 export type OrderItemResponse = {
@@ -12,6 +13,8 @@ export type OrderItemResponse = {
   quantity: number;
   price: number;
   totalPrice: number;
+  discountPercent?: number;
+  discountAmount?: number;
 };
 
 export type OrderResponse = {
@@ -19,6 +22,8 @@ export type OrderResponse = {
   orderNumber: string;
   status: string;
   totalAmount: number;
+  promoCode?: string;
+  promoDiscount?: number;
   customerName: string;
   customerPhone: string;
   customerAddress: string;

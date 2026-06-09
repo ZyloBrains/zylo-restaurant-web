@@ -32,7 +32,7 @@ export default function ExpoMenu() {
     );
   }
 
-  if (initialized && items.length === 0) {
+  if (!initialized || items.length === 0) {
     return null;
   }
 

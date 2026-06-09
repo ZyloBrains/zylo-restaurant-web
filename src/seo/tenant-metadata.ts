@@ -1,6 +1,6 @@
 
 import { getTenantCached } from "@/lib/tenant/get-tenant-cached";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 export async function generateTenantMetadata(slug:string):Promise<Metadata>{
     try{
@@ -10,6 +10,10 @@ export async function generateTenantMetadata(slug:string):Promise<Metadata>{
             title: tenant.seoTitle || tenant.restaurantName,
             description: tenant.seoDescription || tenant.tagline || 'Best restaurant',
             keywords: tenant.seoKeywords?.join(", "),
+
+            icons: tenant.faviconUrl
+                ? { icon: tenant.faviconUrl }
+                : undefined,
 
             openGraph: {
                 title: tenant.restaurantName,

@@ -127,6 +127,14 @@ export function CartDrawer({
                         </button>
                       </div>
 
+                      {item.discountPercent ? (
+                        <div className="mt-1">
+                          <span className="inline-block rounded-full bg-emerald-100 dark:bg-emerald-900/40 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                            {item.discountPercent}% off
+                          </span>
+                        </div>
+                      ) : null}
+
                       {/* QTY */}
                       <div className="mt-3 flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -149,9 +157,22 @@ export function CartDrawer({
                           </button>
                         </div>
 
-                        <p className="font-semibold text-[var(--color-primary)]">
-                          NPR {item.price * item.quantity}
-                        </p>
+                        <div className="text-right">
+                          {item.discountAmount ? (
+                            <>
+                              <p className="text-xs text-[var(--color-text-muted)] line-through">
+                                NPR {item.price * item.quantity}
+                              </p>
+                              <p className="font-semibold text-emerald-600 dark:text-emerald-400">
+                                NPR {item.price * item.quantity - item.discountAmount}
+                              </p>
+                            </>
+                          ) : (
+                            <p className="font-semibold text-[var(--color-primary)]">
+                              NPR {item.price * item.quantity}
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>

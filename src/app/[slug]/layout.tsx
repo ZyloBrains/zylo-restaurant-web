@@ -9,6 +9,7 @@ import { TenantBootstrap } from "@/components/bootstrap/tenant-bootstrap";
 import { generateTenantMetadata } from "@/seo/tenant-metadata";
 import { MenuItemBootStrap } from "@/components/bootstrap/menu-item-bootstrap";
 import { MenuCategoryBootStrap } from "@/components/bootstrap/menu-category-bootstrap";
+import { ServicesBootstrap } from "@/components/bootstrap/services-bootstrap";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -56,7 +57,8 @@ export default async function TenantLayout({
       <TenantBootstrap tenantSlug={slug} />
       <MenuItemBootStrap slug={slug} />
       <MenuCategoryBootStrap slug={slug} />
-        <CartProvider slug={slug}>
+      <ServicesBootstrap slug={slug} />
+      <CartProvider slug={slug}>
           <AppShell>{children}</AppShell>
         </CartProvider>
       

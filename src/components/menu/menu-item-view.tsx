@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import { AnimatePresence } from "framer-motion";
 
 import { MenuItemCard } from "@/components/menu/menu-item-card";
 import type { MenuData } from "@/features/menu/menu.types";
@@ -71,16 +70,14 @@ export function MenuItemView({ menu }: Props) {
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                  <AnimatePresence mode="wait">
-                    {(groupedItems[cat.id.toString()] ?? []).map(
-                      (item) => (
-                        <MenuItemCard
-                          key={item.id.toString()}
-                          item={item}
-                        />
-                      )
-                    )}
-                  </AnimatePresence>
+                  {(groupedItems[cat.id.toString()] ?? []).map(
+                    (item) => (
+                      <MenuItemCard
+                        key={item.id.toString()}
+                        item={item}
+                      />
+                    )
+                  )}
                 </div>
               </section>
             ))}

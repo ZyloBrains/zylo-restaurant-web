@@ -95,8 +95,16 @@ export default function CartSummary() {
                   </div>
 
                   {/* SUBTOTAL */}
-                  <div className="font-semibold text-left md:text-center text-[var(--color-text)]">
-                    NRS {item.price * item.quantity}
+                  <div className="text-left md:text-center">
+                    {item.discountAmount ? (
+                      <>
+                        <p className="text-xs text-[var(--color-text-muted)] line-through">NRS {item.price * item.quantity}</p>
+                        <p className="font-semibold text-emerald-600 dark:text-emerald-400">NRS {item.price * item.quantity - item.discountAmount}</p>
+                        {item.discountPercent ? <p className="text-[10px] text-emerald-500">({item.discountPercent}% off)</p> : null}
+                      </>
+                    ) : (
+                      <span className="font-semibold text-[var(--color-text)]">NRS {item.price * item.quantity}</span>
+                    )}
                   </div>
 
                   {/* REMOVE */}

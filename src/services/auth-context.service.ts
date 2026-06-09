@@ -1,10 +1,13 @@
 import type { AuthUser } from "@/types/auth.types";
+import { getAuthStorageKey } from "@/lib/tenant-storage";
 
-const STORAGE_KEY = "auth-storage";
+function storageKey(): string {
+  return getAuthStorageKey();
+}
 
 function read(): { state: { user: AuthUser | null; token: string | null } } | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(storageKey());
     if (!raw) return null;
     return JSON.parse(raw);
   } catch {
@@ -13,7 +16,7 @@ function read(): { state: { user: AuthUser | null; token: string | null } } | nu
 }
 
 function write(state: { user: AuthUser | null; token: string | null }) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ state }));
+  localStorage.setItem(storageKey(), JSON.stringify({ state }));
 }
 
 export const authContext = {
@@ -44,7 +47,7 @@ export const authContext = {
   },
 
   clearAuth() {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(storageKey());
   },
 
   setAuth(token: string, user: AuthUser) {

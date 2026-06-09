@@ -1,5 +1,6 @@
 import axios from "axios";
 import { toast } from "sonner";
+import { getAuthStorageKey } from "@/lib/tenant-storage";
 
 const API_BASE_URL=process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8082/api';
 
@@ -14,7 +15,7 @@ export const api= axios.create({
 
 api.interceptors.request.use(
     (config)=>{
-        const raw = localStorage.getItem("auth-storage");
+        const raw = localStorage.getItem(getAuthStorageKey());
         if (raw) {
           try {
             const parsed = JSON.parse(raw);

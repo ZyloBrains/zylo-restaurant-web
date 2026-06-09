@@ -15,6 +15,7 @@ import { useTenantStore } from "@/features/tenant/tenant.store";
 export function MenuClientShell() {
 
   const tenantInfo=useTenantStore((s)=>s.tenant);
+  const slug=useTenantStore((s)=>s.tenantSlug);
   return (
     
     <div className="min-h-screen bg-[var(--color-background)] pb-24 text-[var(--color-text)] md:pb-0">
@@ -25,7 +26,7 @@ export function MenuClientShell() {
           title={tenantInfo?.heroTitle as string}
           subtitle={tenantInfo?.heroSubtitle as string}
           phone={tenantInfo?.phone as string}
-          tenantSlug={tenantInfo?.tenantSlug as string}
+          tenantSlug={slug as string}
         />
 
         <ExpoMenu />
@@ -46,7 +47,7 @@ export function MenuClientShell() {
       <CartDrawer
         restaurantName={tenantInfo?.restaurantName as string}
         whatsappNumber={tenantInfo?.whatsappNumber as string}
-        tenantSlug={tenantInfo?.tenantSlug as string}
+        tenantSlug={slug as string}
       />
     </div>
   );

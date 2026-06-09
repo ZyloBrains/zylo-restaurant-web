@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   X,
   CheckCircle2,
@@ -39,6 +39,7 @@ const initialForm: CheckoutFormData = {
   customerAddress: "",
   customerNotes: "",
   paymentMethod: "cash",
+  promoCode: "",
 };
 
 type Step = "details" | "confirm" | "processing" | "success";
@@ -72,7 +73,8 @@ const paymentOptions: {
 export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Props) {
   const { items, subtotal, clearCart, closeCart } = useCart();
   const slug=useTenantStore((s)=>s.tenantSlug) as string;
-  const isLoggedIn = !!useAuthStore((s) => s.user);
+  const user = useAuthStore((s) => s.user);
+  const isLoggedIn = !!user;
 
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("details");
@@ -81,6 +83,15 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
   const [statusText, setStatusText] = useState("");
   const [showLogin, setShowLogin] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
+
+  useEffect(() => {
+    if (!open || !user) return;
+    setForm((prev) => ({
+      ...prev,
+      customerName: prev.customerName || user.name || "",
+      customerPhone: prev.customerPhone || user.phone || "",
+    }));
+  }, [open, user]);
 
   const message = useMemo(
     () =>
@@ -119,12 +130,14 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
     try {
       // 1. Create the order on backend
       setStatusText("Creating your order...");
-      const order = await orderService.placeOrder(tenantSlug, currentUser.id, {
+      const sessionId = localStorage.getItem("cart_session_id");
+      const order = await orderService.placeOrder(tenantSlug, currentUser.id, sessionId, {
         customerName: form.customerName,
         customerPhone: form.customerPhone,
         customerAddress: form.customerAddress || "N/A",
         customerNote: form.customerNotes || undefined,
         paymentMethod: form.paymentMethod.toUpperCase(),
+        promoCode: form.promoCode || undefined,
       });
       setOrderNumber(order.orderNumber);
 
@@ -160,6 +173,8 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
         // best-effort
       }
 
+      clearCart();
+      window.dispatchEvent(new CustomEvent("order-placed"));
       setStep("success");
       setProcessing(false);
     } catch (err: unknown) {
@@ -444,10 +459,18 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                             </p>
                             <p className="text-xs text-[var(--color-text-muted)]">
                               Qty: {item.quantity}
+                              {item.discountPercent ? <span className="ml-1.5 inline-block rounded-full bg-emerald-100 dark:bg-emerald-900/40 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300">{item.discountPercent}% off</span> : null}
                             </p>
                           </div>
-                          <span className="ml-3 text-sm font-semibold text-[var(--color-primary)]">
-                            NPR {item.price * item.quantity}
+                          <span className="ml-3 text-right text-sm font-semibold">
+                            {item.discountAmount ? (
+                              <>
+                                <span className="block text-xs text-[var(--color-text-muted)] line-through">NPR {item.price * item.quantity}</span>
+                                <span className="text-emerald-600 dark:text-emerald-400">NPR {item.price * item.quantity - item.discountAmount}</span>
+                              </>
+                            ) : (
+                              <span className="text-[var(--color-primary)]">NPR {item.price * item.quantity}</span>
+                            )}
                           </span>
                         </div>
                       ))}
@@ -464,6 +487,12 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                         <span>Delivery</span>
                         <span>Free</span>
                       </div>
+                      {form.promoCode && (
+                        <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
+                          <span>Promo ({form.promoCode})</span>
+                          <span>- NPR {0}</span>
+                        </div>
+                      )}
                     </div>
 
                     <hr className="my-4 border-[var(--color-border)]" />
@@ -523,6 +552,14 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                           value={form.customerNotes}
                           onChange={(e) =>
                             updateField("customerNotes", e.target.value)
+                          }
+                        />
+                        <input
+                          className="input-base"
+                          placeholder="Promo Code (optional)"
+                          value={form.promoCode}
+                          onChange={(e) =>
+                            updateField("promoCode", e.target.value)
                           }
                         />
                       </div>
@@ -624,10 +661,18 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                             </p>
                             <p className="text-xs text-[var(--color-text-muted)]">
                               Qty: {item.quantity}
+                              {item.discountPercent ? <span className="ml-1.5 inline-block rounded-full bg-emerald-100 dark:bg-emerald-900/40 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300">{item.discountPercent}% off</span> : null}
                             </p>
                           </div>
-                          <span className="ml-3 text-sm font-semibold text-[var(--color-primary)]">
-                            NPR {item.price * item.quantity}
+                          <span className="ml-3 text-right text-sm font-semibold">
+                            {item.discountAmount ? (
+                              <>
+                                <span className="block text-xs text-[var(--color-text-muted)] line-through">NPR {item.price * item.quantity}</span>
+                                <span className="text-emerald-600 dark:text-emerald-400">NPR {item.price * item.quantity - item.discountAmount}</span>
+                              </>
+                            ) : (
+                              <span className="text-[var(--color-primary)]">NPR {item.price * item.quantity}</span>
+                            )}
                           </span>
                         </div>
                       ))}
@@ -644,6 +689,12 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                         <span>Delivery</span>
                         <span>Free</span>
                       </div>
+                      {form.promoCode && (
+                        <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
+                          <span>Promo ({form.promoCode})</span>
+                          <span>- NPR {0}</span>
+                        </div>
+                      )}
                     </div>
 
                     <hr className="my-4 border-[var(--color-border)]" />

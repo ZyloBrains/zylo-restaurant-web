@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 import { Container } from "@/components/ui/container";
 import { SectionTitle } from "@/components/ui/section-title";
@@ -21,18 +21,19 @@ export function FevItems() {
   const itemInitialized = useMenuItemStore((s) => s.initialized);
   const itemLoading = useMenuItemStore((s) => s.loading);
 
-  const [activeCategoryId, setActiveCategoryId] = useState<string>(
-    categories.length > 0 ? categories[0].id.toString() : ""
-  );
+  const [activeCategoryId, setActiveCategoryId] = useState<string>("");
+
+  const currentCategoryId = activeCategoryId || "";
 
   const activeCategory = useMemo(() => {
-    return categories.find((cat) => cat.id.toString() === activeCategoryId);
-  }, [categories, activeCategoryId]);
+    if (!currentCategoryId) return undefined;
+    return categories.find((cat) => cat.id.toString() === currentCategoryId);
+  }, [categories, currentCategoryId]);
 
   const filteredItems = useMemo(() => {
-    if (!activeCategoryId) return [];
-    return items.filter((item) => item.categoryId.toString() === activeCategoryId);
-  }, [items, activeCategoryId]);
+    if (!currentCategoryId) return items;
+    return items.filter((item) => item.categoryId.toString() === currentCategoryId);
+  }, [items, currentCategoryId]);
 
   const loading = (!catInitialized && catLoading) || (!itemInitialized && itemLoading);
 
@@ -62,8 +63,21 @@ export function FevItems() {
 
         {/* CATEGORY BUTTONS */}
         <div className="mt-8 flex flex-wrap gap-3 justify-center">
+          {/* ALL button */}
+          <button
+            type="button"
+            onClick={() => setActiveCategoryId("")}
+            className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
+              !currentCategoryId
+                ? "bg-[var(--color-primary)] text-white shadow-sm"
+                : "border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-text-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+            }`}
+          >
+            All
+          </button>
+
           {categories.map((category) => {
-            const isActive = category.id.toString() === activeCategoryId;
+            const isActive = category.id.toString() === currentCategoryId;
 
             return (
               <button
@@ -91,7 +105,7 @@ export function FevItems() {
 
         {/* ITEMS GRID */}
         <motion.div
-          key={activeCategoryId}
+          key={currentCategoryId}
           variants={staggerContainer}
           initial="initial"
           animate="animate"
@@ -103,11 +117,9 @@ export function FevItems() {
             </p>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              <AnimatePresence mode="wait">
-                {filteredItems.map((item) => (
-                  <MenuItemCard key={item.id} item={item} />
-                ))}
-              </AnimatePresence>
+              {filteredItems.map((item) => (
+                <MenuItemCard key={item.id} item={item} />
+              ))}
             </div>
           )}
         </motion.div>

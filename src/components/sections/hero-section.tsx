@@ -29,6 +29,7 @@ export function HeroSection({
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
+        if (!tenantSlug) return;
         heroImageService.getHeroImagesBySlug(tenantSlug).then(setHeroImages).catch(() => {});
     }, [tenantSlug]);
 

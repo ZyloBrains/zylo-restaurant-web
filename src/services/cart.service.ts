@@ -9,6 +9,8 @@ export type CartItemResponse = {
   quantity: number;
   price: number;
   totalPrice: number;
+  discountPercent?: number;
+  discountAmount?: number;
 };
 
 export type CartResponse = {
@@ -17,6 +19,8 @@ export type CartResponse = {
   sessionId: string | null;
   status: string;
   totalAmount: number;
+  promoCode?: string;
+  promoDiscount?: number;
   items: CartItemResponse[];
 };
 
@@ -81,6 +85,21 @@ export const cartService = {
   async checkout(slug: string, cartId: number): Promise<CartResponse> {
     const { data } = await api.post<ApiResponse<CartResponse>>(
       `/public/${slug}/cart/checkout/${cartId}`
+    );
+    return data.data;
+  },
+
+  async applyPromoCode(slug: string, cartId: number, code: string): Promise<CartResponse> {
+    const { data } = await api.post<ApiResponse<CartResponse>>(
+      `/public/${slug}/cart/promo/apply/${cartId}`,
+      { code }
+    );
+    return data.data;
+  },
+
+  async removePromoCode(slug: string, cartId: number): Promise<CartResponse> {
+    const { data } = await api.delete<ApiResponse<CartResponse>>(
+      `/public/${slug}/cart/promo/remove/${cartId}`
     );
     return data.data;
   },
