@@ -19,8 +19,6 @@ export default function CartSummary() {
 
   const tenantInfo= useTenantStore((s)=>s.tenant);
 
- 
-
   return (
     <div className="bg-(--color-background) min-h-screen py-10 px-4">
       <div className="max-w-6xl mx-auto">
@@ -76,7 +74,7 @@ export default function CartSummary() {
                     </div>
                   </div>
 
-                  {/* QTY (UNCHANGED BUTTONS) */}
+                  {/* QTY */}
                   <div className="
                     flex items-center justify-between md:justify-center
                     gap-3 border border-[var(--color-border)] rounded-lg px-3 py-2 text-[var(--color-text)]
@@ -149,7 +147,7 @@ export default function CartSummary() {
               </div>
             </div>
 
-            {/* CHECKOUT */}
+            {/* PLACE ORDER */}
             <div className="mt-6">
               <CheckoutModal
                 restaurantName={tenantInfo?.restaurantName as string}

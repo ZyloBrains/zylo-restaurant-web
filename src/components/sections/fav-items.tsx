@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
 
 import { Container } from "@/components/ui/container";
 import { SectionTitle } from "@/components/ui/section-title";
@@ -104,12 +103,9 @@ export function FevItems() {
         )}
 
         {/* ITEMS GRID */}
-        <motion.div
+        <div
           key={currentCategoryId}
-          variants={staggerContainer}
-          initial="initial"
-          animate="animate"
-          className="mt-10"
+          className={`mt-10 ${staggerContainer}`}
         >
           {filteredItems.length === 0 ? (
             <p className="text-sm text-[var(--color-text-muted)] text-center py-10">
@@ -117,12 +113,14 @@ export function FevItems() {
             </p>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {filteredItems.map((item) => (
-                <MenuItemCard key={item.id} item={item} />
+              {filteredItems.map((item, i) => (
+                <div key={item.id} style={{ "--stagger-index": i } as React.CSSProperties}>
+                  <MenuItemCard item={item} />
+                </div>
               ))}
             </div>
           )}
-        </motion.div>
+        </div>
       </Container>
     </section>
   );

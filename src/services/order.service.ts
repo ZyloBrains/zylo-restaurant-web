@@ -1,4 +1,4 @@
-import { api } from "@/lib/axios";
+import { api } from "@/lib/api";
 import type { ApiResponse } from "@/types/api.types";
 import type { CreateOrderRequest, OrderResponse } from "@/types/order.types";
 

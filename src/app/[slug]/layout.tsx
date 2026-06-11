@@ -5,11 +5,8 @@ import "../globals.css";
 
 import { CartProvider } from "@/features/cart/cart-context";
 import { AppShell } from "@/components/layout/app-shell";
-import { TenantBootstrap } from "@/components/bootstrap/tenant-bootstrap";
+import { HydrationBootstrap } from "@/components/bootstrap/hydration-bootstrap";
 import { generateTenantMetadata } from "@/seo/tenant-metadata";
-import { MenuItemBootStrap } from "@/components/bootstrap/menu-item-bootstrap";
-import { MenuCategoryBootStrap } from "@/components/bootstrap/menu-category-bootstrap";
-import { ServicesBootstrap } from "@/components/bootstrap/services-bootstrap";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -54,10 +51,7 @@ export default async function TenantLayout({
       className={`${inter.variable} ${poppins.variable} font-(--font-body)] antialiased bg-(--color-background)] text-(--color-text)] min-h-screen`}
     >
 
-      <TenantBootstrap tenantSlug={slug} />
-      <MenuItemBootStrap slug={slug} />
-      <MenuCategoryBootStrap slug={slug} />
-      <ServicesBootstrap slug={slug} />
+      <HydrationBootstrap slug={slug} />
       <CartProvider slug={slug}>
           <AppShell>{children}</AppShell>
         </CartProvider>

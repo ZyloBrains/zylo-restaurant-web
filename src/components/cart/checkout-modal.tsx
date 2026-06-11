@@ -1,7 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   X,
   CheckCircle2,
@@ -24,8 +23,11 @@ import {
 import { paymentService } from "@/services/payment.service";
 import { orderService } from "@/services/order.service";
 import { notificationService } from "@/services/notification.service";
+import { cartService } from "@/services/cart.service";
 import { useTenantStore } from "@/features/tenant/tenant.store";
+import Image from "next/image";
 import Link from "next/link";
+import { toast } from "sonner";
 
 type Props = {
   restaurantName: string;
@@ -44,37 +46,26 @@ const initialForm: CheckoutFormData = {
 
 type Step = "details" | "confirm" | "processing" | "success";
 
-const paymentOptions: {
+type PaymentOption = {
   value: PaymentMethod;
   label: string;
   description: string;
   icon: typeof Wallet;
-}[] = [
-  {
-    value: "cash",
-    label: "Cash",
-    description: "Pay when you receive",
-    icon: DollarSign,
-  },
-  {
-    value: "esewa",
-    label: "eSewa",
-    description: "Pay via eSewa wallet",
-    icon: Wallet,
-  },
-  {
-    value: "khalti",
-    label: "Khalti",
-    description: "Pay via Khalti wallet",
-    icon: Wallet,
-  },
-];
+  iconUrl?: string;
+};
 
 export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Props) {
-  const { items, subtotal, clearCart, closeCart } = useCart();
+  const { items, subtotal, clearCart, closeCart, cartId } = useCart();
   const slug=useTenantStore((s)=>s.tenantSlug) as string;
+  const tenant = useTenantStore((s) => s.tenant);
   const user = useAuthStore((s) => s.user);
   const isLoggedIn = !!user;
+
+  const paymentOptions = useMemo<PaymentOption[]>(() => [
+    { value: "cash", label: "Cash", description: "Pay when you receive", icon: DollarSign },
+    ...(tenant?.esewaLogoUrl ? [{ value: "esewa" as PaymentMethod, label: "eSewa", description: "Pay via eSewa wallet", icon: Wallet as typeof Wallet, iconUrl: tenant.esewaLogoUrl }] : []),
+    ...(tenant?.khaltiLogoUrl ? [{ value: "khalti" as PaymentMethod, label: "Khalti", description: "Pay via Khalti wallet", icon: Wallet as typeof Wallet, iconUrl: tenant.khaltiLogoUrl }] : []),
+  ], [tenant]);
 
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("details");
@@ -82,15 +73,30 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
   const [processing, setProcessing] = useState(false);
   const [statusText, setStatusText] = useState("");
   const [showLogin, setShowLogin] = useState(false);
+  const loginOriginRef = useRef<"details" | "placeorder">("details");
   const [orderNumber, setOrderNumber] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoDiscount, setPromoDiscount] = useState(0);
 
+  // Auto-fill from user profile on open or login
   useEffect(() => {
-    if (!open || !user) return;
+    if (!open || step !== "details") return;
+    if (!user) return;
     setForm((prev) => ({
       ...prev,
       customerName: prev.customerName || user.name || "",
       customerPhone: prev.customerPhone || user.phone || "",
     }));
+  }, [user, open]);
+
+  // Show login modal on open when not logged in
+  useEffect(() => {
+    if (!open || step !== "details") return;
+    if (!user) {
+      const t = setTimeout(() => setShowLogin(true), 100);
+      return () => clearTimeout(t);
+    }
   }, [open, user]);
 
   const message = useMemo(
@@ -120,6 +126,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
   async function handlePlaceOrder() {
     const currentUser = useAuthStore.getState().user;
     if (!currentUser) {
+      loginOriginRef.current = "placeorder";
       setShowLogin(true);
       return;
     }
@@ -138,6 +145,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
         customerNote: form.customerNotes || undefined,
         paymentMethod: form.paymentMethod.toUpperCase(),
         promoCode: form.promoCode || undefined,
+        promoDiscount: promoApplied ? promoDiscount : undefined,
       });
       setOrderNumber(order.orderNumber);
 
@@ -152,29 +160,30 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
 
       // 3. Send notification to system users
       setStatusText("Sending notification...");
-      try {
-        await notificationService.sendOrderNotification({
-          tenantSlug,
-          orderId: order.orderNumber,
-          customerName: form.customerName,
-          customerPhone: form.customerPhone,
-          customerAddress: form.customerAddress,
-          customerNotes: form.customerNotes,
-          paymentMethod: form.paymentMethod,
-          items: items.map((i) => ({
-            name: i.name,
-            quantity: i.quantity,
-            price: i.price,
-          })),
-          totalAmount: subtotal,
-          restaurantName,
-        });
-      } catch {
-        // best-effort
-      }
+      // try {
+      //   await notificationService.sendOrderNotification({
+      //     tenantSlug,
+      //     orderId: order.orderNumber,
+      //     customerName: form.customerName,
+      //     customerPhone: form.customerPhone,
+      //     customerAddress: form.customerAddress,
+      //     customerNotes: form.customerNotes,
+      //     paymentMethod: form.paymentMethod,
+      //     items: items.map((i) => ({
+      //       name: i.name,
+      //       quantity: i.quantity,
+      //       price: i.price,
+      //     })),
+      //     totalAmount: subtotal,
+      //     restaurantName,
+      //   });
+      // } catch {
+       
+      // }
 
       clearCart();
       window.dispatchEvent(new CustomEvent("order-placed"));
+      toast.info("Order place successfully!")
       setStep("success");
       setProcessing(false);
     } catch (err: unknown) {
@@ -190,8 +199,9 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
 
   async function handleCashFlow(orderId: number, _userId: number) {
     setStatusText("Registering cash payment...");
+    const finalAmount = subtotal - promoDiscount;
     const cashResult = await paymentService.initiateCash(tenantSlug, {
-      amount: subtotal,
+      amount: finalAmount,
       orderId: String(orderId),
       userId: _userId,
       description: `Order from ${restaurantName}`,
@@ -203,8 +213,9 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
 
   async function handleEsewaFlow(orderId: number, _userId: number) {
     setStatusText("Initiating eSewa payment...");
+    const finalAmount = subtotal - promoDiscount;
     const result = await paymentService.initiateEsewa(tenantSlug, {
-      amount: subtotal,
+      amount: finalAmount,
       orderId: String(orderId),
       userId: _userId,
       description: `Order from ${restaurantName}`,
@@ -242,8 +253,9 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
 
   async function handleKhaltiFlow(orderId: number, _userId: number) {
     setStatusText("Initiating Khalti payment...");
+    const finalAmount = subtotal - promoDiscount;
     const result = await paymentService.initiateKhalti(tenantSlug, {
-      amount: subtotal,
+      amount: finalAmount,
       orderId: String(orderId),
       userId: _userId,
       description: `Order from ${restaurantName}`,
@@ -275,7 +287,14 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="btn-primary  w-full">
+      <button onClick={() => {
+        setForm(initialForm);
+        setStep("details");
+        setOpen(true);
+        setPromoApplied(false);
+        setPromoDiscount(0);
+        setOrderNumber("");
+      }} className="btn-primary  w-full">
         Place Order
       </button>
 
@@ -301,6 +320,8 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                   setStep("details");
                   setForm(initialForm);
                   setOrderNumber("");
+                  setPromoApplied(false);
+                  setPromoDiscount(0);
                 }}
                 className="rounded-lg border border-[var(--color-border)] p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
               >
@@ -324,14 +345,9 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
 
               {step === "success" && (
                 <div className="flex flex-col items-center px-6 py-16 text-center">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                    className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-950"
-                  >
-                    <CheckCircle2 className="h-8 w-8 text-emerald-500 dark:text-emerald-400" strokeWidth={2.5} />
-                  </motion.div>
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-950 animate-scale-in">
+                    <CheckCircle2 className="h-8 w-8 text-emerald-500 dark:text-emerald-400 animate-scale-check" strokeWidth={2.5} />
+                  </div>
                   <h3 className="text-xl font-bold text-[var(--color-text)]">
                     Order Confirmed!
                   </h3>
@@ -487,10 +503,10 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                         <span>Delivery</span>
                         <span>Free</span>
                       </div>
-                      {form.promoCode && (
+                      {form.promoCode && promoApplied && (
                         <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
                           <span>Promo ({form.promoCode})</span>
-                          <span>- NPR {0}</span>
+                          <span>- NPR {promoDiscount}</span>
                         </div>
                       )}
                     </div>
@@ -500,7 +516,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-[var(--color-text)]">Total</span>
                       <span className="text-lg font-bold text-[var(--color-primary)]">
-                        NPR {subtotal}
+                        NPR {subtotal - promoDiscount}
                       </span>
                     </div>
                   </div>
@@ -518,6 +534,12 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                       <p className="mb-4 text-xs text-[var(--color-text-muted)]">
                         Fill in your contact information
                       </p>
+
+                      {isLoggedIn && (
+                        <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30 p-3 text-xs text-emerald-700 dark:text-emerald-300">
+                          Logged in as <strong>{user?.name || user?.email || user?.phone}</strong>
+                        </div>
+                      )}
 
                       <div className="space-y-3">
                         <input
@@ -554,14 +576,63 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                             updateField("customerNotes", e.target.value)
                           }
                         />
-                        <input
-                          className="input-base"
-                          placeholder="Promo Code (optional)"
-                          value={form.promoCode}
-                          onChange={(e) =>
-                            updateField("promoCode", e.target.value)
-                          }
-                        />
+                        <div className="flex gap-2">
+                          <input
+                            className="input-base flex-1"
+                            placeholder="Promo Code (optional)"
+                            value={form.promoCode}
+                            onChange={(e) => {
+                              updateField("promoCode", e.target.value);
+                              setPromoApplied(false);
+                              setPromoDiscount(0);
+                            }}
+                            disabled={promoLoading}
+                          />
+                          {promoApplied ? (
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                if (!cartId) return;
+                                setPromoLoading(true);
+                                try {
+                                  await cartService.removePromoCode(tenantSlug, cartId);
+                                  updateField("promoCode", "");
+                                  setPromoApplied(false);
+                                  setPromoDiscount(0);
+                                } catch {
+                                  toast.error("Failed to remove promo code");
+                                } finally {
+                                  setPromoLoading(false);
+                                }
+                              }}
+                              className="btn-secondary shrink-0"
+                            >
+                              Remove
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                if (!cartId) return;
+                                setPromoLoading(true);
+                                try {
+                                  const res = await cartService.applyPromoCode(tenantSlug, cartId, form.promoCode);
+                                  setPromoApplied(true);
+                                  setPromoDiscount(res.promoDiscount ?? 0);
+                                  toast.success("Promo code applied!");
+                                } catch {
+                                  toast.error("Invalid promo code");
+                                } finally {
+                                  setPromoLoading(false);
+                                }
+                              }}
+                              disabled={!form.promoCode.trim() || promoLoading || !cartId}
+                              className="btn-primary shrink-0 disabled:opacity-50"
+                            >
+                              {promoLoading ? "Applying..." : "Apply"}
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -589,13 +660,17 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                                   : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-text-muted)]"
                               }`}
                             >
-                              <Icon
-                                className={`h-5 w-5 ${
-                                  selected
-                                    ? "text-[var(--color-primary)]"
-                                    : "text-[var(--color-text-muted)]"
-                                }`}
-                              />
+                              {opt.iconUrl ? (
+                                <Image src={opt.iconUrl} alt={opt.label} width={24} height={24} className="h-6 w-6 object-contain" unoptimized />
+                              ) : (
+                                <Icon
+                                  className={`h-5 w-5 ${
+                                    selected
+                                      ? "text-[var(--color-primary)]"
+                                      : "text-[var(--color-text-muted)]"
+                                  }`}
+                                />
+                              )}
                               <div>
                                 <p
                                   className={`text-sm font-semibold ${
@@ -689,10 +764,10 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                         <span>Delivery</span>
                         <span>Free</span>
                       </div>
-                      {form.promoCode && (
+                      {form.promoCode && promoApplied && (
                         <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
                           <span>Promo ({form.promoCode})</span>
-                          <span>- NPR {0}</span>
+                          <span>- NPR {promoDiscount}</span>
                         </div>
                       )}
                     </div>
@@ -702,7 +777,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-[var(--color-text)]">Total</span>
                       <span className="text-lg font-bold text-[var(--color-primary)]">
-                        NPR {subtotal}
+                        NPR {subtotal - promoDiscount}
                       </span>
                     </div>
 
@@ -723,6 +798,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                 <button
                   onClick={() => {
                     if (!isLoggedIn) {
+                      loginOriginRef.current = "details";
                       setShowLogin(true);
                       return;
                     }
@@ -733,11 +809,10 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                 >
                   {!isLoggedIn ? (
                     <span className="flex items-center justify-center gap-2">
-                      <ArrowLeft size={16} />
                       Login to Place Order
                     </span>
                   ) : (
-                    `Continue – NPR ${subtotal}`
+                    `Continue – NPR ${subtotal - promoDiscount}`
                   )}
                 </button>
                 {!isValid && (
@@ -768,7 +843,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                       Processing...
                     </span>
                   ) : (
-                    `Confirm & Place Order – NPR ${subtotal}`
+                    `Confirm & Place Order – NPR ${subtotal - promoDiscount}`
                   )}
                 </button>
               </div>
@@ -780,7 +855,15 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                 onClose={() => setShowLogin(false)}
                 onSuccess={() => {
                   setShowLogin(false);
-                  handlePlaceOrder();
+                  const currentUser = useAuthStore.getState().user;
+                  setForm((prev) => ({
+                    ...prev,
+                    customerName: prev.customerName || currentUser?.name || "",
+                    customerPhone: prev.customerPhone || currentUser?.phone || "",
+                  }));
+                  if (loginOriginRef.current === "placeorder") {
+                    handlePlaceOrder();
+                  }
                 }}
               />
             )}

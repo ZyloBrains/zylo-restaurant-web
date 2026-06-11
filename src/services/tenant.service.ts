@@ -1,4 +1,4 @@
-import api from "@/lib/axios";
+import api from "@/lib/api";
 import { ApiResponse } from "@/types/api.types";
 import { TenantResponse } from "@/types/tenant.types";
 

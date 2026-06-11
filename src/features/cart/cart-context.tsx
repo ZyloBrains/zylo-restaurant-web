@@ -20,7 +20,9 @@ type CartContextValue = {
   isOpen: boolean;
   itemCount: number;
   subtotal: number;
+  total: number;
   hasItems: boolean;
+  cartId: number | null;
 
   openCart: () => void;
   closeCart: () => void;
@@ -99,9 +101,12 @@ export function CartProvider({
 }: CartProviderProps) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [cartId, setCartId] = useState<number | null>(null);
   const sessionIdRef = useRef<string>("");
   const cartIdRef = useRef<number | null>(null);
   const loadedRef = useRef(false);
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
 
   // Load existing cart on mount
   useEffect(() => {
@@ -117,6 +122,7 @@ export function CartProvider({
         .then((res) => {
           if (res) {
             cartIdRef.current = res.id;
+            setCartId(res.id);
             if (res.items?.length) {
               setItems(deduplicateBackendItems(res.items));
             }
@@ -129,6 +135,7 @@ export function CartProvider({
         .then((res) => {
           if (res) {
             cartIdRef.current = res.id;
+            setCartId(res.id);
             sessionIdRef.current = storedSessionId;
             if (res.items?.length) {
               setItems(deduplicateBackendItems(res.items));
@@ -146,6 +153,7 @@ export function CartProvider({
   const clearCart = useCallback(() => {
     setItems([]);
     setIsOpen(false);
+    setCartId(null);
     const cartId = cartIdRef.current;
     if (cartId && slug) {
       cartIdRef.current = null;
@@ -209,6 +217,7 @@ export function CartProvider({
         .addItem(slug, input.itemId, 1, identifier.userId, identifier.sessionId)
         .then((res) => {
           cartIdRef.current = res.id;
+          setCartId(res.id);
           const backendItem = res.items.find(
             (i) => i.itemId === input.itemId
           );
@@ -229,7 +238,7 @@ export function CartProvider({
 
   const increaseQty = useCallback(
     (menuItemId: string) => {
-      const target = items.find((i) => i.menuItemId === menuItemId);
+      const target = itemsRef.current.find((i) => i.menuItemId === menuItemId);
       if (!target) return;
 
       const newQty = target.quantity + 1;
@@ -247,12 +256,12 @@ export function CartProvider({
           .catch(() => {});
       }
     },
-    [items]
+    [slug]
   );
 
   const decreaseQty = useCallback(
     (menuItemId: string) => {
-      const target = items.find((i) => i.menuItemId === menuItemId);
+      const target = itemsRef.current.find((i) => i.menuItemId === menuItemId);
       if (!target) return;
 
       const newQty = target.quantity - 1;
@@ -276,12 +285,12 @@ export function CartProvider({
           .catch(() => {});
       }
     },
-    [items]
+    [slug]
   );
 
   const removeItem = useCallback(
     (menuItemId: string) => {
-      const target = items.find((i) => i.menuItemId === menuItemId);
+      const target = itemsRef.current.find((i) => i.menuItemId === menuItemId);
 
       setItems((prev) =>
         prev.filter((item) => item.menuItemId !== menuItemId)
@@ -293,20 +302,20 @@ export function CartProvider({
           .catch(() => {});
       }
     },
-    [items]
+    [slug]
   );
 
   const isInCart = useCallback(
     (menuItemId: string) =>
-      items.some((item) => item.menuItemId === menuItemId),
-    [items]
+      itemsRef.current.some((item) => item.menuItemId === menuItemId),
+    []
   );
 
   const getItemQty = useCallback(
     (menuItemId: string) => {
-      return items.find((i) => i.menuItemId === menuItemId)?.quantity ?? 0;
+      return itemsRef.current.find((i) => i.menuItemId === menuItemId)?.quantity ?? 0;
     },
-    [items]
+    []
   );
 
   const itemCount = useMemo(
@@ -319,6 +328,8 @@ export function CartProvider({
     [items]
   );
 
+  const total = subtotal;
+
   const hasItems = items.length > 0;
 
   const value = useMemo(
@@ -327,7 +338,9 @@ export function CartProvider({
       isOpen,
       itemCount,
       subtotal,
+      total,
       hasItems,
+      cartId,
 
       openCart,
       closeCart,
@@ -348,7 +361,9 @@ export function CartProvider({
       isOpen,
       itemCount,
       subtotal,
+      total,
       hasItems,
+      cartId,
       openCart,
       closeCart,
       toggleCart,

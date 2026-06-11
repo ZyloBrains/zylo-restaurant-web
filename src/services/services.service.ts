@@ -1,5 +1,5 @@
 import { ServiceResponse } from "@/features/services/services.types";
-import api from "@/lib/axios";
+import api from "@/lib/api";
 import { ApiResponse, PaginationResponse } from "@/types/api.types";
 
 export const serviceService = {

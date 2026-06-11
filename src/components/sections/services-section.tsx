@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Container } from "@/components/ui/container";
 import { SectionTitle } from "@/components/ui/section-title";
 import { fadeUp, staggerContainer } from "@/lib/utils/animations";
@@ -19,18 +18,14 @@ export function ServicesSection() {
             <Container className="relative max-w-[1540px] px-3 lg:px-4 xl:px-6">
                 <SectionTitle title="Services" align="center" />
 
-                <motion.div
-                    variants={staggerContainer}
-                    initial="initial"
-                    whileInView="animate"
-                    viewport={{ once: true, amount: 0.2 }}
-                    className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-4"
+                <div
+                    className={`mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-4 ${staggerContainer}`}
                 >
-                    {services.map((service) => (
-                        <motion.div
+                    {services.map((service, i) => (
+                        <div
                             key={service.id}
-                            variants={fadeUp}
-                            className="card-base card-hover flex h-full flex-col p-6"
+                            className={`card-base card-hover flex h-full flex-col p-6 ${fadeUp}`}
+                            style={{ "--stagger-index": i } as React.CSSProperties}
                         >
                             {service.iconUrl && (
                                 <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--color-accent)]/10 text-[var(--color-accent)] overflow-hidden">
@@ -67,9 +62,9 @@ export function ServicesSection() {
                                     ))}
                                 </div>
                             )}
-                        </motion.div>
+                        </div>
                     ))}
-                </motion.div>
+                </div>
             </Container>
         </section>
     );

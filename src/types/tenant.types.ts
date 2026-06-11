@@ -60,6 +60,9 @@ export interface TenantResponse {
   createdAt: string;
 
   updatedAt: string;
+
+  esewaLogoUrl?: string;
+  khaltiLogoUrl?: string;
 }
 
 

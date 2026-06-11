@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
 import { CheckCircle2, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { paymentService } from "@/services/payment.service";
@@ -64,74 +63,31 @@ export default function PaymentSuccessPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="w-full max-w-md rounded-3xl border border-[var(--color-border)] bg-[var(--color-card)] p-8 text-center shadow-[var(--shadow-card)]"
-      >
+      <div className="w-full max-w-md rounded-3xl border border-[var(--color-border)] bg-[var(--color-card)] p-8 text-center shadow-[var(--shadow-card)] animate-scale-in">
         {status === "verifying" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex flex-col items-center gap-4 py-8"
-          >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-            >
+          <div className="flex flex-col items-center gap-4 py-8 animate-fade-in">
+            <div className="animate-spin">
               <Loader2 className="h-12 w-12 text-[var(--color-primary)]" />
-            </motion.div>
+            </div>
             <p className="text-sm text-[var(--color-text-muted)]">{message}</p>
-          </motion.div>
+          </div>
         )}
 
         {status === "success" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col items-center gap-4 py-8"
-          >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 200, damping: 15 }}
-              className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-950"
-            >
-              <motion.div
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-              >
-                <CheckCircle2 className="h-10 w-10 text-emerald-500 dark:text-emerald-400" />
-              </motion.div>
-            </motion.div>
+          <div className="flex flex-col items-center gap-4 py-8 animate-fade-in">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-950 animate-scale-in">
+              <CheckCircle2 className="h-10 w-10 text-emerald-500 dark:text-emerald-400 animate-scale-check" />
+            </div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="text-2xl font-bold text-[var(--color-text)]"
-            >
+            <h1 className="text-2xl font-bold text-[var(--color-text)] animate-fade-up" style={{ animationDelay: "0.4s" }}>
               Payment Successful!
-            </motion.h1>
+            </h1>
 
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="text-sm text-[var(--color-text-muted)]"
-            >
+            <p className="text-sm text-[var(--color-text-muted)] animate-fade-up" style={{ animationDelay: "0.5s" }}>
               {message}
-            </motion.p>
+            </p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="mt-4 w-full space-y-3"
-            >
+            <div className="mt-4 w-full space-y-3 animate-fade-up" style={{ animationDelay: "0.6s" }}>
               <Link
                 href={`/${slug}`}
                 className="btn-primary inline-flex w-full items-center justify-center gap-2"
@@ -139,24 +95,14 @@ export default function PaymentSuccessPage() {
                 <ArrowLeft size={16} />
                 Back to Restaurant
               </Link>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
 
         {status === "error" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex flex-col items-center gap-4 py-8"
-          >
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-50 dark:bg-red-950">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 200, damping: 15 }}
-              >
-                <span className="text-4xl">!</span>
-              </motion.div>
+          <div className="flex flex-col items-center gap-4 py-8 animate-fade-in">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-50 dark:bg-red-950 animate-scale-in">
+              <span className="text-4xl font-bold text-red-500 dark:text-red-400">!</span>
             </div>
             <h1 className="text-2xl font-bold text-[var(--color-text)]">
               Verification Failed
@@ -169,9 +115,9 @@ export default function PaymentSuccessPage() {
               <ArrowLeft size={16} />
               Back to Restaurant
             </Link>
-          </motion.div>
+          </div>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 }

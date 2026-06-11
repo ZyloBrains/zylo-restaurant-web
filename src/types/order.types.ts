@@ -5,6 +5,7 @@ export type CreateOrderRequest = {
   customerNote?: string;
   paymentMethod: string;
   promoCode?: string;
+  promoDiscount?: number;
 };
 
 export type OrderItemResponse = {

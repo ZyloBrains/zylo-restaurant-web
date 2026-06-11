@@ -1,14 +1,5 @@
-export const fadeUp = {
-    initial: { opacity: 0, y: 30 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.5, ease: "easeOut" as const },
-};
-
-export const staggerContainer = {
-    initial: {},
-    animate: {
-        transition: {
-            staggerChildren: 0.12,
-        },
-    },
-};
+// CSS animation class names (replaces framer-motion variants)
+export const fadeUp = "animate-fade-up";
+export const fadeIn = "animate-fade-in";
+export const scaleIn = "animate-scale-in";
+export const staggerContainer = "stagger-container";

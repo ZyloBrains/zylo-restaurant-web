@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { User, LogOut, Package, ChevronDown, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/features/auth/auth.store";
 import { useTenantStore } from "@/features/tenant/tenant.store";
@@ -14,6 +14,7 @@ export function UserDropdown() {
   const slug = useTenantStore((s) => s.tenantSlug) ?? "";
 
   const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -75,6 +76,18 @@ export function UserDropdown() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshKey]);
 
+  // Close on click outside
+  useEffect(() => {
+    if (!open) return;
+    const handleClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open]);
+
   const statusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "confirmed":
@@ -90,7 +103,7 @@ export function UserDropdown() {
   if (!user) return null;
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button
         onClick={handleToggle}
         className="flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium"
@@ -105,13 +118,8 @@ export function UserDropdown() {
       </button>
 
       {open && (
-        <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setOpen(false)}
-          />
-          <div
-            className="absolute right-0 top-full mt-2 z-50 w-80 rounded-xl border shadow-xl"
+        <div
+          className="absolute right-0 top-full mt-2 z-50 w-80 rounded-xl border shadow-xl"
             style={{
               backgroundColor: "var(--color-card)",
               borderColor: "var(--color-border, #e5e7eb)",
@@ -216,7 +224,6 @@ export function UserDropdown() {
               </button>
             </div>
           </div>
-        </>
       )}
     </div>
   );

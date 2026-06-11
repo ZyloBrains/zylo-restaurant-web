@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { SectionTitle } from "@/components/ui/section-title";
@@ -34,18 +33,14 @@ export function TestimonialsSection() {
                     align="center"
                 />
 
-                <motion.div
-                    variants={staggerContainer}
-                    initial="initial"
-                    whileInView="animate"
-                    viewport={{ once: true, amount: 0.2 }}
-                    className="mt-10 grid gap-6 md:grid-cols-3"
+                <div
+                    className={`mt-10 grid gap-6 md:grid-cols-3 ${staggerContainer}`}
                 >
-                    {testimonials.map((testimonial) => (
-                        <motion.div
+                    {testimonials.map((testimonial, i) => (
+                        <div
                             key={testimonial.name}
-                            variants={fadeUp}
-                            className="card-base card-hover h-full p-6"
+                            className={`card-base card-hover h-full p-6 ${fadeUp}`}
+                            style={{ "--stagger-index": i } as React.CSSProperties}
                         >
                             <div className="mb-4 flex items-center gap-1 text-[var(--color-accent)]">
                                 <Star className="h-4 w-4 fill-current" />
@@ -73,9 +68,9 @@ export function TestimonialsSection() {
                                     </p>
                                 </div>
                             </div>
-                        </motion.div>
+                        </div>
                     ))}
-                </motion.div>
+                </div>
             </Container>
         </section>
     );

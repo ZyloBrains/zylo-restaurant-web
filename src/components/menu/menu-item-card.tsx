@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -73,15 +72,12 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
   };
 
   return (
-    <motion.div
+    <div
       onClick={() => {
         setSelectedItem(item);
         router.push(`/${slug}/menu/${item.id}`);
       }}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 10 }}
-      className="card-base card-hover group p-5 cursor-pointer"
+      className="card-base card-hover group p-5 cursor-pointer animate-fade-up"
     >
       {/* IMAGE */}
       <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)] shadow-inner">
@@ -176,6 +172,6 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

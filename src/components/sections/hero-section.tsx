@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Container } from "@/components/ui/container";
 import { fadeUp } from "@/lib/utils/animations";
 import { sectionImages } from "@/lib/constants/section-images";
@@ -58,19 +57,17 @@ export function HeroSection({
             className="relative overflow-hidden py-20 md:py-28 text-white"
         >
 
-            <motion.img
+            <img
                 key={current.src}
                 src={current.src}
                 alt={current.alt}
-                className="absolute inset-0 h-full w-full object-cover"
+                className="absolute inset-0 h-full w-full object-cover animate-fade-in"
                 style={{
                     transform: "translateZ(0)",
                     backfaceVisibility: "hidden",
                     willChange: "transform, opacity",
+                    animationDuration: "0.9s",
                 }}
-                initial={{ opacity: 0, scale: 1.08 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.9 }}
                 loading="eager"
             />
 
@@ -84,7 +81,7 @@ export function HeroSection({
 
                 <div className="flex items-center min-h-[70vh]">
 
-                    <motion.div {...fadeUp} className="max-w-3xl">
+                    <div className={`max-w-3xl ${fadeUp}`}>
 
                         <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-accent)]">
                             {restaurantName}
@@ -117,7 +114,7 @@ export function HeroSection({
                             </a>
                         </div>
 
-                    </motion.div>
+                    </div>
 
                 </div>
 

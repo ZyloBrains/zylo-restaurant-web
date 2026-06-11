@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
 
 import { useMenuItemStore } from "@/app/[slug]/store/menu-store";
@@ -87,11 +86,9 @@ export default function MenuItemPage() {
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-start">
 
         {/* IMAGE */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4 }}
-          className="relative h-[300px] md:h-[450px] rounded-3xl overflow-hidden shadow-lg border border-[var(--color-border)]/50"
+        <div
+          className="relative h-[300px] md:h-[450px] rounded-3xl overflow-hidden shadow-lg border border-[var(--color-border)]/50 animate-fade-in"
+          style={{ animationDuration: "0.4s" }}
         >
           <Image
             src={getSafeImage(item.imageUrl)}
@@ -108,13 +105,12 @@ export default function MenuItemPage() {
               {qty} in cart
             </div>
           )}
-        </motion.div>
+        </div>
 
         {/* DETAILS */}
-        <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4 }}
+        <div
+          className="animate-fade-up"
+          style={{ animationDuration: "0.4s" }}
         >
           <h1 className="text-4xl font-bold text-[var(--color-text)]">
             {item.name}
@@ -158,7 +154,7 @@ export default function MenuItemPage() {
               </span>
             )}
           </div>
-        </motion.div>
+        </div>
 
       </div>
     </div>
