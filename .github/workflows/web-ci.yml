@@ -14,17 +14,17 @@ jobs:
       # Checkout code
       - uses: actions/checkout@v4
 
-      # Setup Node.js (corepack: true enables pnpm via corepack before caching)
+      # Install pnpm first so setup-node can find it for caching
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      # Setup Node.js with pnpm cache
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: "pnpm"
-          corepack: true
-
-      # Use the exact pnpm version from the repo
-      - name: Activate pnpm version
-        run: corepack prepare pnpm@latest --activate
 
       # Install dependencies
       - name: Install dependencies
