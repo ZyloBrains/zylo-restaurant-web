@@ -8,7 +8,6 @@ import {
   DollarSign,
   Loader2,
   ExternalLink,
-  Info,
   ArrowLeft,
 } from "lucide-react";
 import { useCart } from "@/features/cart/cart-context";
@@ -63,8 +62,8 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
 
   const paymentOptions = useMemo<PaymentOption[]>(() => [
     { value: "cash", label: "Cash", description: "Pay when you receive", icon: DollarSign },
-    ...(tenant?.esewaLogoUrl ? [{ value: "esewa" as PaymentMethod, label: "eSewa", description: "Pay via eSewa wallet", icon: Wallet as typeof Wallet, iconUrl: tenant.esewaLogoUrl }] : []),
-    ...(tenant?.khaltiLogoUrl ? [{ value: "khalti" as PaymentMethod, label: "Khalti", description: "Pay via Khalti wallet", icon: Wallet as typeof Wallet, iconUrl: tenant.khaltiLogoUrl }] : []),
+    { value: "esewa", label: "eSewa", description: "Pay via eSewa wallet", icon: Wallet, iconUrl: tenant?.esewaLogoUrl },
+    { value: "khalti", label: "Khalti", description: "Pay via Khalti wallet", icon: Wallet, iconUrl: tenant?.khaltiLogoUrl },
   ], [tenant]);
 
   const [open, setOpen] = useState(false);
@@ -437,21 +436,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                       </div>
                     </div>
 
-                    {/* WALLET TEST CREDENTIALS */}
-                    {form.paymentMethod === "esewa" && (
-                      <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/50 p-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Info size={14} className="text-amber-600 dark:text-amber-400" />
-                          <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
-                            eSewa Test Credentials
-                          </span>
-                        </div>
-                        <ul className="space-y-1 text-xs text-amber-600 dark:text-amber-400">
-                          <li>Merchant: <strong>merchant@esewa.com.np</strong></li>
-                          <li>OTP: <strong>123456</strong></li>
-                        </ul>
-                      </div>
-                    )}
+
                   </div>
 
                   {/* RIGHT - ORDER SUMMARY */}
@@ -697,21 +682,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                         </p>
                       )}
 
-                      {form.paymentMethod === "esewa" && (
-                        <div className="mt-4 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/50 p-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Info size={14} className="text-amber-600 dark:text-amber-400" />
-                            <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
-                              eSewa Test Mode
-                            </span>
-                          </div>
-                          <ul className="space-y-1 text-xs text-amber-600 dark:text-amber-400">
-                            <li>Merchant: <strong>merchant@esewa.com.np</strong></li>
-                            <li>OTP: <strong>123456</strong></li>
-                            <li>Environment: Test (rc.esewa.com.np)</li>
-                          </ul>
-                        </div>
-                      )}
+
                     </div>
                   </div>
 
@@ -781,12 +752,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                       </span>
                     </div>
 
-                    {form.paymentMethod === "esewa" && (
-                      <div className="mt-4 rounded-lg bg-amber-50 dark:bg-amber-950/30 p-3 text-xs text-amber-700 dark:text-amber-300">
-                        <p className="font-medium mb-1">Test Credentials</p>
-                        <p>Use test OTP <strong>123456</strong> to complete payment</p>
-                      </div>
-                    )}
+
                   </div>
                 </div>
               )}
