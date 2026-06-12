@@ -1,17 +1,21 @@
 import type { NextConfig } from "next";
 
-const backendUrl= process.env.NEXT_PUBLIC_BACKEND_URL;
+const backendUrl =
+  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8082";
+
+const backend = new URL(backendUrl);
 
 const nextConfig: NextConfig = {
-  /* config options here */
   reactCompiler: true,
+  output: "standalone",
+
   images: {
     remotePatterns: [
       {
-        protocol: 'http',
-        hostname: backendUrl? new URL(backendUrl).hostname: 'localhost',
-        port: backendUrl ? new URL(backendUrl).port: "8082",
-        pathname: '/**',
+        protocol: backend.protocol.replace(":", "") as "http" | "https",
+        hostname: backend.hostname,
+        port: backend.port || "",
+        pathname: "/**",
       },
     ],
   },
