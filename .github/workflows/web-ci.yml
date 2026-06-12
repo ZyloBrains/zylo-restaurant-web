@@ -14,24 +14,17 @@ jobs:
       # Checkout code
       - uses: actions/checkout@v4
 
-      # Setup Node.js
+      # Setup Node.js (corepack: true enables pnpm via corepack before caching)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: "pnpm"
+          corepack: true
 
-      # ✅ ENABLE COREPACK (THIS FIXES PNPM ERROR)
-      - name: Enable Corepack
-        run: corepack enable
-
-      # ✅ ACTIVATE PNPM VERSION
-      - name: Enable pnpm
+      # Use the exact pnpm version from the repo
+      - name: Activate pnpm version
         run: corepack prepare pnpm@latest --activate
-
-      # Check pnpm version (debug)
-      - name: Check pnpm version
-        run: pnpm -v
 
       # Install dependencies
       - name: Install dependencies
@@ -60,4 +53,4 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            meet786/zylo-nextjs:latest
+            meet786/zylo-web:latest
