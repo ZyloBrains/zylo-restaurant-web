@@ -1,8 +1,8 @@
-const BACKEND_IMAGE_BASE_URL=process.env.NEXT_PUBLIC_API_URL
-? `${process.env.NEXT_PUBLIC_API_URL}/images`
-: 'http://localhost:8082/api/v1/images';
+import { API_BASE_URL } from "@/lib/constants/env";
 
-export function getSafeImage(imageUrl?:string|null):string{
+const BACKEND_IMAGE_BASE_URL = `${API_BASE_URL}/images`;
+
+export function getSafeImage(imageUrl?: string | null): string {
     if(!imageUrl || imageUrl.trim() === ""){
         return "/images/placeholder-food.jpg";
     }

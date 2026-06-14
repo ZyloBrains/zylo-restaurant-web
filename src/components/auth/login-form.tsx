@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { User, Lock, Loader2 } from "lucide-react";
+import { User, Lock, Loader2, Eye, EyeOff } from "lucide-react";
 import { useAuthStore } from "@/features/auth/auth.store";
 
 export function LoginForm({
@@ -17,6 +17,7 @@ export function LoginForm({
     const [form, setForm] = useState({ email: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = async () => {
         if (!form.email || !form.password) return;
@@ -66,19 +67,28 @@ export function LoginForm({
                 <div className="relative mt-2">
                     <Lock className="absolute left-3 top-4 text-[var(--color-text-muted)]" size={18} />
                     <input
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         value={form.password}
                         onChange={(e) => setForm({ ...form, password: e.target.value })}
                         placeholder="password"
-                        className="w-full pl-10 pr-4 py-4 border rounded-xl outline-none bg-[var(--color-card)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]"
+                        className="w-full pl-10 pr-12 py-4 border rounded-xl outline-none bg-[var(--color-card)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]"
                         style={{ borderColor: "var(--color-accent)", borderRadius: "var(--radius-button)" }}
                     />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword((p) => !p)}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                        tabIndex={-1}
+                    >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
                 </div>
             </div>
 
             <div className="text-right text-sm">
                 <button
                     onClick={onForgot}
+                    className="hover:underline"
                     style={{ color: "var(--color-text-muted)" }}
                 >
                     Forgot Password?
@@ -103,7 +113,7 @@ export function LoginForm({
 
             <p className="text-center text-sm">
                 Don&rsquo;t have an account?{" "}
-                <span onClick={onSwitch} className="cursor-pointer" style={{ color: "var(--color-primary)" }}>
+                <span onClick={onSwitch} className="cursor-pointer hover:underline" style={{ color: "var(--color-primary)" }}>
                     Sign Up
                 </span>
             </p>

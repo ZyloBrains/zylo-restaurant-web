@@ -8,6 +8,7 @@ const backend = new URL(backendUrl);
 const nextConfig: NextConfig = {
   reactCompiler: true,
   output: "standalone",
+  devIndicators: false,
 
   images: {
     remotePatterns: [

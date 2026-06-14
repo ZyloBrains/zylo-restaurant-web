@@ -1,8 +1,8 @@
 import { cache } from "react";
 import { TenantResponse } from "@/types/tenant.types";
+import { API_BASE_URL } from "@/lib/constants/env";
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL;
+const API = API_BASE_URL;
 
 export const getTenantCached = cache(
   async (slug: string): Promise<TenantResponse> => {

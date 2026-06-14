@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { X, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 
 import { LoginForm } from "@/components/auth/login-form";
 import { RegisterForm } from "@/components/auth/register-form";
@@ -67,8 +68,8 @@ export function LoginModal({
                     ) : mode === "register" ? (
                         <RegisterForm
                             onSuccess={() => {
-                                onSuccess();
-                                onClose();
+                                toast.success("Account created successfully! Please login.");
+                                setMode("login");
                             }}
                             onSwitch={() => setMode("login")}
                         />

@@ -17,7 +17,6 @@ import { getSafeImage } from "@/lib/utils/image.utils";
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Menu", href: "/menu" },
-  { label: "Services", href: "/services" },
 ];
 
 function SvgIcon({ path, size }: { path: string; size?: number }) {
@@ -29,7 +28,6 @@ function SvgIcon({ path, size }: { path: string; size?: number }) {
 const navIconMap: Record<string, React.ComponentType<{ size?: number }>> = {
   Home: (p) => <SvgIcon path='<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' {...p} />,
   Menu: UtensilsCrossed,
-  Services: (p) => <SvgIcon path='<path d="M6 4H18M6 8H18M6 12H12M6 16H18M6 20H18"/><circle cx="12" cy="4" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="20" r="2"/>' {...p} />,
 };
 
 function AuthButtonCompact() {
