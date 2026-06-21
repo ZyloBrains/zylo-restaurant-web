@@ -1,11 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { Trash2, Minus, Plus } from "lucide-react";
 import { useCart } from "@/features/cart/cart-context";
 import { CheckoutModal } from "@/components/cart/checkout-modal";
 import { useTenantStore } from "@/features/tenant/tenant.store";
-import { getSafeImage } from "@/lib/utils/image.utils";
+import { resolveImageUrl } from "@/lib/utils/image.utils";
 
 
 export default function CartSummary() {
@@ -56,13 +55,10 @@ export default function CartSummary() {
                   {/* PRODUCT */}
                   <div className="flex items-center gap-4">
                     <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)] shadow-inner">
-                      <Image
-                        src={getSafeImage(item.imageUrl)}
+                      <img
+                        src={resolveImageUrl(item.imageUrl)}
                         alt={item.name}
-                        fill
-                        sizes="80px"
-                        className="object-cover"
-                        unoptimized
+                        className="absolute inset-0 h-full w-full object-cover"
                       />
                     </div>
 

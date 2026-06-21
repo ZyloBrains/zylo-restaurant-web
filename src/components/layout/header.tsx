@@ -12,7 +12,7 @@ import { useTenantStore } from "@/features/tenant/tenant.store";
 import { useAuthStore } from "@/features/auth/auth.store";
 import { LoginModal } from "@/components/auth/login-modal";
 import Image from "next/image";
-import { getSafeImage } from "@/lib/utils/image.utils";
+import { resolveImageUrl } from "@/lib/utils/image.utils";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -115,7 +115,7 @@ export function Header() {
         <a href="#top" className="flex items-center gap-2 min-w-0 flex-shrink">
           {tenant.faviconUrl && (
             <Image
-              src={getSafeImage(tenant.faviconUrl)}
+              src={resolveImageUrl(tenant.faviconUrl)}
               alt={`${tenant.restaurantName || "Restaurant"} logo`}
               width={28}
               height={28}

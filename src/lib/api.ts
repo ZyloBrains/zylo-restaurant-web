@@ -1,6 +1,6 @@
 import { getAuthStorageKey } from "@/lib/tenant-storage";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8082/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8082/api/v1";
 
 type RequestOptions = {
   params?: Record<string, string | number | undefined>;

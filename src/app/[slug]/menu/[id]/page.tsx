@@ -1,11 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { toast } from "sonner";
 
 import { useMenuItemStore } from "@/app/[slug]/store/menu-store";
 import { useCart } from "@/features/cart/cart-context";
-import { getSafeImage } from "@/lib/utils/image.utils";
+import { resolveImageUrl } from "@/lib/utils/image.utils";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
@@ -38,13 +37,10 @@ export default function MenuItemPage() {
       () => (
         <div className="flex w-[340px] items-center gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] p-3 shadow-[var(--shadow-card)]">
           <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)]">
-            <Image
-              src={getSafeImage(item.imageUrl)}
+            <img
+              src={resolveImageUrl(item.imageUrl)}
               alt={item.name}
-              fill
-              className="object-cover"
-              sizes="56px"
-              unoptimized
+              className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
 
@@ -90,13 +86,10 @@ export default function MenuItemPage() {
           className="relative h-[300px] md:h-[450px] rounded-3xl overflow-hidden shadow-lg border border-[var(--color-border)]/50 animate-fade-in"
           style={{ animationDuration: "0.4s" }}
         >
-          <Image
-            src={getSafeImage(item.imageUrl)}
+          <img
+            src={resolveImageUrl(item.imageUrl)}
             alt={item.name}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover transition duration-500 hover:scale-105"
-            unoptimized
+            className="absolute inset-0 h-full w-full object-cover transition duration-500 hover:scale-105"
           />
 
           {/* QTY BADGE */}

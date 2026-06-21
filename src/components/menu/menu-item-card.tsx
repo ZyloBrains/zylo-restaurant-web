@@ -1,14 +1,34 @@
 "use client";
 
-import Image from "next/image";
+import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 import { ItemResponse } from "../../features/menu/menu.types";
 import { useCart } from "@/features/cart/cart-context";
-import { getSafeImage } from "@/lib/utils/image.utils";
+import { resolveImageUrl } from "@/lib/utils/image.utils";
 import { useMenuItemStore } from "@/app/[slug]/store/menu-store";
 import { useTenantStore } from "@/features/tenant/tenant.store";
+import Image from "next/image";
+
+function ItemImage({ imageUrl, name }: { imageUrl?: string | null; name: string }) {
+  const [error, setError] = useState(false);
+  if (!imageUrl || error) {
+    return (
+      <div className="flex h-full w-full items-center justify-center text-sm text-[var(--color-text-muted)]">
+        No Image
+      </div>
+    );
+  }
+  return (
+    <img
+      src={resolveImageUrl(imageUrl)}
+      alt={name}
+      className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+      onError={() => setError(true)}
+    />
+  );
+}
 
 export function MenuItemCard({ item }: { item: ItemResponse }) {
   const { addItem, getItemQty } = useCart();
@@ -25,12 +45,11 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
           <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)]">
             {item.imageUrl ? (
               <Image
-                src={getSafeImage(item.imageUrl)}
+                src={resolveImageUrl(item.imageUrl)}
                 alt={item.name}
                 fill
-                sizes="56px"
-                className="object-cover"
                 unoptimized
+                className="absolute inset-0 h-full w-full object-cover"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-xs text-[var(--color-text-muted)]">
@@ -81,31 +100,7 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
     >
       {/* IMAGE */}
       <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)] shadow-inner">
-       {item.imageUrl ? (
-              <Image
-                src={getSafeImage(item.imageUrl)}
-                alt={item.name}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover transition duration-500 group-hover:scale-105"
-                unoptimized
-              />
-            ) : (
-              <div
-                className="
-                          h-full
-                          w-full
-                          flex
-                          items-center
-                          justify-center
-                          text-sm
-                          text-[var(--color-text-muted)]
-                        "
-              >
-                No Image
-              </div>
-            )}
-
+        <ItemImage imageUrl={item.imageUrl} name={item.name} />
         {qty > 0 && (
           <div className="absolute right-3 top-3 rounded-full bg-[var(--color-primary)] px-3 py-1 text-xs font-semibold text-white shadow-md">
             {qty} in cart
