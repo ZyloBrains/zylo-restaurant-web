@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { X, Trash2, Minus, Plus, ShoppingCart, ArrowLeft } from "lucide-react";
 import { CheckoutModal } from "@/components/cart/checkout-modal";
 import { useCart } from "@/features/cart/cart-context";
-import { getSafeImage } from "@/lib/utils/image.utils";
+import { resolveImageUrl } from "@/lib/utils/image.utils";
 import { useTenantStore } from "@/features/tenant/tenant.store";
+import Image from "next/image";
 
 type CartDrawerProps = {
   restaurantName: string;
@@ -93,12 +93,12 @@ export function CartDrawer({
                     <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)]">
                       {item.imageUrl ? (
                         <Image
-                          src={getSafeImage(item.imageUrl)}
-                          alt={item.name}
-                          fill
-                          sizes="64px"
-                          className="object-cover"
+                          src={resolveImageUrl(item.imageUrl)}
                           unoptimized
+                          width={50}
+                          height={40}
+                          alt={item.name}
+                          className="absolute inset-0 h-full w-full object-cover"
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center text-xs text-[var(--color-text-muted)]">
@@ -223,7 +223,7 @@ export function CartDrawer({
                   <div className="flex gap-4">
                     <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)]">
                       {item.imageUrl ? (
-                        <Image src={getSafeImage(item.imageUrl)} alt={item.name} fill sizes="64px" className="object-cover" unoptimized />
+                        <img src={resolveImageUrl(item.imageUrl)} alt={item.name} className="absolute inset-0 h-full w-full object-cover" />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center text-xs text-[var(--color-text-muted)]">No Image</div>
                       )}

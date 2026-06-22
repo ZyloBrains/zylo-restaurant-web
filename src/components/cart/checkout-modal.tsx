@@ -53,6 +53,24 @@ type PaymentOption = {
   iconUrl?: string;
 };
 
+function PaymentIcon({ opt, selected }: { opt: PaymentOption; selected: boolean }) {
+  const [imgError, setImgError] = useState(false);
+  const Icon = opt.icon;
+  if (opt.iconUrl && !imgError) {
+    return (
+      <img
+        src={opt.iconUrl}
+        alt={opt.label}
+        className="h-6 w-6 object-contain"
+        onError={() => setImgError(true)}
+      />
+    );
+  }
+  return (
+    <Icon className={`h-5 w-5 ${selected ? "text-[var(--color-primary)]" : "text-[var(--color-text-muted)]"}`} />
+  );
+}
+
 export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Props) {
   const { items, subtotal, clearCart, closeCart, cartId } = useCart();
   const slug=useTenantStore((s)=>s.tenantSlug) as string;
@@ -60,11 +78,26 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
   const user = useAuthStore((s) => s.user);
   const isLoggedIn = !!user;
 
-  const paymentOptions = useMemo<PaymentOption[]>(() => [
-    { value: "cash", label: "Cash", description: "Pay when you receive", icon: DollarSign },
-    { value: "esewa", label: "eSewa", description: "Pay via eSewa wallet", icon: Wallet, iconUrl: tenant?.esewaLogoUrl },
-    { value: "khalti", label: "Khalti", description: "Pay via Khalti wallet", icon: Wallet, iconUrl: tenant?.khaltiLogoUrl },
-  ], [tenant]);
+  const paymentOptions = useMemo<PaymentOption[]>(() => {
+    const options: PaymentOption[] = [
+      { value: "cash", label: "Cash", description: "Pay when you receive", icon: DollarSign },
+    ];
+    if (tenant?.esewaLogoUrl) {
+      options.push({ value: "esewa", label: "eSewa", description: "Pay via eSewa wallet", icon: Wallet, iconUrl: tenant.esewaLogoUrl });
+    }
+    if (tenant?.khaltiLogoUrl) {
+      options.push({ value: "khalti", label: "Khalti", description: "Pay via Khalti wallet", icon: Wallet, iconUrl: tenant.khaltiLogoUrl });
+    }
+    return options;
+  }, [tenant]);
+
+  // Reset payment method if current selection is no longer available
+  useEffect(() => {
+    const validValues = paymentOptions.map((o) => o.value);
+    if (!validValues.includes(form.paymentMethod)) {
+      updateField("paymentMethod", "cash");
+    }
+  }, [paymentOptions]);
 
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("details");
@@ -645,17 +678,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                                   : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-text-muted)]"
                               }`}
                             >
-                              {opt.iconUrl ? (
-                                <Image src={opt.iconUrl} alt={opt.label} width={24} height={24} className="h-6 w-6 object-contain" unoptimized />
-                              ) : (
-                                <Icon
-                                  className={`h-5 w-5 ${
-                                    selected
-                                      ? "text-[var(--color-primary)]"
-                                      : "text-[var(--color-text-muted)]"
-                                  }`}
-                                />
-                              )}
+                              <PaymentIcon opt={opt} selected={selected} />
                               <div>
                                 <p
                                   className={`text-sm font-semibold ${

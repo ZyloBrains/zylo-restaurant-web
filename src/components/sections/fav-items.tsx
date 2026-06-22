@@ -39,9 +39,25 @@ export function FevItems() {
   if (loading) {
     return (
       <section className="section-plain section-divider-top py-16 md:py-20">
-        <Container>
-          <div className="flex justify-center items-center h-64">
-            <p className="text-lg">Loading favorite items...</p>
+        <Container className="max-w-385 px-3 lg:px-4 xl:px-6">
+          <div className="mb-8 flex justify-center">
+            <div className="h-8 w-40 bg-(--color-text-muted)/20 rounded-full animate-pulse" />
+          </div>
+          <div className="flex gap-3 justify-center mb-8">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-9 w-24 bg-(--color-text-muted)/15 rounded-full animate-pulse" />
+            ))}
+          </div>
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="rounded-2xl bg-(--color-surface) border border-(--color-border)/40 p-5 animate-pulse">
+                <div className="aspect-[4/3] rounded-2xl bg-(--color-text-muted)/15" />
+                <div className="mt-5 space-y-2">
+                  <div className="h-5 w-3/4 bg-(--color-text-muted)/20 rounded-md" />
+                  <div className="h-4 w-1/2 bg-(--color-text-muted)/10 rounded-md" />
+                </div>
+              </div>
+            ))}
           </div>
         </Container>
       </section>

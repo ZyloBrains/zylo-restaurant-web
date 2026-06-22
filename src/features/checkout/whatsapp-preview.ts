@@ -49,6 +49,7 @@ export function buildWhatsAppOrderMessage(payload: CheckoutPayload): string {
 }
 
 export function buildWhatsAppLink(phone: string, message: string): string {
-  const cleanPhone = phone.replace(/\D/g, "");
+  if (!phone) return `https://wa.me?text=${encodeURIComponent(message)}`;
+  const cleanPhone = String(phone).replace(/\D/g, "");
   return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
 }

@@ -6,7 +6,7 @@ import { sectionImages } from "@/lib/constants/section-images";
 import { useEffect, useState } from "react";
 import { heroImageService } from "@/services/hero-image.service";
 import { HeroImageResponse } from "@/types/hero-image.types";
-import { getSafeImage } from "@/lib/utils/image.utils";
+import { resolveImageUrl } from "@/lib/utils/image.utils";
 
 type HeroSectionProps = {
     restaurantName: string;
@@ -34,7 +34,7 @@ export function HeroSection({
 
     const images = heroImages.length > 0
         ? heroImages.map((img) => ({
-              src: getSafeImage(img.fileUrl),
+              src: resolveImageUrl(img.fileUrl),
               alt: img.title || `Hero image ${img.sortOrder + 1}`,
               title: img.title || null,
               description: img.description || null,

@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { MobileBottomBar } from "@/components/layout/mobile-bottom-bar";
 import { CartDrawer } from "@/components/cart/cart-drawer";
+import { NotFoundPage } from "@/components/not-found-page";
 import React, { useEffect, useState } from "react";
 import { useTenantStore } from "@/features/tenant/tenant.store";
 
@@ -67,17 +68,17 @@ export function Skeleton() {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const tenant = useTenantStore((s) => s.tenant);
+  const notFound = useTenantStore((s) => s.notFound);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => { setHydrated(true); }, []);
 
+  if (notFound) {
+    return <NotFoundPage />;
+  }
+
   if (!tenant || !hydrated) {
-    return (
-      <div className="min-h-screen bg-[var(--color-background)] pb-24 text-[var(--color-text)] md:pb-0">
-        <Header />
-        <main>{children}</main>
-      </div>
-    );
+    return <Skeleton />;
   }
 
   return (

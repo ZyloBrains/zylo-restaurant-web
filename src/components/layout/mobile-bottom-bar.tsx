@@ -17,6 +17,7 @@ export function MobileBottomBar({
     return (
         <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--color-border)] bg-[var(--color-card)]/90 backdrop-blur-xl p-3 md:hidden">
             <div className="grid grid-cols-3 gap-2">
+                {phone && (
                 <a
                     href={`tel:${phone}`}
                     className="inline-flex items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-3 text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
@@ -24,7 +25,9 @@ export function MobileBottomBar({
                     <PhoneCall className="h-4 w-4" />
                     <span>Call</span>
                 </a>
+                )}
 
+                {whatsappNumber && (
                 <a
                     href={`https://wa.me/${whatsappNumber}`}
                     target="_blank"
@@ -34,6 +37,7 @@ export function MobileBottomBar({
                     <MessageCircle className="h-4 w-4" />
                     <span>WhatsApp</span>
                 </a>
+                )}
 
                 <button
                     onClick={openCart}

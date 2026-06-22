@@ -22,6 +22,7 @@ type TenantStore = {
 
   loading: boolean;
   error: string | null;
+  notFound: boolean;
 
   fetchTenant: (slug: string) => Promise<void>;
   toggleDarkMode: () => void;
@@ -77,6 +78,7 @@ export const useTenantStore = create<TenantStore>()(
 
       loading: false,
       error: null,
+      notFound: false,
 
       /* ---------------- FETCH TENANT (SWR + TTL) ---------------- */
       fetchTenant: async (slug: string) => {
@@ -156,9 +158,11 @@ export const useTenantStore = create<TenantStore>()(
 
           applyThemeToDom(response.theme, state.darkModeBySlug[slug]);
         } catch (err) {
+          const is404 = (err as { status?: number })?.status === 404;
           set({
             loading: false,
             error: "Failed to load tenant",
+            notFound: is404,
           });
         }
       },
