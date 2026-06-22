@@ -6,7 +6,9 @@ import { useMenuItemStore } from "@/app/[slug]/store/menu-store";
 import { useCart } from "@/features/cart/cart-context";
 import { resolveImageUrl } from "@/lib/utils/image.utils";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { useEffect } from "react";
+import { ArrowLeft } from "lucide-react";
 
 export default function MenuItemPage() {
   const params= useParams();
@@ -79,6 +81,14 @@ export default function MenuItemPage() {
   return (
     <div className="bg-[var(--color-background)] min-h-[calc(100vh-120px)] px-4 pt-10 pb-8">
       
+      <Link
+        href={`/${slug}`}
+        className="mb-6 inline-flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition"
+      >
+        <ArrowLeft size={18} />
+        Back to Menu
+      </Link>
+
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-start">
 
         {/* IMAGE */}
