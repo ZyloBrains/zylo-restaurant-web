@@ -654,59 +654,6 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                       </div>
                     </div>
 
-                    {/* PAYMENT METHOD */}
-                    <div>
-                      <h3 className="mb-1 text-sm font-semibold text-[var(--color-text)]">
-                        Payment Method
-                      </h3>
-                      <p className="mb-3 text-xs text-[var(--color-text-muted)]">
-                        Choose how you want to pay
-                      </p>
-
-                      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
-                        {paymentOptions.map((opt) => {
-                          const selected = form.paymentMethod === opt.value;
-                          const Icon = opt.icon;
-                          return (
-                            <button
-                              key={opt.value}
-                              type="button"
-                              onClick={() => updateField("paymentMethod", opt.value)}
-                              className={`flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition sm:flex-col sm:items-center sm:text-center ${
-                                selected
-                                  ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5"
-                                  : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-text-muted)]"
-                              }`}
-                            >
-                              <PaymentIcon opt={opt} selected={selected} />
-                              <div>
-                                <p
-                                  className={`text-sm font-semibold ${
-                                    selected
-                                      ? "text-[var(--color-primary)]"
-                                      : "text-[var(--color-text)]"
-                                  }`}
-                                >
-                                  {opt.label}
-                                </p>
-                                <p className="text-xs text-[var(--color-text-muted)]">
-                                  {opt.description}
-                                </p>
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      {form.paymentMethod !== "cash" && (
-                        <p className="mt-3 flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
-                          <ExternalLink size={12} />
-                          You will be redirected to complete the payment.
-                        </p>
-                      )}
-
-
-                    </div>
                   </div>
 
                   {/* RIGHT - ORDER SUMMARY */}
@@ -780,6 +727,43 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                 </div>
               )}
             </div>
+
+            {/* PAYMENT METHOD - always visible */}
+            {step === "details" && (
+              <div className="border-t border-[var(--color-border)] bg-[var(--color-card)] px-6 py-4">
+                <div className="mx-auto max-w-lg">
+                  <h3 className="mb-3 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wide">
+                    Pay with
+                  </h3>
+                  <div className="flex gap-2.5">
+                    {paymentOptions.map((opt) => {
+                      const selected = form.paymentMethod === opt.value;
+                      return (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => updateField("paymentMethod", opt.value)}
+                          className={`flex flex-1 flex-col items-center gap-1.5 rounded-xl border-2 px-3 py-3 text-center transition-all duration-150 ${
+                            selected
+                              ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5"
+                              : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-text-muted)]"
+                          }`}
+                        >
+                          <div className="flex h-9 w-9 items-center justify-center">
+                            <PaymentIcon opt={opt} selected={selected} />
+                          </div>
+                          <span className={`text-xs font-semibold leading-tight ${
+                            selected ? "text-[var(--color-primary)]" : "text-[var(--color-text)]"
+                          }`}>
+                            {opt.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* FOOTER ACTION */}
             {step === "details" && (
