@@ -14,6 +14,13 @@ export function HydrationBootstrap({ slug }: { slug: string }) {
 
   useEffect(() => {
     if (!slug) return;
+
+    try {
+      sessionStorage.setItem("active-tenant-slug", slug);
+    } catch (error) {
+      console.error("Failed to save active tenant slug to sessionStorage:", error);
+    }
+
     fetchTenant(slug);
     fetchItems(slug);
     fetchCategories(slug);
