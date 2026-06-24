@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "myorg.com";
+const TENANT_ROUTE_SEGMENTS = new Set([
+  "cart-summary",
+  "failure",
+  "forgot-password",
+  "khalti-success",
+  "menu",
+  "reset-password",
+  "success",
+]);
 
 export async function proxy(request: NextRequest) {
   const url = request.nextUrl.clone();
@@ -18,14 +27,21 @@ export async function proxy(request: NextRequest) {
     tenantSlug = pathSegments[0] || null;
   }
 
-  if (url.pathname === "/" || url.pathname === "") {
-    return NextResponse.next();
-  }
-
   if (tenantSlug && tenantSlug !== "www" && tenantSlug !== "app") {
-    url.pathname = `/${tenantSlug}${url.pathname.replace(`/${tenantSlug}`, "") || "/"}`;
+    const pathSegments = url.pathname.split("/").filter(Boolean);
+    const firstSegment = pathSegments[0];
 
-    return NextResponse.rewrite(url);
+    if (!firstSegment || TENANT_ROUTE_SEGMENTS.has(firstSegment)) {
+      url.pathname = `/${tenantSlug}${url.pathname === "/" ? "" : url.pathname}`;
+
+      return NextResponse.rewrite(url);
+    }
+
+    if (firstSegment === tenantSlug) {
+      return NextResponse.next();
+    }
+
+    return NextResponse.next();
   }
   return NextResponse.next();
 }
