@@ -86,9 +86,11 @@ export function RegisterForm({
     setLoading(true);
     setError("");
     try {
+      const processedName = form.name.trim().charAt(0).toUpperCase() + form.name.trim().slice(1);
+      const processedEmail = form.email.trim().toLowerCase();
       await register(slug,{
-        name: form.name.trim(),
-        email: form.email.trim(),
+        name: processedName,
+        email: processedEmail,
         phone: form.phone.trim(),
         password: form.password,
         role: "OTHER",
@@ -96,9 +98,14 @@ export function RegisterForm({
       });
       onSuccess();
     } catch (e: unknown) {
-      setError(
-        e instanceof Error ? e.message : "Registration failed. Please try again."
-      );
+      const err = e as { status?: number; message?: string };
+      if (err.status === 409 || err.message?.toLowerCase().includes("already exist")) {
+        setErrors((prev) => ({ ...prev, name: "Restaurant name is already exist" }));
+      } else {
+        setError(
+          e instanceof Error ? e.message : "Registration failed. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
     }

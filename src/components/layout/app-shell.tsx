@@ -5,7 +5,8 @@ import { Footer } from "@/components/layout/footer";
 import { MobileBottomBar } from "@/components/layout/mobile-bottom-bar";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { NotFoundPage } from "@/components/not-found-page";
-import React, { useEffect, useState } from "react";
+
+import type { ReactNode } from "react";
 import { useTenantStore } from "@/features/tenant/tenant.store";
 
 export function Skeleton() {
@@ -66,39 +67,37 @@ export function Skeleton() {
   );
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({ children }: { children: ReactNode }) {
   const tenant = useTenantStore((s) => s.tenant);
   const notFound = useTenantStore((s) => s.notFound);
-  const [hydrated, setHydrated] = useState(false);
+  const loading = useTenantStore((s) => s.loading);
 
-  useEffect(() => { setHydrated(true); }, []);
+  // 1. Loading state — data is being fetched
+  if (loading) return <Skeleton />;
 
-  if (notFound) {
-    return <NotFoundPage />;
+  // 2. Not found — response received, tenant does not exist
+  if (notFound) return <NotFoundPage />;
+
+  // 3. Data loaded — render the full layout
+  if (tenant) {
+    return (
+      <div className="min-h-screen bg-[var(--color-background)] pb-24 text-[var(--color-text)] md:pb-0">
+        <Header />
+        <main>{children}</main>
+        <Footer />
+        <MobileBottomBar
+          phone={tenant.phone as string}
+          whatsappNumber={tenant.whatsappNumber as string}
+        />
+        <CartDrawer
+          restaurantName={tenant.restaurantName as string}
+          whatsappNumber={tenant.whatsappNumber as string}
+          tenantSlug={tenant.tenantSlug as string}
+        />
+      </div>
+    );
   }
 
-  if (!tenant || !hydrated) {
-    return <Skeleton />;
-  }
-
-  return (
-    <div className="min-h-screen bg-[var(--color-background)] pb-24 text-[var(--color-text)] md:pb-0">
-      <Header />
-
-      <main>{children}</main>
-
-      <Footer />
-
-      <MobileBottomBar
-        phone={tenant?.phone as string}
-        whatsappNumber={tenant?.whatsappNumber as string}
-      />
-
-      <CartDrawer
-        restaurantName={tenant?.restaurantName as string}
-        whatsappNumber={tenant?.whatsappNumber as string}
-        tenantSlug={tenant?.tenantSlug as string}
-      />
-    </div>
-  );
+  // 4. Waiting for first fetch — show skeleton
+  return <Skeleton />;
 }

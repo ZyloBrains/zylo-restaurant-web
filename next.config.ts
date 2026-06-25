@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   output: "standalone",
   devIndicators: false,
+  allowedDevOrigins:[
+    "fish-station.zylobrains.com",
+    "another-tenant.zylobrains.com",
+    "www.customclient.com",       // ← specific, not www.**  (invalid)
+    "*.zylobrains.com",
+  ],
 
   images: {
     remotePatterns: [
