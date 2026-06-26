@@ -76,7 +76,7 @@ export default function KhaltiSuccessPage() {
 
             <div className="mt-4 w-full animate-fade-up" style={{ animationDelay: "0.6s" }}>
               <Link
-                href={`/${slug}`}
+                href="/"
                 className="btn-primary inline-flex w-full items-center justify-center gap-2"
               >
                 <ArrowLeft size={16} />

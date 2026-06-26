@@ -18,8 +18,8 @@ type EsewaCallback = {
 
 export default function PaymentSuccessPage() {
   const params = useParams();
-  const searchParams = useSearchParams();
   const slug = (params?.slug as string) || "";
+  const searchParams = useSearchParams();
   const [status, setStatus] = useState<"verifying" | "success" | "error">(
     "verifying"
   );
@@ -89,7 +89,7 @@ export default function PaymentSuccessPage() {
 
             <div className="mt-4 w-full space-y-3 animate-fade-up" style={{ animationDelay: "0.6s" }}>
               <Link
-                href={`/${slug}`}
+                href="/"
                 className="btn-primary inline-flex w-full items-center justify-center gap-2"
               >
                 <ArrowLeft size={16} />
@@ -108,15 +108,15 @@ export default function PaymentSuccessPage() {
               Verification Failed
             </h1>
             <p className="text-sm text-[var(--color-text-muted)]">{message}</p>
-            <Link
-              href={`/${slug}`}
-              className="btn-primary mt-4 inline-flex w-full items-center justify-center gap-2"
-            >
-              <ArrowLeft size={16} />
-              Back to Restaurant
-            </Link>
-          </div>
-        )}
+              <Link
+                href="/"
+                className="btn-primary inline-flex w-full items-center justify-center gap-2"
+              >
+                <ArrowLeft size={16} />
+                Back to Restaurant
+              </Link>
+            </div>
+          )}
       </div>
     </div>
   );

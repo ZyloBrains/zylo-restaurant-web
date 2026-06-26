@@ -32,7 +32,6 @@ function ItemImage({ imageUrl, name }: { imageUrl?: string | null; name: string 
 
 export function MenuItemCard({ item }: { item: ItemResponse }) {
   const { addItem, getItemQty } = useCart();
-  const slug=useTenantStore((s)=>s.tenantSlug);
   const setSelectedItem = useMenuItemStore((s) => s.setSelectedItem);
   const router = useRouter();
 
@@ -94,7 +93,7 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
     <div
       onClick={() => {
         setSelectedItem(item);
-        router.push(`/${slug}/menu/${item.id}`);
+        router.push(`/menu/${item.id}`);
       }}
       className="card-base card-hover group p-5 cursor-pointer animate-fade-up"
     >

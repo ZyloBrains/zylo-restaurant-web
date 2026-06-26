@@ -82,7 +82,7 @@ export default function MenuItemPage() {
     <div className="bg-[var(--color-background)] min-h-[calc(100vh-120px)] px-4 pt-10 pb-8">
       
       <Link
-        href={`/${slug}`}
+        href="/"
         className="mb-6 inline-flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition"
       >
         <ArrowLeft size={18} />

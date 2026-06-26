@@ -112,7 +112,7 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[var(--color-card)]/80 backdrop-blur-md">
       <Container className="relative flex h-14 md:h-16 items-center justify-between max-w-[1540px] px-3 lg:px-4 xl:px-6">
         {/* LOGO */}
-        <a href="#top" className="flex items-center gap-2 min-w-0 flex-shrink">
+        <Link href="/" className="flex items-center gap-2 min-w-0 flex-shrink">
           {tenant.faviconUrl && (
             <Image
               src={resolveImageUrl(tenant.faviconUrl)}
@@ -126,14 +126,14 @@ export function Header() {
           <span className="text-base md:text-xl font-bold text-[var(--color-primary)] truncate">
             {tenant.restaurantName || "Restaurant"}
           </span>
-        </a>
+        </Link>
 
         {/* DESKTOP NAVIGATION */}
         <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 gap-10">
           {navItems.map((item) => (
             <Link
               key={item.label}
-              href={`/${slug}${item.href}`}
+              href={item.href}
               className="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
             >
               {item.label}
@@ -191,7 +191,7 @@ export function Header() {
             return (
               <Link
                 key={item.label}
-                href={`/${slug}${item.href}`}
+                href={item.href}
                 onClick={() => setMobileOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 rounded-xl text-[var(--color-text)] hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)] transition active:scale-[0.98]"
               >

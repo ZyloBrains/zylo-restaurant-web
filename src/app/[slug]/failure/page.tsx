@@ -1,12 +1,11 @@
 "use client";
 
-import { useSearchParams, useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { XCircle, ArrowLeft, RotateCcw } from "lucide-react";
 import Link from "next/link";
 
 export default function PaymentFailurePage() {
   const searchParams = useSearchParams();
-  const { slug } = useParams() as { slug: string };
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
@@ -42,7 +41,7 @@ export default function PaymentFailurePage() {
           </button>
 
           <Link
-            href={`/${slug}`}
+            href={`/`}
             className="btn-secondary inline-flex w-full items-center justify-center gap-2"
           >
             <ArrowLeft size={16} />

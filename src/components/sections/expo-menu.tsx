@@ -33,7 +33,6 @@ function ExpoItemImage({ imageUrl, name }: { imageUrl?: string | null; name: str
 }
 
 export default function ExpoMenu() {
-  const slug = useTenantStore((s) => s.tenantSlug);
   const tenantTheme = useTenantStore((s) => s.tenantTheme);
   const items = useMenuItemStore((s) => s.items);
   const initialized = useMenuItemStore((s) => s.initialized);
@@ -84,7 +83,7 @@ export default function ExpoMenu() {
             {items.map((item) => (
               <button
                 key={item.id}
-                onClick={() => router.push(`/${slug}/menu/${item.id}`)}
+                onClick={() => router.push(`/menu/${item.id}`)}
                 className="snap-start min-w-55 md:min-w-65 px-4 py-6 text-center transition duration-300 hover:-translate-y-2"
                 style={{
                   background: "var(--color-surface)",
