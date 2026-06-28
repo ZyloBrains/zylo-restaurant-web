@@ -406,7 +406,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                       </a>
                     )}
                     <Link 
-                    href={`/${slug}`}
+                    href="/"
                     className="btn-secondary">
                       Done
                     </Link>
