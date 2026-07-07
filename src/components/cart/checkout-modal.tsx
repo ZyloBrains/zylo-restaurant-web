@@ -82,10 +82,10 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
     const options: PaymentOption[] = [
       { value: "cash", label: "Cash", description: "Pay when you receive", icon: DollarSign },
     ];
-    if (tenant?.esewaLogoUrl) {
+    if (tenant?.esewaProductCode) {
       options.push({ value: "esewa", label: "eSewa", description: "Pay via eSewa wallet", icon: Wallet, iconUrl: tenant.esewaLogoUrl });
     }
-    if (tenant?.khaltiLogoUrl) {
+    if (tenant?.khaltiBaseUrl) {
       options.push({ value: "khalti", label: "Khalti", description: "Pay via Khalti wallet", icon: Wallet, iconUrl: tenant.khaltiLogoUrl });
     }
     return options;
@@ -170,6 +170,10 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
       // 1. Create the order on backend
       setStatusText("Creating your order...");
       const sessionId = localStorage.getItem("cart_session_id");
+      const idempotencyKey =
+        (typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `order-${Date.now()}-${Math.random().toString(36).slice(2)}`);
       const order = await orderService.placeOrder(tenantSlug, currentUser.id, sessionId, {
         customerName: form.customerName,
         customerPhone: form.customerPhone,
@@ -178,6 +182,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
         paymentMethod: form.paymentMethod.toUpperCase(),
         promoCode: form.promoCode || undefined,
         promoDiscount: promoApplied ? promoDiscount : undefined,
+        idempotencyKey,
       });
       setOrderNumber(order.orderNumber);
 
@@ -264,7 +269,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
       transaction_uuid: result.transaction_uuid,
       product_code: result.product_code,
       product_service_charge: result.product_service_charge,
-      product_delivery_charge: result.product_delivery_charge,
+      // product_delivery_charge: result.product_delivery_charge,
       success_url: result.success_url,
       failure_url: result.failure_url,
       signed_field_names: result.signed_field_names,
@@ -517,16 +522,22 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                         <span>Subtotal</span>
                         <span>NPR {subtotal}</span>
                       </div>
-                      <div className="flex justify-between text-[var(--color-text-muted)]">
+                      {/* <div className="flex justify-between text-[var(--color-text-muted)]">
                         <span>Delivery</span>
                         <span>Free</span>
-                      </div>
+                      </div> */}
                       {form.promoCode && promoApplied && (
                         <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
                           <span>Promo ({form.promoCode})</span>
                           <span>- NPR {promoDiscount}</span>
                         </div>
                       )}
+                      {tenant?.vatPercentage ? (
+                        <div className="flex justify-between text-[var(--color-text-muted)]">
+                          <span>VAT ({tenant.vatPercentage}%)</span>
+                          <span>NPR {Math.round((subtotal - promoDiscount) * tenant.vatPercentage / 100)}</span>
+                        </div>
+                      ) : null}
                     </div>
 
                     <hr className="my-4 border-[var(--color-border)]" />
@@ -534,7 +545,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-[var(--color-text)]">Total</span>
                       <span className="text-lg font-bold text-[var(--color-primary)]">
-                        NPR {subtotal - promoDiscount}
+                        NPR {subtotal - promoDiscount + (tenant?.vatPercentage ? Math.round((subtotal - promoDiscount) * tenant.vatPercentage / 100) : 0)}
                       </span>
                     </div>
                   </div>
@@ -701,16 +712,22 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                         <span>Subtotal</span>
                         <span>NPR {subtotal}</span>
                       </div>
-                      <div className="flex justify-between text-[var(--color-text-muted)]">
+                      {/* <div className="flex justify-between text-[var(--color-text-muted)]">
                         <span>Delivery</span>
                         <span>Free</span>
-                      </div>
+                      </div> */}
                       {form.promoCode && promoApplied && (
                         <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
                           <span>Promo ({form.promoCode})</span>
                           <span>- NPR {promoDiscount}</span>
                         </div>
                       )}
+                      {tenant?.vatPercentage ? (
+                        <div className="flex justify-between text-[var(--color-text-muted)]">
+                          <span>VAT ({tenant.vatPercentage}%)</span>
+                          <span>NPR {Math.round((subtotal - promoDiscount) * tenant.vatPercentage / 100)}</span>
+                        </div>
+                      ) : null}
                     </div>
 
                     <hr className="my-4 border-[var(--color-border)]" />
@@ -718,7 +735,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-[var(--color-text)]">Total</span>
                       <span className="text-lg font-bold text-[var(--color-primary)]">
-                        NPR {subtotal - promoDiscount}
+                        NPR {subtotal - promoDiscount + (tenant?.vatPercentage ? Math.round((subtotal - promoDiscount) * tenant.vatPercentage / 100) : 0)}
                       </span>
                     </div>
 
@@ -785,7 +802,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                       Login to Place Order
                     </span>
                   ) : (
-                    `Continue – NPR ${subtotal - promoDiscount}`
+                    `Continue – NPR ${subtotal - promoDiscount + (tenant?.vatPercentage ? Math.round((subtotal - promoDiscount) * tenant.vatPercentage / 100) : 0)}`
                   )}
                 </button>
                 {!isValid && (
@@ -816,7 +833,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                       Processing...
                     </span>
                   ) : (
-                    `Confirm & Place Order – NPR ${subtotal - promoDiscount}`
+                    `Confirm & Place Order – NPR ${subtotal - promoDiscount + (tenant?.vatPercentage ? Math.round((subtotal - promoDiscount) * tenant.vatPercentage / 100) : 0)}`
                   )}
                 </button>
               </div>

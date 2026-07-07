@@ -6,6 +6,7 @@ export type CreateOrderRequest = {
   paymentMethod: string;
   promoCode?: string;
   promoDiscount?: number;
+  idempotencyKey?: string;
 };
 
 export type OrderItemResponse = {
@@ -31,6 +32,8 @@ export type OrderResponse = {
   customerNote?: string;
   paymentMethod: string;
   paymentStatus: string;
+  vatPercentage?: number;
+  vatAmount?: number;
   orderedAt: string;
   items: OrderItemResponse[];
 };

@@ -62,7 +62,10 @@ export interface TenantResponse {
   updatedAt: string;
 
   esewaLogoUrl?: string;
+  esewaProductCode?: string;
   khaltiLogoUrl?: string;
+  khaltiBaseUrl?: string;
+  vatPercentage?: number;
 }
 
 
