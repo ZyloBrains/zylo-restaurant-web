@@ -269,7 +269,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
       transaction_uuid: result.transaction_uuid,
       product_code: result.product_code,
       product_service_charge: result.product_service_charge,
-      // product_delivery_charge: result.product_delivery_charge,
+      product_delivery_charge: result.product_delivery_charge,
       success_url: result.success_url,
       failure_url: result.failure_url,
       signed_field_names: result.signed_field_names,
