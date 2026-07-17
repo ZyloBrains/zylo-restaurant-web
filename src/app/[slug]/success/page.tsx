@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import { CheckCircle2, ArrowLeft, Loader2 } from "lucide-react";
+import { CheckCircle2, ArrowLeft, Loader2, User } from "lucide-react";
 import Link from "next/link";
 import { paymentService } from "@/services/payment.service";
+import { getAuthStorageKey } from "@/lib/tenant-storage";
 
 type EsewaCallback = {
   transaction_code: string;
@@ -16,6 +17,13 @@ type EsewaCallback = {
   signature: string;
 };
 
+type UserInfo = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+};
+
 export default function PaymentSuccessPage() {
   const params = useParams();
   const slug = (params?.slug as string) || "";
@@ -24,6 +32,19 @@ export default function PaymentSuccessPage() {
     "verifying"
   );
   const [message, setMessage] = useState("Verifying your payment...");
+  const [user, setUser] = useState<UserInfo | null>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(getAuthStorageKey(slug));
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed?.state?.user) {
+          setUser(parsed.state.user);
+        }
+      } catch {}
+    }
+  }, [slug]);
 
   useEffect(() => {
     const verify = async () => {
@@ -86,6 +107,25 @@ export default function PaymentSuccessPage() {
             <p className="text-sm text-[var(--color-text-muted)] animate-fade-up" style={{ animationDelay: "0.5s" }}>
               {message}
             </p>
+
+            {user && (
+              <div className="w-full mt-2 p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] animate-fade-up text-left space-y-2" style={{ animationDelay: "0.55s" }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[var(--color-primary)]/10 flex items-center justify-center shrink-0">
+                    <User className="h-5 w-5 text-[var(--color-primary)]" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-[var(--color-text)] truncate">{user.name}</p>
+                    <p className="text-xs text-[var(--color-text-muted)] truncate">{user.email}</p>
+                  </div>
+                </div>
+                {user.phone && (
+                  <p className="text-xs text-[var(--color-text-muted)] flex items-center gap-1">
+                    <span className="font-medium">Phone:</span> {user.phone}
+                  </p>
+                )}
+              </div>
+            )}
 
             <div className="mt-4 w-full space-y-3 animate-fade-up" style={{ animationDelay: "0.6s" }}>
               <Link

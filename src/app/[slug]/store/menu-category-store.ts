@@ -1,18 +1,18 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { CategoryResponse } from "@/features/menu/menu.types";
-import { CategoryService } from "@/services/category.service";
+import type { MenuResponse } from "@/features/menu/menu.types";
+import { menuService } from "@/services/menu.service";
 
 const TTL = 1000 * 60 * 60 * 12; // 12 hours
 
 type CacheEntry = {
-  data: CategoryResponse[];
+  data: MenuResponse[];
   timestamp: number;
 };
 
 type MenuCategoryStore = {
-  categories: CategoryResponse[];
-  selectedCategory: CategoryResponse | null;
+  categories: MenuResponse[];
+  selectedCategory: MenuResponse | null;
 
   cacheByTenant: Record<string, CacheEntry>;
 
@@ -21,9 +21,9 @@ type MenuCategoryStore = {
   error: string | null;
 
   fetchCategories: (slug: string) => Promise<void>;
-  fetchCategoryById: (slug: string, id: string) => Promise<CategoryResponse | null>;
+  fetchCategoryById: (slug: string, id: string) => Promise<MenuResponse | null>;
 
-  setSelectedCategory: (category: CategoryResponse) => void;
+  setSelectedCategory: (category: MenuResponse) => void;
   clearSelectedCategory: () => void;
 };
 
@@ -65,7 +65,7 @@ export const useMenuCategoryStore = create<MenuCategoryStore>()(
           });
 
           // background refresh
-          CategoryService.getCategoryList(slug, 0, 50)
+          menuService.getMenuList(slug, 0, 50)
             .then((response) => {
               set((state) => ({
                 cacheByTenant: {
@@ -79,7 +79,7 @@ export const useMenuCategoryStore = create<MenuCategoryStore>()(
               }));
             })
             .catch((err) => {
-              console.error("Category refresh failed:", err);
+              console.error("Menu refresh failed:", err);
             });
 
           return;
@@ -89,7 +89,7 @@ export const useMenuCategoryStore = create<MenuCategoryStore>()(
         try {
           set({ loading: true, error: null });
 
-          const response = await CategoryService.getCategoryList(slug, 0, 50);
+          const response = await menuService.getMenuList(slug, 0, 50);
 
           set((state) => ({
             categories: response || [],
@@ -104,16 +104,16 @@ export const useMenuCategoryStore = create<MenuCategoryStore>()(
             initialized: true,
           }));
         } catch (error) {
-          console.error("Category fetch failed", error);
+          console.error("Menu fetch failed", error);
 
           set({
             loading: false,
-            error: "Failed to load category",
+            error: "Failed to load menu",
           });
         }
       },
 
-      // 🔥 CATEGORY BY ID (CACHE-FIRST)
+      // 🔥 MENU BY ID (CACHE-FIRST)
       fetchCategoryById: async (slug: string, id: string) => {
         const state = get();
 
@@ -127,7 +127,7 @@ export const useMenuCategoryStore = create<MenuCategoryStore>()(
         }
 
         try {
-          const response = await CategoryService.getCategoryById(
+          const response = await menuService.getMenuById(
             slug,
             Number(id)
           );
@@ -141,7 +141,7 @@ export const useMenuCategoryStore = create<MenuCategoryStore>()(
 
           return response ?? null;
         } catch (error) {
-          console.error("Category fetch failed", error);
+          console.error("Menu fetch failed", error);
           return null;
         }
       },

@@ -1,19 +1,19 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import type { TenantThemeTokens } from "@/features/tenant/tenant.types";
 
 import { buildThemeStyle } from "@/lib/theme/theme.tokens";
 import { SectionTitle } from "../ui/section-title";
 import { Container } from "../ui/container";
-import { useMenuItemStore } from "@/app/[slug]/store/menu-store";
+import { useMenuListStore } from "@/app/[slug]/store/menu-list-store";
 import { useTenantStore } from "@/features/tenant/tenant.store";
 import { resolveImageUrl } from "@/lib/utils/image.utils";
 
 
-function ExpoItemImage({ imageUrl, name }: { imageUrl?: string | null; name: string }) {
+function ExpoMenuImage({ imageUrl, name }: { imageUrl?: string | null; name: string }) {
   const [error, setError] = useState(false);
   if (!imageUrl || error) {
     return (
@@ -34,9 +34,9 @@ function ExpoItemImage({ imageUrl, name }: { imageUrl?: string | null; name: str
 
 export default function ExpoMenu() {
   const tenantTheme = useTenantStore((s) => s.tenantTheme);
-  const items = useMenuItemStore((s) => s.items);
-  const initialized = useMenuItemStore((s) => s.initialized);
-  const storeLoading = useMenuItemStore((s) => s.loading);
+  const menus = useMenuListStore((s) => s.menus);
+  const initialized = useMenuListStore((s) => s.initialized);
+  const storeLoading = useMenuListStore((s) => s.loading);
 
   const router = useRouter();
   if (!initialized && storeLoading) {
@@ -62,7 +62,7 @@ export default function ExpoMenu() {
     );
   }
 
-  if (!initialized || items.length === 0) {
+  if (!initialized || menus.length === 0) {
     return null;
   }
 
@@ -77,13 +77,13 @@ export default function ExpoMenu() {
           <SectionTitle title="Explore Menu" align="center" />
         </div>
 
-        {/* ITEMS SLIDER */}
+        {/* MENUS SLIDER */}
         <div className="relative">
           <div className="flex gap-8 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-            {items.map((item) => (
+            {menus.map((menu) => (
               <button
-                key={item.id}
-                onClick={() => router.push(`/menu/${item.id}`)}
+                key={menu.id}
+                onClick={() => router.push(`/menu?menuId=${menu.id}`)}
                 className="snap-start min-w-55 md:min-w-65 px-4 py-6 text-center transition duration-300 hover:-translate-y-2"
                 style={{
                   background: "var(--color-surface)",
@@ -92,12 +92,12 @@ export default function ExpoMenu() {
                 }}
               >
                 <div className="relative mx-auto w-full aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)] shadow-inner">
-                  <ExpoItemImage imageUrl={item.imageUrl} name={item.name} />
+                  <ExpoMenuImage imageUrl={menu.imageUrl} name={menu.menuName} />
                 </div>
 
                 {/* NAME */}
                 <p className="mt-5 text-lg font-semibold text-(--color-text)">
-                  {item.name}
+                  {menu.menuName}
                 </p>
               </button>
             ))}

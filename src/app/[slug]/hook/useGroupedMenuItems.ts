@@ -1,22 +1,17 @@
 
 import { useMemo } from "react";
-import type { MenuData } from "@/features/menu/menu.types";
+import type { ItemResponse } from "@/features/menu/menu.types";
 
 export function useGroupedMenuItems(
-  menu: MenuData | null
+  items: ItemResponse[]
 ) {
   return useMemo(() => {
-    if(!menu){
-      return{};
-    }
-    const map: Record<string, typeof menu.items> = {};
-
-    menu.categories?.forEach((cat) => {
-      map[cat.id] = menu.items?.filter(
-        (item) => item.categoryId.toString() === cat.id.toString()
-      ) || [];
+    const map: Record<string, ItemResponse[]> = {};
+    items.forEach((item) => {
+      const key = item.menuId?.toString() ?? "unknown";
+      if (!map[key]) map[key] = [];
+      map[key].push(item);
     });
-
     return map;
-  }, [menu]);
+  }, [items]);
 }

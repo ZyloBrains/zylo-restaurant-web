@@ -1,9 +1,9 @@
-export interface CategoryResponse{
-    id:number;
-    categoryName:string;
-    categoryDescription:string;
-    menuName:string,
-    menuId:number
+export interface MenuResponse {
+    id: number;
+    menuName: string;
+    description: string;
+    active: boolean;
+    imageUrl?: string;
 }
 
 export interface ItemResponse{
@@ -14,12 +14,10 @@ export interface ItemResponse{
     imageUrl?:string;
     tags?:string[];
     active:boolean;
-    categoryName:string,
-    categoryId:number,
-    menuName:string
+    menuName:string,
+    menuId:number
 }
 
 export type MenuData = {
-  categories: CategoryResponse[];
   items: ItemResponse[];
 };
