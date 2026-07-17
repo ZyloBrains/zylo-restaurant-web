@@ -1,4 +1,5 @@
 import { getAuthStorageKey } from "@/lib/tenant-storage";
+import { useAuthStore } from "@/features/auth/auth.store";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8082/api/v1";
 
@@ -51,6 +52,13 @@ async function request<T>(method: string, path: string, options: RequestOptions 
 
   if (!response.ok) {
     if (typeof window !== "undefined") {
+      if (response.status === 401) {
+        useAuthStore.getState().logout();
+        const { toast } = await import("sonner");
+        toast.error("Session expired. Please log in again.");
+        window.location.href = "/";
+        throw Object.assign(new Error("Unauthorized"), { status: 401 });
+      }
       try {
         const { toast } = await import("sonner");
         toast.error(data?.message || `Request failed (${response.status})`);

@@ -16,12 +16,18 @@ type MenuStore = {
 
   cacheByTenant: Record<string, CacheEntry>;
 
+  topSellingItems: ItemResponse[];
+  topSellingLoading: boolean;
+  topSellingInitialized: boolean;
+  topSellingError: string | null;
+
   loading: boolean;
   initialized: boolean;
   error: string | null;
 
   fetchItems: (slug: string) => Promise<void>;
   fetchItemById: (slug: string, id: string) => Promise<ItemResponse | null>;
+  fetchTopSellingItems: (slug: string, limit?: number) => Promise<void>;
 
   setSelectedItem: (item: ItemResponse) => void;
   clearSelectedItem: () => void;
@@ -34,6 +40,11 @@ export const useMenuItemStore = create<MenuStore>()(
       selectedItem: null,
 
       cacheByTenant: {},
+
+      topSellingItems: [],
+      topSellingLoading: false,
+      topSellingInitialized: false,
+      topSellingError: null,
 
       loading: false,
       initialized: false,
@@ -145,6 +156,24 @@ export const useMenuItemStore = create<MenuStore>()(
         } catch (error) {
           console.error("Item fetch failed", error);
           return null;
+        }
+      },
+
+      fetchTopSellingItems: async (slug: string, limit: number = 5) => {
+        try {
+          set({ topSellingLoading: true, topSellingError: null });
+          const response = await itemService.getTopSellingItems(slug, limit);
+          set({
+            topSellingItems: response || [],
+            topSellingLoading: false,
+            topSellingInitialized: true,
+          });
+        } catch (error) {
+          console.error("Top selling fetch failed", error);
+          set({
+            topSellingLoading: false,
+            topSellingError: "Failed to load top selling items",
+          });
         }
       },
 

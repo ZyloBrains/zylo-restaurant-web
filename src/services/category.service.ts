@@ -1,4 +1,4 @@
-import { CategoryResponse } from "@/features/menu/menu.types";
+import type { MenuResponse } from "@/features/menu/menu.types";
 import api from "@/lib/api";
 import { ApiResponse, PaginationResponse } from "@/types/api.types";
 
@@ -7,9 +7,9 @@ export const CategoryService={
         slug:string,
         page:number=0,
         size:number=20
-    ): Promise<CategoryResponse[]>{
+    ): Promise<MenuResponse[]>{
         try{
-            const response= await api.get<ApiResponse<PaginationResponse<CategoryResponse>>>(`/public/${slug}/category/list`,{
+            const response= await api.get<ApiResponse<PaginationResponse<MenuResponse>>>(`/public/${slug}/menu/list`,{
                 params:{
                     page,
                     size
@@ -18,20 +18,20 @@ export const CategoryService={
            return response.data?.data?.content || [];
     
         }catch(error){
-            console.error(`Failed to fetch category for tenant ${slug}`, error);
+            console.error(`Failed to fetch menu for tenant ${slug}`, error);
             throw error;
         }
     },
     async getCategoryById(
         slug:string,
         id:number
-    ): Promise<CategoryResponse>{
+    ): Promise<MenuResponse | null>{
         try{
-            const response= await api.get<ApiResponse<CategoryResponse>>(`/public/${slug}/category/${id}`);
+            const response= await api.get<ApiResponse<MenuResponse>>(`/public/${slug}/menu/${id}`);
            return response.data.data;
     
         }catch(error){
-            console.error(`Failed to fetch category for tenant ${slug}`, error);
+            console.error(`Failed to fetch menu for tenant ${slug}`, error);
             throw error;
         }
     },
@@ -40,19 +40,19 @@ export const CategoryService={
         menuId:string,
         page:number=0,
         size:number=20
-    ): Promise<CategoryResponse[]>{
+    ): Promise<MenuResponse[]>{
         try{
-            const response= await api.get<ApiResponse<PaginationResponse<CategoryResponse>>>(`/public/${slug}/category`,{
+            const response= await api.get<ApiResponse<PaginationResponse<MenuResponse>>>(`/public/${slug}/menu`,{
                 params:{
                     page,
                     size
                 }
             });
-            console.log("category Data are ",response.data.data);
+            console.log("Menu Data are ",response.data.data);
            return response.data?.data?.content || [];
     
         }catch(error){
-            console.error(`Failed to fetch category for tenant ${slug}`, error);
+            console.error(`Failed to fetch menu for tenant ${slug}`, error);
             throw error;
         }
     }

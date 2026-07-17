@@ -1,16 +1,16 @@
 "use client";
 
-import { CategoryResponse } from "@/features/menu/menu.types";
+import type { MenuResponse } from "@/features/menu/menu.types";
 
 type Props = {
-  categories: CategoryResponse[];
-  activeCategoryId: string;
+  menus: MenuResponse[];
+  activeMenuId: string;
   onSelect: (id: string) => void;
 };
 
 export function MenuSidebar({
-  categories,
-  activeCategoryId,
+  menus,
+  activeMenuId,
   onSelect,
 }: Props) {
   return (
@@ -23,17 +23,17 @@ export function MenuSidebar({
         }}
       >
         <h2 className="text-xl font-bold mb-6 px-2 text-[var(--color-text)]">
-          🍗 Menu Categories
+          Our Menus
         </h2>
 
         <div className="flex flex-col gap-2">
-          {categories.map((cat) => {
-            const isActive = cat.id.toString() === activeCategoryId;
+          {menus.map((menu) => {
+            const isActive = menu.id.toString() === activeMenuId;
 
             return (
               <button
-                key={cat.id}
-                onClick={() => onSelect(cat.id.toString())}
+                key={menu.id}
+                onClick={() => onSelect(menu.id.toString())}
                 className="text-left px-4 py-3 rounded-xl transition"
                 style={{
                   backgroundColor: isActive
@@ -62,7 +62,7 @@ export function MenuSidebar({
                   }
                 }}
               >
-                {cat.categoryName}
+                {menu.menuName}
               </button>
             );
           })}

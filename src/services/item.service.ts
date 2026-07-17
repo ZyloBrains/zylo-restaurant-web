@@ -3,6 +3,23 @@ import api from "@/lib/api";
 import { ApiResponse, PaginationResponse } from "@/types/api.types";
 
 export const itemService = {
+  async getTopSellingItems(
+    slug: string,
+    limit: number = 5,
+  ): Promise<ItemResponse[]> {
+    try {
+      const response = await api.get<
+        ApiResponse<ItemResponse[]>
+      >(`/public/${slug}/items/top-selling-items`, {
+        params: { limit },
+      });
+      return response.data?.data || [];
+    } catch (error) {
+      console.error(`Failed to fetch top-selling items for tenant ${slug}:`, error);
+      throw error;
+    }
+  },
+
   async getItemList(
     slug: string,
     page: number = 0,
