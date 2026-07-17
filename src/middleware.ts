@@ -67,7 +67,13 @@ export async function middleware(request: NextRequest) {
   }
 
   url.pathname = path === "/" ? `/${tenantSlug}` : `/${tenantSlug}${path}`;
-  return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+  const response = NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+  response.cookies.set("x-tenant-slug", tenantSlug, {
+    path: "/",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 30,
+  });
+  return response;
 }
 
 export const config = {

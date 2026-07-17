@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Container } from "@/components/ui/container";
 import { SectionTitle } from "@/components/ui/section-title";
@@ -8,33 +8,42 @@ import { MenuItemCard } from "@/components/menu/menu-item-card";
 
 import { staggerContainer } from "@/lib/utils/animations";
 import { useMenuItemStore } from "@/app/[slug]/store/menu-store";
-import { useMenuCategoryStore } from "@/app/[slug]/store/menu-category-store";
+import { useMenuListStore } from "@/app/[slug]/store/menu-list-store";
+import { useTenantStore } from "@/features/tenant/tenant.store";
 
 
 export function FevItems() {
-  const categories = useMenuCategoryStore((s) => s.categories);
-  const catInitialized = useMenuCategoryStore((s) => s.initialized);
-  const catLoading = useMenuCategoryStore((s) => s.loading);
+  const slug = useTenantStore((s) => s.tenantSlug);
+  const menus = useMenuListStore((s) => s.menus);
+  const menusInitialized = useMenuListStore((s) => s.initialized);
+  const menusLoading = useMenuListStore((s) => s.loading);
 
-  const items = useMenuItemStore((s) => s.items);
-  const itemInitialized = useMenuItemStore((s) => s.initialized);
-  const itemLoading = useMenuItemStore((s) => s.loading);
+  const topSellingItems = useMenuItemStore((s) => s.topSellingItems);
+  const topSellingInitialized = useMenuItemStore((s) => s.topSellingInitialized);
+  const topSellingLoading = useMenuItemStore((s) => s.topSellingLoading);
+  const fetchTopSellingItems = useMenuItemStore((s) => s.fetchTopSellingItems);
 
-  const [activeCategoryId, setActiveCategoryId] = useState<string>("");
+  const [activeMenuId, setActiveMenuId] = useState<string>("");
 
-  const currentCategoryId = activeCategoryId || "";
+  useEffect(() => {
+    if (slug && !topSellingInitialized && !topSellingLoading) {
+      fetchTopSellingItems(slug, 5);
+    }
+  }, [slug, fetchTopSellingItems, topSellingInitialized, topSellingLoading]);
 
-  const activeCategory = useMemo(() => {
-    if (!currentCategoryId) return undefined;
-    return categories.find((cat) => cat.id.toString() === currentCategoryId);
-  }, [categories, currentCategoryId]);
+  const currentMenuId = activeMenuId || "";
+
+  const activeMenu = useMemo(() => {
+    if (!currentMenuId) return undefined;
+    return menus.find((m) => m.id.toString() === currentMenuId);
+  }, [menus, currentMenuId]);
 
   const filteredItems = useMemo(() => {
-    if (!currentCategoryId) return items;
-    return items.filter((item) => item.categoryId.toString() === currentCategoryId);
-  }, [items, currentCategoryId]);
+    if (!currentMenuId) return topSellingItems;
+    return topSellingItems.filter((item) => item.menuId?.toString() === currentMenuId);
+  }, [topSellingItems, currentMenuId]);
 
-  const loading = (!catInitialized && catLoading) || (!itemInitialized && itemLoading);
+  const loading = (!menusInitialized && menusLoading) || (!topSellingInitialized && topSellingLoading);
 
   if (loading) {
     return (
@@ -64,7 +73,7 @@ export function FevItems() {
     );
   }
 
-  if (categories.length === 0) {
+  if (menus.length === 0) {
     return null;
   }
 
@@ -76,14 +85,14 @@ export function FevItems() {
       <Container className="relative max-w-385 px-3 lg:px-4 xl:px-6">
         <SectionTitle title="Favorite" align="center" />
 
-        {/* CATEGORY BUTTONS */}
+        {/* MENU BUTTONS */}
         <div className="mt-8 flex flex-wrap gap-3 justify-center">
           {/* ALL button */}
           <button
             type="button"
-            onClick={() => setActiveCategoryId("")}
+            onClick={() => setActiveMenuId("")}
             className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
-              !currentCategoryId
+              !currentMenuId
                 ? "bg-[var(--color-primary)] text-white shadow-sm"
                 : "border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-text-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
             }`}
@@ -91,41 +100,41 @@ export function FevItems() {
             All
           </button>
 
-          {categories.map((category) => {
-            const isActive = category.id.toString() === currentCategoryId;
+          {menus.map((menu) => {
+            const isActive = menu.id.toString() === currentMenuId;
 
             return (
               <button
-                key={category.id}
+                key={menu.id}
                 type="button"
-                onClick={() => setActiveCategoryId(category.id.toString())}
+                onClick={() => setActiveMenuId(menu.id.toString())}
                 className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
                   isActive
                     ? "bg-[var(--color-primary)] text-white shadow-sm"
                     : "border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-text-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
                 }`}
               >
-                {category.categoryName}
+                {menu.menuName}
               </button>
             );
           })}
         </div>
 
-        {/* CATEGORY DESCRIPTION */}
-        {activeCategory?.categoryDescription && (
+        {/* MENU DESCRIPTION */}
+        {activeMenu?.description && (
           <p className="mt-5 mx-auto max-w-2xl text-center text-sm text-[var(--color-text-muted)]">
-            {activeCategory.categoryDescription}
+            {activeMenu.description}
           </p>
         )}
 
         {/* ITEMS GRID */}
         <div
-          key={currentCategoryId}
+          key={currentMenuId}
           className={`mt-10 ${staggerContainer}`}
         >
           {filteredItems.length === 0 ? (
             <p className="text-sm text-[var(--color-text-muted)] text-center py-10">
-              No items available in this category.
+              No items available in this menu.
             </p>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
