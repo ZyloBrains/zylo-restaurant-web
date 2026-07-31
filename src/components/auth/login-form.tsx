@@ -113,7 +113,7 @@ export function LoginForm({
 
             <p className="text-center text-sm">
                 Don&rsquo;t have an account?{" "}
-                <span onClick={onSwitch} className="cursor-pointer hover:underline" style={{ color: "var(--color-primary)" }}>
+                <span onClick={onSwitch} className="cursor-pointer hover:underline" style={{ color: "var(--color-primary-text)" }}>
                     Sign Up
                 </span>
             </p>

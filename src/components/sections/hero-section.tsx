@@ -4,8 +4,7 @@ import { Container } from "@/components/ui/container";
 import { fadeUp } from "@/lib/utils/animations";
 import { sectionImages } from "@/lib/constants/section-images";
 import { useEffect, useState } from "react";
-import { heroImageService } from "@/services/hero-image.service";
-import { HeroImageResponse } from "@/types/hero-image.types";
+import { useHeroImagesStore } from "@/app/[slug]/store/hero-images-store";
 import { resolveImageUrl } from "@/lib/utils/image.utils";
 
 type HeroSectionProps = {
@@ -24,13 +23,14 @@ export function HeroSection({
     tenantSlug,
 }: HeroSectionProps) {
 
-    const [heroImages, setHeroImages] = useState<HeroImageResponse[]>([]);
     const [index, setIndex] = useState(0);
+    const heroImages = useHeroImagesStore((s) => s.data);
+    const fetchHeroImages = useHeroImagesStore((s) => s.fetchData);
 
     useEffect(() => {
         if (!tenantSlug) return;
-        heroImageService.getHeroImagesBySlug(tenantSlug).then(setHeroImages).catch(() => {});
-    }, [tenantSlug]);
+        fetchHeroImages(tenantSlug);
+    }, [tenantSlug, fetchHeroImages]);
 
     const images = heroImages.length > 0
         ? heroImages.map((img) => ({
@@ -105,7 +105,7 @@ export function HeroSection({
                                 Order Now
                             </a>
 
-                            <a href="#menu" className="btn-outline-dark">
+                            <a href="menu" className="btn-outline-dark">
                                 View Menu
                             </a>
 

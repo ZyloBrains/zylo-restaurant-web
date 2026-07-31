@@ -54,7 +54,7 @@ export function CartDrawer({
         <div className="border-b border-[var(--color-border)] px-5 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <ShoppingCart className="h-5 w-5 text-[var(--color-primary)]" />
+              <ShoppingCart className="h-5 w-5 text-[var(--color-primary-text)]" />
               <h2 className="text-lg font-semibold text-[var(--color-text)]">Your Order</h2>
             </div>
 
@@ -166,7 +166,7 @@ export function CartDrawer({
                               </p>
                             </>
                           ) : (
-                            <p className="font-semibold text-[var(--color-primary)]">
+                            <p className="font-semibold text-[var(--color-primary-text)]">
                               NPR {item.price * item.quantity}
                             </p>
                           )}
@@ -185,7 +185,7 @@ export function CartDrawer({
           <div className="border-t border-[var(--color-border)] p-5 space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-[var(--color-text-muted)]">Total</span>
-              <span className="text-lg font-bold text-[var(--color-primary)]">
+              <span className="text-lg font-bold text-[var(--color-primary-text)]">
                 NPR {total}
               </span>
             </div>
@@ -258,7 +258,7 @@ export function CartDrawer({
                               <p className="font-semibold text-emerald-600 dark:text-emerald-400">NPR {item.price * item.quantity - item.discountAmount}</p>
                             </>
                           ) : (
-                            <p className="font-semibold text-[var(--color-primary)]">NPR {item.price * item.quantity}</p>
+                            <p className="font-semibold text-[var(--color-primary-text)]">NPR {item.price * item.quantity}</p>
                           )}
                         </div>
                       </div>
@@ -271,7 +271,7 @@ export function CartDrawer({
             <div className="border-t border-[var(--color-border)] p-5 space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-[var(--color-text-muted)]">Total</span>
-                <span className="text-lg font-bold text-[var(--color-primary)]">NPR {total}</span>
+                <span className="text-lg font-bold text-[var(--color-primary-text)]">NPR {total}</span>
               </div>
               <CheckoutModal
                 restaurantName={restaurantName}

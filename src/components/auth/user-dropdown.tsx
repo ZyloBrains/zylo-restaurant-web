@@ -137,7 +137,7 @@ export function UserDropdown() {
             {/* Orders */}
             <div className="p-4">
               <div className="flex items-center gap-2 mb-3">
-                <Package size={16} className="text-[var(--color-primary)]" />
+                <Package size={16} className="text-[var(--color-primary-text)]" />
                 <span className="text-sm font-semibold text-[var(--color-text)]">My Orders</span>
               </div>
 
@@ -196,7 +196,7 @@ export function UserDropdown() {
                   ) : hasMore ? (
                     <button
                       onClick={handleSeeMore}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-primary)] hover:underline"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-[var(--color-primary-text)] hover:underline"
                     >
                       <ChevronDown size={14} />
                       See more

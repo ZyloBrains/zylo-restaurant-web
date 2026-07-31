@@ -37,7 +37,7 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-md rounded-3xl border border-[var(--color-border)] bg-[var(--color-card)] p-8 shadow-[var(--shadow-card)]">
         <div className="text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-accent)]/10">
-            <Lock className="h-8 w-8" style={{ color: "var(--color-primary)" }} />
+            <Lock className="h-8 w-8" style={{ color: "var(--color-primary-text)" }} />
           </div>
           <h1 className="mt-5 text-2xl font-bold text-[var(--color-text)]">Set New Password</h1>
           {email && (
@@ -124,7 +124,7 @@ export default function ResetPasswordPage() {
           <Link
             href="../"
             className="inline-flex items-center gap-2 text-sm"
-            style={{ color: "var(--color-primary)" }}
+            style={{ color: "var(--color-primary-text)" }}
           >
             <ArrowLeft size={16} />
             Back to Login

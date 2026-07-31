@@ -167,7 +167,7 @@ export function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
         type="button"
         onClick={onBack}
         className="inline-flex w-full items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition hover:opacity-80"
-        style={{ color: "var(--color-primary)", border: "1px solid var(--color-primary)", borderRadius: "var(--radius-button)" }}
+        style={{ color: "var(--color-primary-text)", border: "1px solid var(--color-primary)", borderRadius: "var(--radius-button)" }}
       >
         <ArrowLeft size={16} />
         {step === "success" ? "Back to Login" : "Back to Login"}

@@ -7,7 +7,7 @@ import { useServicesStore } from "@/app/[slug]/store/services-store";
 import { useTenantStore } from "@/features/tenant/tenant.store";
 
 export function ServicesSection() {
-    const services = useServicesStore((s) => s.services);
+    const services = useServicesStore((s) => s.data);
     const slug = useTenantStore((s) => s.tenantSlug);
 
     if (!slug) return null;
@@ -55,7 +55,7 @@ export function ServicesSection() {
                                     {service.tags.map((tag) => (
                                         <span
                                             key={tag}
-                                            className="inline-flex rounded-full bg-[var(--color-surface)] px-3 py-1 text-xs font-semibold text-[var(--color-primary)]"
+                                            className="inline-flex rounded-full bg-[var(--color-surface)] px-3 py-1 text-xs font-semibold text-[var(--color-primary-text)]"
                                         >
                                             {tag}
                                         </span>

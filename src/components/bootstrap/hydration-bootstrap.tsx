@@ -9,8 +9,8 @@ import { useServicesStore } from "@/app/[slug]/store/services-store";
 export function HydrationBootstrap({ slug }: { slug: string }) {
   const fetchTenant = useTenantStore((s) => s.fetchTenant);
   const fetchItems = useMenuItemStore((s) => s.fetchItems);
-  const fetchMenus = useMenuListStore((s) => s.fetchMenus);
-  const fetchServices = useServicesStore((s) => s.fetchServices);
+  const fetchMenus = useMenuListStore((s) => s.fetchData);
+  const fetchServices = useServicesStore((s) => s.fetchData);
 
   useEffect(() => {
     if (!slug) return;

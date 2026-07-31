@@ -1,3 +1,5 @@
+"use client";
+
 import { MapPin, PhoneCall, Clock, XCircle } from "lucide-react";
 import { FaFacebookF, FaInstagram, FaTwitter, FaTiktok } from "react-icons/fa";
 
@@ -13,7 +15,7 @@ export function Footer() {
           {/* LEFT - INFO */}
           <div>
             <h3
-              className="text-lg font-semibold text-[var(--color-primary)]"
+              className="text-lg font-semibold text-[var(--color-primary-text)]"
               style={{ fontFamily: "var(--font-heading, Poppins)" }}
             >
               {tenant?.restaurantName}
@@ -70,7 +72,7 @@ export function Footer() {
 
             return (
               <div>
-                <h4 className="text-sm font-semibold text-[var(--color-primary)] mb-4">
+                <h4 className="text-sm font-semibold text-[var(--color-primary-text)] mb-4">
                   Follow Us
                 </h4>
 
@@ -97,7 +99,7 @@ export function Footer() {
 
           {/* RIGHT - COPYRIGHT */}
           <div className="text-sm text-[var(--color-text-muted)] md:text-right">
-            <p className="text-[var(--color-primary)] font-medium">
+            <p className="text-[var(--color-primary-text)] font-medium">
               © {new Date().getFullYear()} {tenant?.restaurantName}
             </p>
 

@@ -182,6 +182,7 @@ export const useMenuItemStore = create<MenuStore>()(
     }),
     {
       name: "menu-storage",
+      version: 1,
 
       storage: createJSONStorage(() => localStorage),
 

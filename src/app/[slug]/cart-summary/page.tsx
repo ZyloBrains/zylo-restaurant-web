@@ -137,7 +137,7 @@ export default function CartSummary() {
 
               <div className="flex justify-between font-bold text-lg text-[var(--color-text)]">
                 <span>Total</span>
-                <span className="text-[var(--color-primary)]">
+                <span className="text-[var(--color-primary-text)]">
                   NPR {subtotal}
                 </span>
               </div>

@@ -16,7 +16,7 @@ export function MenuSidebar({
   return (
     <aside className="hidden md:block w-72 sticky top-0 h-screen p-4">
       <div
-        className="rounded-2xl shadow-lg border border-[var(--color-border)] p-4 h-full"
+        className="rounded-2xl shadow-lg border border-[var(--color-border)] p-4 h-full flex flex-col"
         style={{
           backgroundColor: "var(--color-surface)",
           color: "var(--color-text)",
@@ -26,7 +26,7 @@ export function MenuSidebar({
           Our Menus
         </h2>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 overflow-y-auto min-h-0 flex-1 pr-1">
           {menus.map((menu) => {
             const isActive = menu.id.toString() === activeMenuId;
 

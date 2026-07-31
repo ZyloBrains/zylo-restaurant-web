@@ -88,7 +88,7 @@ export default function PaymentSuccessPage() {
         {status === "verifying" && (
           <div className="flex flex-col items-center gap-4 py-8 animate-fade-in">
             <div className="animate-spin">
-              <Loader2 className="h-12 w-12 text-[var(--color-primary)]" />
+              <Loader2 className="h-12 w-12 text-[var(--color-primary-text)]" />
             </div>
             <p className="text-sm text-[var(--color-text-muted)]">{message}</p>
           </div>
@@ -112,7 +112,7 @@ export default function PaymentSuccessPage() {
               <div className="w-full mt-2 p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] animate-fade-up text-left space-y-2" style={{ animationDelay: "0.55s" }}>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-[var(--color-primary)]/10 flex items-center justify-center shrink-0">
-                    <User className="h-5 w-5 text-[var(--color-primary)]" />
+                    <User className="h-5 w-5 text-[var(--color-primary-text)]" />
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-[var(--color-text)] truncate">{user.name}</p>

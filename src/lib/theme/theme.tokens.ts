@@ -64,6 +64,26 @@ export function buildThemeStyle(
   } as React.CSSProperties;
 }
 
+export function buildThemeCss(
+  tokens?: Partial<TenantThemeTokens>
+): string {
+  const t = normalizeThemeTokens(tokens);
+
+  return [
+    "--color-primary: " + t.colorPrimary,
+    "--color-secondary: " + t.colorSecondary,
+    "--color-accent: " + t.colorAccent,
+    "--color-background: " + t.colorBackground,
+    "--color-surface: " + t.colorSurface,
+    "--color-card: " + t.colorSurface,
+    "--color-text: " + t.colorText,
+    "--color-text-muted: " + t.colorTextMuted,
+    "--radius-button: " + t.radiusButton,
+    "--radius-card: " + t.radiusCard,
+    "--shadow-card: " + t.shadowCard,
+  ].join(";\n  ");
+}
+
 export function isDarkModeEnabled(tokens?: Partial<TenantThemeTokens>): boolean {
   return normalizeDarkMode(tokens?.defaultDarkMode ?? THEME_DEFAULTS.defaultDarkMode) === "true";
 }

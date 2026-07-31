@@ -34,27 +34,31 @@ function applyThemeToDom(
   theme: TenantTheme | null | undefined,
   isDarkMode?: boolean
 ) {
-  if (!theme || typeof window === "undefined") return;
+  if (typeof window === "undefined") return;
 
   const root = document.documentElement;
-  const t = normalizeThemeTokens(theme);
-
-  root.style.setProperty("--color-primary", t.colorPrimary);
-  root.style.setProperty("--color-secondary", t.colorSecondary);
-  root.style.setProperty("--color-accent", t.colorAccent);
+  const t = normalizeThemeTokens(theme ?? undefined);
 
   if (isDarkMode) {
-    // Dark mode: let the CSS [data-dark-mode] selector handle structural colors.
+    // Dark mode: let the CSS [data-dark-mode] selector handle ALL colors.
     // Remove any previously inlined light mode values so the CSS can take over.
+    root.style.removeProperty("--color-primary");
+    root.style.removeProperty("--color-secondary");
+    root.style.removeProperty("--color-accent");
     root.style.removeProperty("--color-background");
     root.style.removeProperty("--color-surface");
+    root.style.removeProperty("--color-card");
     root.style.removeProperty("--color-text");
     root.style.removeProperty("--color-text-muted");
     root.setAttribute("data-dark-mode", "true");
   } else {
     // Light mode – apply the full backend tenant theme as inline styles
+    root.style.setProperty("--color-primary", t.colorPrimary);
+    root.style.setProperty("--color-secondary", t.colorSecondary);
+    root.style.setProperty("--color-accent", t.colorAccent);
     root.style.setProperty("--color-background", t.colorBackground);
     root.style.setProperty("--color-surface", t.colorSurface);
+    root.style.setProperty("--color-card", t.colorSurface);
     root.style.setProperty("--color-text", t.colorText);
     root.style.setProperty("--color-text-muted", t.colorTextMuted);
     root.removeAttribute("data-dark-mode");

@@ -9,7 +9,7 @@ export default function Loading() {
             </div>
 
             {/* TEXT */}
-            <p className="text-lg font-semibold text-[var(--color-primary)]">
+            <p className="text-lg font-semibold text-[var(--color-primary-text)]">
                 Loading Fish Station...
             </p>
 

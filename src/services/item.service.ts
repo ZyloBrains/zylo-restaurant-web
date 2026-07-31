@@ -20,6 +20,44 @@ export const itemService = {
     }
   },
 
+  async getTopSellingByMenu(
+    slug: string,
+    menuId: number,
+    page: number = 0,
+    size: number = 10,
+  ): Promise<PaginationResponse<ItemResponse>> {
+    try {
+      const response = await api.get<
+        ApiResponse<PaginationResponse<ItemResponse>>
+      >(`/public/${slug}/items/top-selling-by-menu`, {
+        params: { menuId, page, size },
+      });
+      return response.data?.data;
+    } catch (error) {
+      console.error(`Failed to fetch top-selling items for menu ${menuId} of tenant ${slug}:`, error);
+      throw error;
+    }
+  },
+
+  async searchItems(
+    slug: string,
+    search: string,
+    page: number = 0,
+    size: number = 10,
+  ): Promise<PaginationResponse<ItemResponse>> {
+    try {
+      const response = await api.get<
+        ApiResponse<PaginationResponse<ItemResponse>>
+      >(`/public/${slug}/items/list`, {
+        params: { search, page, size },
+      });
+      return response.data?.data;
+    } catch (error) {
+      console.error(`Failed to search items for tenant ${slug}:`, error);
+      throw error;
+    }
+  },
+
   async getItemList(
     slug: string,
     page: number = 0,

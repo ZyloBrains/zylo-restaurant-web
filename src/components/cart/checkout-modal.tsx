@@ -67,7 +67,7 @@ function PaymentIcon({ opt, selected }: { opt: PaymentOption; selected: boolean 
     );
   }
   return (
-    <Icon className={`h-5 w-5 ${selected ? "text-[var(--color-primary)]" : "text-[var(--color-text-muted)]"}`} />
+    <Icon className={`h-5 w-5 ${selected ? "text-[var(--color-primary-text)]" : "text-[var(--color-text-muted)]"}`} />
   );
 }
 
@@ -370,7 +370,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
             <div className="flex-1 overflow-y-auto">
               {step === "processing" && (
                 <div className="flex flex-col items-center justify-center gap-4 px-6 py-20">
-                  <Loader2 className="h-10 w-10 animate-spin text-[var(--color-primary)]" />
+                  <Loader2 className="h-10 w-10 animate-spin text-[var(--color-primary-text)]" />
                   <p className="text-sm text-[var(--color-text-muted)]">
                     {statusText}
                   </p>
@@ -389,7 +389,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                     Order Confirmed!
                   </h3>
                   {orderNumber && (
-                    <p className="mt-1 text-xs font-medium text-[var(--color-primary)]">
+                    <p className="mt-1 text-xs font-medium text-[var(--color-primary-text)]">
                       {orderNumber}
                     </p>
                   )}
@@ -461,7 +461,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                         {form.paymentMethod === "cash" ? (
                           <DollarSign className="h-5 w-5 text-emerald-500" />
                         ) : (
-                          <Wallet className="h-5 w-5 text-[var(--color-primary)]" />
+                          <Wallet className="h-5 w-5 text-[var(--color-primary-text)]" />
                         )}
                         <div>
                           <p className="text-sm font-medium text-[var(--color-text)]">
@@ -508,7 +508,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                                 <span className="text-emerald-600 dark:text-emerald-400">NPR {item.price * item.quantity - item.discountAmount}</span>
                               </>
                             ) : (
-                              <span className="text-[var(--color-primary)]">NPR {item.price * item.quantity}</span>
+                              <span className="text-[var(--color-primary-text)]">NPR {item.price * item.quantity}</span>
                             )}
                           </span>
                         </div>
@@ -544,7 +544,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
 
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-[var(--color-text)]">Total</span>
-                      <span className="text-lg font-bold text-[var(--color-primary)]">
+                      <span className="text-lg font-bold text-[var(--color-primary-text)]">
                         NPR {subtotal - promoDiscount + (tenant?.vatPercentage ? Math.round((subtotal - promoDiscount) * tenant.vatPercentage / 100) : 0)}
                       </span>
                     </div>
@@ -698,7 +698,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                                 <span className="text-emerald-600 dark:text-emerald-400">NPR {item.price * item.quantity - item.discountAmount}</span>
                               </>
                             ) : (
-                              <span className="text-[var(--color-primary)]">NPR {item.price * item.quantity}</span>
+                              <span className="text-[var(--color-primary-text)]">NPR {item.price * item.quantity}</span>
                             )}
                           </span>
                         </div>
@@ -734,7 +734,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
 
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-[var(--color-text)]">Total</span>
-                      <span className="text-lg font-bold text-[var(--color-primary)]">
+                      <span className="text-lg font-bold text-[var(--color-primary-text)]">
                         NPR {subtotal - promoDiscount + (tenant?.vatPercentage ? Math.round((subtotal - promoDiscount) * tenant.vatPercentage / 100) : 0)}
                       </span>
                     </div>
@@ -770,7 +770,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
                             <PaymentIcon opt={opt} selected={selected} />
                           </div>
                           <span className={`text-xs font-semibold leading-tight ${
-                            selected ? "text-[var(--color-primary)]" : "text-[var(--color-text)]"
+                            selected ? "text-[var(--color-primary-text)]" : "text-[var(--color-text)]"
                           }`}>
                             {opt.label}
                           </span>

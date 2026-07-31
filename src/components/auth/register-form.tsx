@@ -250,7 +250,7 @@ export function RegisterForm({
 
       <p className="text-center text-sm text-[var(--color-text-muted)]">
         Already have an account?{" "}
-        <button type="button" onClick={onSwitch} className="font-medium hover:underline" style={{ color: "var(--color-primary)" }}>
+        <button type="button" onClick={onSwitch} className="font-medium hover:underline" style={{ color: "var(--color-primary-text)" }}>
           Login
         </button>
       </p>
