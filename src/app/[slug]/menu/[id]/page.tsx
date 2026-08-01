@@ -123,7 +123,7 @@ export default function MenuItemPage() {
             {item.description}
           </p>
 
-          <p className="mt-5 text-3xl font-bold text-[var(--color-primary)]">
+          <p className="mt-5 text-3xl font-bold text-[var(--color-primary-text)]">
             NPR {item.price}
           </p>
 

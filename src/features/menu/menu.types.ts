@@ -4,6 +4,7 @@ export interface MenuResponse {
     description: string;
     active: boolean;
     imageUrl?: string;
+    orderCount?: number;
 }
 
 export interface ItemResponse{

@@ -20,7 +20,7 @@ export function MobileBottomBar({
                 {phone && (
                 <a
                     href={`tel:${phone}`}
-                    className="inline-flex items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-3 text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+                    className="inline-flex items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[var(--color-border)] bg-[var(--color-card)] px-3 py-3 text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary-text)]"
                 >
                     <PhoneCall className="h-4 w-4" />
                     <span>Call</span>
@@ -32,7 +32,7 @@ export function MobileBottomBar({
                     href={`https://wa.me/${whatsappNumber}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[var(--color-primary)] bg-[var(--color-card)] px-3 py-3 text-sm font-semibold text-[var(--color-primary)] transition hover:bg-[var(--color-surface)]"
+                    className="inline-flex items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[var(--color-primary)] bg-[var(--color-card)] px-3 py-3 text-sm font-semibold text-[var(--color-primary-text)] transition hover:bg-[var(--color-surface)]"
                 >
                     <MessageCircle className="h-4 w-4" />
                     <span>WhatsApp</span>
@@ -47,7 +47,7 @@ export function MobileBottomBar({
                     <span>Cart</span>
 
                     {itemCount > 0 && (
-                        <span className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[var(--color-accent)] px-1 text-[10px] font-bold text-white shadow-sm">
+                        <span className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[var(--color-accent)] px-1 text-[10px] font-bold text-[var(--color-primary)] shadow-sm">
               {itemCount}
             </span>
                     )}

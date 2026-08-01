@@ -54,37 +54,51 @@ export const cartService = {
 
   async updateItem(
     cartItemId: number,
-    slug:string,
-    quantity: number
+    slug: string,
+    quantity: number,
+    sessionId?: string
   ): Promise<CartResponse> {
     const { data } = await api.put<ApiResponse<CartResponse>>(
       `/public/${slug}/cart/item/${cartItemId}`,
-      { quantity }
+      { quantity },
+      { params: { sessionId } }
     );
     return data.data;
   },
 
   async removeItem(
-    slug:string,
-    cartItemId: number): Promise<CartResponse> {
+    slug: string,
+    cartItemId: number,
+    sessionId?: string
+  ): Promise<CartResponse> {
     const { data } = await api.delete<ApiResponse<CartResponse>>(
-      `/public/${slug}/cart/item/${cartItemId}`
+      `/public/${slug}/cart/item/${cartItemId}`,
+      { params: { sessionId } }
     );
     return data.data;
   },
 
   async clearCart(
-    slug:string
-    ,cartId: number): Promise<CartResponse> {
+    slug: string,
+    cartId: number,
+    sessionId?: string
+  ): Promise<CartResponse> {
     const { data } = await api.delete<ApiResponse<CartResponse>>(
-      `/public/${slug}/cart/clear/${cartId}`
+      `/public/${slug}/cart/clear/${cartId}`,
+      { params: { sessionId } }
     );
     return data.data;
   },
 
-  async checkout(slug: string, cartId: number): Promise<CartResponse> {
+  async checkout(
+    slug: string,
+    cartId: number,
+    sessionId?: string
+  ): Promise<CartResponse> {
     const { data } = await api.post<ApiResponse<CartResponse>>(
-      `/public/${slug}/cart/checkout/${cartId}`
+      `/public/${slug}/cart/checkout/${cartId}`,
+      null,
+      { params: { sessionId } }
     );
     return data.data;
   },

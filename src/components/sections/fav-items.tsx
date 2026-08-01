@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 import { Container } from "@/components/ui/container";
 import { SectionTitle } from "@/components/ui/section-title";
@@ -8,42 +10,26 @@ import { MenuItemCard } from "@/components/menu/menu-item-card";
 
 import { staggerContainer } from "@/lib/utils/animations";
 import { useMenuItemStore } from "@/app/[slug]/store/menu-store";
-import { useMenuListStore } from "@/app/[slug]/store/menu-list-store";
 import { useTenantStore } from "@/features/tenant/tenant.store";
 
+const TOP_SELLING_LIMIT = 6;
 
 export function FevItems() {
   const slug = useTenantStore((s) => s.tenantSlug);
-  const menus = useMenuListStore((s) => s.menus);
-  const menusInitialized = useMenuListStore((s) => s.initialized);
-  const menusLoading = useMenuListStore((s) => s.loading);
 
   const topSellingItems = useMenuItemStore((s) => s.topSellingItems);
   const topSellingInitialized = useMenuItemStore((s) => s.topSellingInitialized);
   const topSellingLoading = useMenuItemStore((s) => s.topSellingLoading);
   const fetchTopSellingItems = useMenuItemStore((s) => s.fetchTopSellingItems);
 
-  const [activeMenuId, setActiveMenuId] = useState<string>("");
-
   useEffect(() => {
     if (slug && !topSellingInitialized && !topSellingLoading) {
-      fetchTopSellingItems(slug, 5);
+      fetchTopSellingItems(slug, TOP_SELLING_LIMIT);
     }
   }, [slug, fetchTopSellingItems, topSellingInitialized, topSellingLoading]);
 
-  const currentMenuId = activeMenuId || "";
-
-  const activeMenu = useMemo(() => {
-    if (!currentMenuId) return undefined;
-    return menus.find((m) => m.id.toString() === currentMenuId);
-  }, [menus, currentMenuId]);
-
-  const filteredItems = useMemo(() => {
-    if (!currentMenuId) return topSellingItems;
-    return topSellingItems.filter((item) => item.menuId?.toString() === currentMenuId);
-  }, [topSellingItems, currentMenuId]);
-
-  const loading = (!menusInitialized && menusLoading) || (!topSellingInitialized && topSellingLoading);
+  const loading = !topSellingInitialized && topSellingLoading;
+  const displayItems = topSellingItems.slice(0, TOP_SELLING_LIMIT);
 
   if (loading) {
     return (
@@ -51,11 +37,6 @@ export function FevItems() {
         <Container className="max-w-385 px-3 lg:px-4 xl:px-6">
           <div className="mb-8 flex justify-center">
             <div className="h-8 w-40 bg-(--color-text-muted)/20 rounded-full animate-pulse" />
-          </div>
-          <div className="flex gap-3 justify-center mb-8">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-9 w-24 bg-(--color-text-muted)/15 rounded-full animate-pulse" />
-            ))}
           </div>
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -73,7 +54,7 @@ export function FevItems() {
     );
   }
 
-  if (menus.length === 0) {
+  if (displayItems.length === 0) {
     return null;
   }
 
@@ -83,68 +64,33 @@ export function FevItems() {
       className="section-plain section-divider-top py-16 md:py-20"
     >
       <Container className="relative max-w-385 px-3 lg:px-4 xl:px-6">
-        <SectionTitle title="Favorite" align="center" />
-
-        {/* MENU BUTTONS */}
-        <div className="mt-8 flex flex-wrap gap-3 justify-center">
-          {/* ALL button */}
-          <button
-            type="button"
-            onClick={() => setActiveMenuId("")}
-            className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
-              !currentMenuId
-                ? "bg-[var(--color-primary)] text-white shadow-sm"
-                : "border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-text-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
-            }`}
-          >
-            All
-          </button>
-
-          {menus.map((menu) => {
-            const isActive = menu.id.toString() === currentMenuId;
-
-            return (
-              <button
-                key={menu.id}
-                type="button"
-                onClick={() => setActiveMenuId(menu.id.toString())}
-                className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
-                  isActive
-                    ? "bg-[var(--color-primary)] text-white shadow-sm"
-                    : "border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-text-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
-                }`}
-              >
-                {menu.menuName}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* MENU DESCRIPTION */}
-        {activeMenu?.description && (
-          <p className="mt-5 mx-auto max-w-2xl text-center text-sm text-[var(--color-text-muted)]">
-            {activeMenu.description}
-          </p>
-        )}
+        <SectionTitle title="Top Selling" align="center" />
 
         {/* ITEMS GRID */}
-        <div
-          key={currentMenuId}
-          className={`mt-10 ${staggerContainer}`}
-        >
-          {filteredItems.length === 0 ? (
-            <p className="text-sm text-[var(--color-text-muted)] text-center py-10">
-              No items available in this menu.
-            </p>
-          ) : (
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {filteredItems.map((item, i) => (
-                <div key={item.id} style={{ "--stagger-index": i } as React.CSSProperties}>
-                  <MenuItemCard item={item} />
-                </div>
-              ))}
-            </div>
-          )}
+        <div className={`mt-10 ${staggerContainer}`}>
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {displayItems.map((item, i) => (
+              <div key={item.id} className="h-full" style={{ "--stagger-index": i } as React.CSSProperties}>
+                <MenuItemCard item={item} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ALL ITEMS BUTTON */}
+        <div className="mt-10 flex justify-end">
+          <Link
+            href="/menu"
+            className="inline-flex items-center gap-2 rounded-full border-2 px-6 py-3 text-sm font-semibold transition hover:opacity-80"
+            style={{
+              borderColor: "var(--color-primary)",
+              color: "var(--color-primary-text)",
+              borderRadius: "var(--radius-button)",
+            }}
+          >
+            All Items
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </Container>
     </section>

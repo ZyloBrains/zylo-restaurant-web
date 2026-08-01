@@ -12,6 +12,7 @@ import {
 } from "react";
 import type { AddToCartInput, CartItem } from "./cart.types";
 import { cartService } from "@/services/cart.service";
+import { getAuthStorageKey } from "@/lib/tenant-storage";
 
 type CartOpenBehavior = "manual" | "first-item" | "always";
 
@@ -47,9 +48,9 @@ type CartProviderProps = {
   openBehavior?: CartOpenBehavior;
 };
 
-function getAuthState(): { userId?: number; token?: string } {
+function getAuthState(slug: string): { userId?: number; token?: string } {
   try {
-    const raw = localStorage.getItem("auth-storage");
+    const raw = localStorage.getItem(getAuthStorageKey(slug));
     if (!raw) return {};
     const parsed = JSON.parse(raw);
     return {
@@ -113,7 +114,7 @@ export function CartProvider({
     if (!slug || loadedRef.current) return;
     loadedRef.current = true;
 
-    const { userId } = getAuthState();
+    const { userId } = getAuthState(slug);
     const storedSessionId = localStorage.getItem("cart_session_id");
 
     if (userId) {
@@ -157,20 +158,20 @@ export function CartProvider({
     const cartId = cartIdRef.current;
     if (cartId && slug) {
       cartIdRef.current = null;
-      cartService.clearCart(slug,cartId).catch(() => {});
+      cartService.clearCart(slug,cartId, sessionIdRef.current).catch(() => {});
     }
   }, []);
 
   const checkoutCart = useCallback(async (slug: string) => {
     const cartId = cartIdRef.current;
     if (cartId) {
-      await cartService.checkout(slug, cartId);
+      await cartService.checkout(slug, cartId, sessionIdRef.current);
     }
   }, []);
 
   const addItem = useCallback(
     (input: AddToCartInput) => {
-      const { userId } = getAuthState();
+      const { userId } = getAuthState(slug);
       const isAuthed = !!userId;
       let sessionId = sessionIdRef.current;
 
@@ -252,7 +253,7 @@ export function CartProvider({
 
       if (slug &&target.cartItemId) {
         cartService
-          .updateItem(target.cartItemId, slug,newQty)
+          .updateItem(target.cartItemId, slug,newQty, sessionIdRef.current)
           .catch(() => {});
       }
     },
@@ -277,11 +278,11 @@ export function CartProvider({
 
       if (newQty > 0 && target.cartItemId && slug) {
         cartService
-          .updateItem(target.cartItemId, slug, newQty)
+          .updateItem(target.cartItemId, slug, newQty, sessionIdRef.current)
           .catch(() => {});
       } else if (newQty === 0 && target.cartItemId && slug) {
         cartService
-          .removeItem(slug,target.cartItemId)
+          .removeItem(slug,target.cartItemId, sessionIdRef.current)
           .catch(() => {});
       }
     },
@@ -298,7 +299,7 @@ export function CartProvider({
 
       if ( slug && target?.cartItemId) {
         cartService
-          .removeItem(slug,target.cartItemId)
+          .removeItem(slug,target.cartItemId, sessionIdRef.current)
           .catch(() => {});
       }
     },

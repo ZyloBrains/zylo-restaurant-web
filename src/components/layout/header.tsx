@@ -2,12 +2,13 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Menu, ShoppingCart, X, Sun, Moon, UtensilsCrossed, User } from "lucide-react";
+import { Menu, ShoppingCart, X, Sun, Moon, UtensilsCrossed, User, Search } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { useCart } from "@/features/cart/cart-context";
 import { AuthButton } from "../auth/auth-buttton";
 import { UserDropdown } from "../auth/user-dropdown";
+import { SearchDialog } from "@/components/search/search-dialog";
 import { useTenantStore } from "@/features/tenant/tenant.store";
 import { useAuthStore } from "@/features/auth/auth.store";
 import { LoginModal } from "@/components/auth/login-modal";
@@ -49,7 +50,7 @@ function AuthButtonCompact() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center justify-center h-10 w-10 rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] transition"
+        className="flex items-center justify-center h-10 w-10 rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-primary-text)] hover:border-[var(--color-primary)] transition"
         aria-label="Login / Register"
       >
         <User size={18} />
@@ -76,6 +77,7 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [animateCart, setAnimateCart] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { setHydrated(true); }, []);
@@ -123,7 +125,7 @@ export function Header() {
               unoptimized
             />
           )}
-          <span className="text-base md:text-xl font-bold text-[var(--color-primary)] truncate">
+          <span className="text-base md:text-xl font-bold text-[var(--color-primary-text)] truncate">
             {tenant.restaurantName || "Restaurant"}
           </span>
         </Link>
@@ -134,7 +136,7 @@ export function Header() {
             <Link
               key={item.label}
               href={item.href}
-              className="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
+              className="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary-text)] transition-colors"
             >
               {item.label}
             </Link>
@@ -144,8 +146,16 @@ export function Header() {
         {/* DESKTOP RIGHT */}
         <div className="hidden md:flex items-center gap-3">
           <button
+            onClick={() => setSearchOpen(true)}
+            className="p-2 rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-primary-text)] hover:border-[var(--color-primary)] transition"
+            title="Search items"
+            aria-label="Search items"
+          >
+            <Search size={18} />
+          </button>
+          <button
             onClick={toggleDarkMode}
-            className="p-2 rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] transition"
+            className="p-2 rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-primary-text)] hover:border-[var(--color-primary)] transition"
             title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
           >
             {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
@@ -158,7 +168,7 @@ export function Header() {
             <ShoppingCart className={animateCart ? "animate-bounce" : ""} size={18} />
             Cart
             {itemCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[var(--color-accent)] text-white text-[10px] leading-none px-1.5 py-0.5 rounded-full">
+              <span className="absolute -top-2 -right-2 bg-[var(--color-accent)] text-[var(--color-primary)] text-[10px] leading-none px-1.5 py-0.5 rounded-full">
                 {itemCount}
               </span>
             )}
@@ -167,6 +177,13 @@ export function Header() {
 
         {/* MOBILE TOOLBAR */}
         <div className="flex md:hidden items-center gap-1">
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="flex items-center justify-center h-10 w-10 rounded-full border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-border)]/20 transition"
+            aria-label="Search items"
+          >
+            <Search size={18} />
+          </button>
           <AuthButtonCompact />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -193,7 +210,7 @@ export function Header() {
                 key={item.label}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-[var(--color-text)] hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)] transition active:scale-[0.98]"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-[var(--color-text)] hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary-text)] transition active:scale-[0.98]"
               >
                 {Icon && <Icon size={18} />}
                 <span className="text-sm font-medium">{item.label}</span>
@@ -207,7 +224,7 @@ export function Header() {
             <span className="text-sm text-[var(--color-text-muted)]">Dark mode</span>
             <button
               onClick={toggleDarkMode}
-              className="p-2 rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition"
+              className="p-2 rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-primary-text)] transition"
               title="Toggle dark mode"
             >
               {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
@@ -217,6 +234,10 @@ export function Header() {
 
         </nav>
       </div>
+
+      {searchOpen && slug && (
+        <SearchDialog slug={slug} onClose={() => setSearchOpen(false)} />
+      )}
     </header>
   );
 }

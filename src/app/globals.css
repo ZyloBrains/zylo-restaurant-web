@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(html[data-dark-mode="true"], html[data-dark-mode="true"] *, html[data-dark-mode="dark"], html[data-dark-mode="dark"] *));
+
 :root {
   --color-primary: #000f22;
   --color-primary-hover: #001a3d;
@@ -8,11 +10,13 @@
 
   --color-background: #f7f9fb;
   --color-surface: #ffffff;
-  --color-card: #ffffff;
+  --color-card: var(--color-surface);
   --color-border: #e2e8f0;
 
   --color-text: #191c1e;
   --color-text-muted: #6b7280;
+
+  --color-primary-text: var(--color-primary);
 
   --radius-button: 12px;
   --radius-card: 20px;
@@ -37,6 +41,7 @@ html[data-dark-mode="dark"] {
   --color-border: #334155;
   --color-text: #f1f5f9;
   --color-text-muted: #94a3b8;
+  --color-primary-text: #7dd3fc;
 }
 
 body {
@@ -83,7 +88,7 @@ section {
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center rounded-[var(--radius-button)] border border-[var(--color-border)] bg-[var(--color-card)] px-5 py-3 text-sm font-semibold text-[var(--color-primary)] transition duration-200 hover:border-[var(--color-primary)] hover:bg-[var(--color-surface)];
+  @apply inline-flex items-center justify-center rounded-[var(--radius-button)] border border-[var(--color-border)] bg-[var(--color-card)] px-5 py-3 text-sm font-semibold text-[var(--color-primary-text)] transition duration-200 hover:border-[var(--color-primary)] hover:bg-[var(--color-surface)];
 }
 
 .btn-outline-dark {

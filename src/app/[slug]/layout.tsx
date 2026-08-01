@@ -7,6 +7,8 @@ import { CartProvider } from "@/features/cart/cart-context";
 import { AppShell } from "@/components/layout/app-shell";
 import { HydrationBootstrap } from "@/components/bootstrap/hydration-bootstrap";
 import { generateTenantMetadata } from "@/seo/tenant-metadata";
+import { getTenantCached } from "@/lib/tenant/get-tenant-cached";
+import { buildThemeCss } from "@/lib/theme/theme.tokens";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -46,10 +48,23 @@ export default async function TenantLayout({
   params: Promise<{slug:string}>;
 }) {
   const {slug}= await params;
+
+  let themeCss = "";
+  try {
+    const tenant = await getTenantCached(slug);
+    themeCss = buildThemeCss(tenant.theme);
+  } catch (e) {
+    // Fall back to globals.css defaults when the tenant cannot be resolved.
+    themeCss = "";
+  }
+
   return (
     <div
       className={`${inter.variable} ${poppins.variable} font-(--font-body)] antialiased bg-(--color-background)] text-(--color-text)] min-h-screen`}
     >
+      {themeCss ? (
+        <style dangerouslySetInnerHTML={{ __html: `:root {\n  ${themeCss}\n}` }} />
+      ) : null}
 
       <HydrationBootstrap slug={slug} />
       <CartProvider slug={slug}>

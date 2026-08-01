@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { api } from "@/lib/api";
 
-const BASE = "http://localhost:8082/api";
+const BASE = "http://localhost:8082/api/v1";
 
 describe("api client", () => {
   beforeEach(() => {

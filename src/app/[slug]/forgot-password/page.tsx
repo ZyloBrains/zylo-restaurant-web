@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md rounded-3xl border border-[var(--color-border)] bg-[var(--color-card)] p-8 shadow-[var(--shadow-card)]">
         <div className="text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-accent)]/10">
-            <Mail className="h-8 w-8" style={{ color: "var(--color-primary)" }} />
+            <Mail className="h-8 w-8" style={{ color: "var(--color-primary-text)" }} />
           </div>
           <h1 className="mt-5 text-2xl font-bold text-[var(--color-text)]">Reset Password</h1>
           <p className="mt-2 text-sm text-[var(--color-text-muted)]">
@@ -95,7 +95,7 @@ export default function ForgotPasswordPage() {
           <Link
             href="../"
             className="inline-flex items-center gap-2 text-sm"
-            style={{ color: "var(--color-primary)" }}
+            style={{ color: "var(--color-primary-text)" }}
           >
             <ArrowLeft size={16} />
             Back to Login

@@ -95,7 +95,7 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
         setSelectedItem(item);
         router.push(`/menu/${item.id}`);
       }}
-      className="card-base card-hover group p-5 cursor-pointer animate-fade-up"
+      className="card-base card-hover group p-5 cursor-pointer animate-fade-up flex h-full flex-col overflow-hidden"
     >
       {/* IMAGE */}
       <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)] shadow-inner">
@@ -108,18 +108,18 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
       </div>
 
       {/* CONTENT */}
-      <div className="mt-5">
+      <div className="mt-5 flex flex-1 flex-col">
         <div className="flex items-start justify-between gap-4">
-          <h3 className="text-lg font-semibold text-[var(--color-text)]">
+          <h3 className="text-lg font-semibold text-[var(--color-text)] line-clamp-1">
             {item.name}
           </h3>
 
-          <span className="text-sm font-bold text-[var(--color-primary)]">
+          <span className="shrink-0 text-sm font-bold text-[var(--color-primary-text)]">
             NPR {item.price}
           </span>
         </div>
 
-        <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+        <p className="mt-2 text-sm text-[var(--color-text-muted)] line-clamp-2">
           {item.description}
         </p>
 
@@ -147,7 +147,7 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
           )}
         </div>
 
-        <div className="mt-5 flex items-center gap-3">
+        <div className="mt-auto flex items-center gap-3 pt-5">
           <button
             onClick={(e) => {
               e.stopPropagation();

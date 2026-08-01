@@ -48,7 +48,7 @@ export default function KhaltiSuccessPage() {
         {status === "verifying" && (
           <div className="flex flex-col items-center gap-4 py-8 animate-fade-in">
             <div className="animate-spin">
-              <Loader2 className="h-12 w-12 text-[var(--color-primary)]" />
+              <Loader2 className="h-12 w-12 text-[var(--color-primary-text)]" />
             </div>
             <p className="text-sm text-[var(--color-text-muted)]">{message}</p>
           </div>

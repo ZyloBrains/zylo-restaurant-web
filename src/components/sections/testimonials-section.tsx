@@ -60,7 +60,7 @@ export function TestimonialsSection() {
                                 </div>
 
                                 <div>
-                                    <p className="font-semibold text-[var(--color-primary)]">
+                                    <p className="font-semibold text-[var(--color-primary-text)]">
                                         {testimonial.name}
                                     </p>
                                     <p className="text-xs text-[var(--color-text-muted)]">

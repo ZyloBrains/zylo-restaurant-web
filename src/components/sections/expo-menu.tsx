@@ -34,7 +34,7 @@ function ExpoMenuImage({ imageUrl, name }: { imageUrl?: string | null; name: str
 
 export default function ExpoMenu() {
   const tenantTheme = useTenantStore((s) => s.tenantTheme);
-  const menus = useMenuListStore((s) => s.menus);
+  const menus = useMenuListStore((s) => s.data);
   const initialized = useMenuListStore((s) => s.initialized);
   const storeLoading = useMenuListStore((s) => s.loading);
 
@@ -84,7 +84,7 @@ export default function ExpoMenu() {
               <button
                 key={menu.id}
                 onClick={() => router.push(`/menu?menuId=${menu.id}`)}
-                className="snap-start min-w-55 md:min-w-65 px-4 py-6 text-center transition duration-300 hover:-translate-y-2"
+                className="snap-start min-w-55 md:min-w-65 px-4 py-6 text-center transition duration-300 hover:-translate-y-2 cursor-pointer"
                 style={{
                   background: "var(--color-surface)",
                   borderRadius: "var(--radius-card)",
