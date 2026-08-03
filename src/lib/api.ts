@@ -19,6 +19,10 @@ function getToken(): string | null {
   }
 }
 
+function isPublicPath(path: string): boolean {
+  return path.startsWith("/public/") || path.startsWith("/common/");
+}
+
 function buildUrl(path: string, params?: Record<string, string | number | undefined>): string {
   const url = new URL(`${API_BASE_URL}${path}`);
   if (params) {
@@ -32,13 +36,14 @@ function buildUrl(path: string, params?: Record<string, string | number | undefi
 async function request<T>(method: string, path: string, options: RequestOptions = {}): Promise<{ data: T; status: number }> {
   const { params, body, headers } = options;
   const token = getToken();
+  const publicPath = isPublicPath(path);
 
   const fetchHeaders: Record<string, string> = {
     "Content-Type": "application/json",
     ...headers,
   };
 
-  if (token) {
+  if (token && !publicPath) {
     fetchHeaders["Authorization"] = `Bearer ${token}`;
   }
 
@@ -52,11 +57,14 @@ async function request<T>(method: string, path: string, options: RequestOptions 
 
   if (!response.ok) {
     if (typeof window !== "undefined") {
-      if (response.status === 401) {
+      if (response.status === 401 && !publicPath) {
         useAuthStore.getState().logout();
         const { toast } = await import("sonner");
         toast.error("Session expired. Please log in again.");
         window.location.href = "/";
+        throw Object.assign(new Error("Unauthorized"), { status: 401 });
+      }
+      if (response.status === 401 && publicPath) {
         throw Object.assign(new Error("Unauthorized"), { status: 401 });
       }
       try {
