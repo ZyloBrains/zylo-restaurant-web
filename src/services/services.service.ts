@@ -19,17 +19,4 @@ export const serviceService = {
             return [];
         }
     },
-
-    async getServiceById(
-        slug: string,
-        id: number
-    ): Promise<ServiceResponse | null> {
-        try {
-            const response = await api.get<ApiResponse<ServiceResponse>>(`/public/${slug}/service/${id}`);
-            return response.data.data;
-        } catch (error) {
-            console.error(`Failed to fetch service ${id} for tenant ${slug}`, error);
-            return null;
-        }
-    },
 };

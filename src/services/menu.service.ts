@@ -20,16 +20,4 @@ export const menuService = {
       throw error;
     }
   },
-
-  async getMenuById(slug: string, id: number): Promise<MenuResponse | null> {
-    try {
-      const response = await api.get<ApiResponse<MenuResponse>>(
-        `/public/${slug}/menu/${id}`,
-      );
-      return response.data.data;
-    } catch (error) {
-      console.error(`Failed to fetch menu ${id} for tenant ${slug}:`, error);
-      return null;
-    }
-  },
 };

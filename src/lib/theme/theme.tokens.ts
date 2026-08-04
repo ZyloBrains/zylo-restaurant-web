@@ -83,7 +83,3 @@ export function buildThemeCss(
     "--shadow-card: " + t.shadowCard,
   ].join(";\n  ");
 }
-
-export function isDarkModeEnabled(tokens?: Partial<TenantThemeTokens>): boolean {
-  return normalizeDarkMode(tokens?.defaultDarkMode ?? THEME_DEFAULTS.defaultDarkMode) === "true";
-}

@@ -8,7 +8,6 @@ import { ItemResponse } from "../../features/menu/menu.types";
 import { useCart } from "@/features/cart/cart-context";
 import { resolveImageUrl } from "@/lib/utils/image.utils";
 import { useMenuItemStore } from "@/app/[slug]/store/menu-store";
-import { useTenantStore } from "@/features/tenant/tenant.store";
 import Image from "next/image";
 
 function ItemImage({ imageUrl, name }: { imageUrl?: string | null; name: string }) {

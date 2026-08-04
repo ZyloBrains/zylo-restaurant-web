@@ -5,7 +5,6 @@ import { X, Trash2, Minus, Plus, ShoppingCart, ArrowLeft } from "lucide-react";
 import { CheckoutModal } from "@/components/cart/checkout-modal";
 import { useCart } from "@/features/cart/cart-context";
 import { resolveImageUrl } from "@/lib/utils/image.utils";
-import { useTenantStore } from "@/features/tenant/tenant.store";
 import Image from "next/image";
 
 type CartDrawerProps = {
@@ -20,7 +19,6 @@ export function CartDrawer({
   tenantSlug,
 }: CartDrawerProps) {
   const [showSummary, setShowSummary] = useState(false);
-  const slug= useTenantStore((s)=>s.tenantSlug) as string;
 
   const {
     items,

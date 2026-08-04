@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-export type CachedListState<TData> = {
+type CachedListState<TData> = {
   data: TData[];
   cacheByTenant: Record<string, { data: TData[]; timestamp: number }>;
   loading: boolean;
@@ -9,7 +9,7 @@ export type CachedListState<TData> = {
   error: string | null;
 };
 
-export type CachedListActions = {
+type CachedListActions = {
   fetchData: (slug: string) => Promise<void>;
 };
 

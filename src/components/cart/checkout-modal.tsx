@@ -21,10 +21,8 @@ import {
 } from "@/features/checkout/whatsapp-preview";
 import { paymentService } from "@/services/payment.service";
 import { orderService } from "@/services/order.service";
-import { notificationService } from "@/services/notification.service";
 import { cartService } from "@/services/cart.service";
 import { useTenantStore } from "@/features/tenant/tenant.store";
-import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -72,8 +70,7 @@ function PaymentIcon({ opt, selected }: { opt: PaymentOption; selected: boolean 
 }
 
 export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Props) {
-  const { items, subtotal, clearCart, closeCart, cartId } = useCart();
-  const slug=useTenantStore((s)=>s.tenantSlug) as string;
+  const { items, subtotal, clearCart, cartId } = useCart();
   const tenant = useTenantStore((s) => s.tenant);
   const user = useAuthStore((s) => s.user);
   const isLoggedIn = !!user;
@@ -179,7 +176,10 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
         customerPhone: form.customerPhone,
         customerAddress: form.customerAddress || "N/A",
         customerNote: form.customerNotes || undefined,
-        paymentMethod: form.paymentMethod.toUpperCase(),
+        paymentMethod:
+          form.paymentMethod === "cash"
+            ? "OFFLINE"
+            : form.paymentMethod.toUpperCase(),
         promoCode: form.promoCode || undefined,
         promoDiscount: promoApplied ? promoDiscount : undefined,
         idempotencyKey,
@@ -187,9 +187,7 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
       setOrderNumber(order.orderNumber);
 
       // 2. Process based on payment method
-      if (form.paymentMethod === "cash") {
-        await handleCashFlow(order.id, currentUser.id);
-      } else if (form.paymentMethod === "esewa") {
+      if (form.paymentMethod === "esewa") {
         await handleEsewaFlow(order.id, currentUser.id);
       } else if (form.paymentMethod === "khalti") {
         await handleKhaltiFlow(order.id, currentUser.id);
@@ -232,20 +230,6 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
         setProcessing(false);
       }, 2000);
     }
-  }
-
-  async function handleCashFlow(orderId: number, _userId: number) {
-    setStatusText("Registering cash payment...");
-    const finalAmount = subtotal - promoDiscount;
-    const cashResult = await paymentService.initiateCash(tenantSlug, {
-      amount: finalAmount,
-      orderId: String(orderId),
-      userId: _userId,
-      description: `Order from ${restaurantName}`,
-    });
-
-    setStatusText("Confirming payment...");
-    await paymentService.confirmCash(tenantSlug, cashResult.transaction_uuid);
   }
 
   async function handleEsewaFlow(orderId: number, _userId: number) {
@@ -304,18 +288,6 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
     await new Promise((r) => setTimeout(r, 1500));
     setStep("success");
     setProcessing(false);
-  }
-
-  function handleDone() {
-    if (form.paymentMethod === "cash") {
-      window.open(waLink, "_blank");
-    }
-    clearCart();
-    closeCart();
-    setOpen(false);
-    setStep("details");
-    setForm(initialForm);
-    setOrderNumber("");
   }
 
   const isValid =

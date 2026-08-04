@@ -67,10 +67,9 @@ export function Header() {
   const slug = useTenantStore((s) => s.tenantSlug);
   const tenant = useTenantStore((s) => s.tenant);
   const darkModeBySlug = useTenantStore((s) => s.darkModeBySlug);
-  const tenantTheme = useTenantStore((s) => s.tenantTheme);
   const toggleDarkMode = useTenantStore((s) => s.toggleDarkMode);
 
-  const isDarkMode = slug ? (darkModeBySlug[slug] ?? (tenantTheme?.defaultDarkMode === "dark" || tenantTheme?.defaultDarkMode === "true")) : false;
+  const isDarkMode = slug ? (darkModeBySlug[slug] ?? false) : false;
 
   const { itemCount, openCart } = useCart();
 

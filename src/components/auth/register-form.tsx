@@ -48,13 +48,6 @@ export function RegisterForm({
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const set = (field: typeof form, cb?: () => void) =>
-    (value: string) => {
-      const updated = { ...form, ...field };
-      setForm(updated);
-      if (cb) cb();
-    };
-
   const handleBlur = (field: keyof typeof form) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
     setErrors((prev) => ({ ...prev, [field]: validate(field, form[field]) }));
