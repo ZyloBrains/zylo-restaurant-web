@@ -18,7 +18,3 @@ export interface ItemResponse{
     menuName:string,
     menuId:number
 }
-
-export type MenuData = {
-  items: ItemResponse[];
-};

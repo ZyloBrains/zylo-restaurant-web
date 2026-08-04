@@ -9,7 +9,7 @@ import { NotFoundPage } from "@/components/not-found-page";
 import type { ReactNode } from "react";
 import { useTenantStore } from "@/features/tenant/tenant.store";
 
-export function Skeleton() {
+function Skeleton() {
   return (
     <div className="min-h-screen bg-[var(--color-background)] animate-pulse">
       

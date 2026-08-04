@@ -1,14 +1,4 @@
 export const sectionImages = {
-  hero: {
-    src: "https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=1400&q=80",
-    alt: "Premium grilled seafood platter",
-  },
-
-  about: {
-    src: "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1200&q=80",
-    alt: "Restaurant seafood dining ambience",
-  },
-
   gallery: [
     {
       src: "https://images.unsplash.com/photo-1611599537845-1c7aca0091c0?auto=format&fit=crop&w=1000&q=80",

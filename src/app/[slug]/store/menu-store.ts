@@ -19,7 +19,6 @@ type MenuStore = {
   topSellingItems: ItemResponse[];
   topSellingLoading: boolean;
   topSellingInitialized: boolean;
-  topSellingError: string | null;
 
   loading: boolean;
   initialized: boolean;
@@ -30,7 +29,6 @@ type MenuStore = {
   fetchTopSellingItems: (slug: string, limit?: number) => Promise<void>;
 
   setSelectedItem: (item: ItemResponse) => void;
-  clearSelectedItem: () => void;
 };
 
 export const useMenuItemStore = create<MenuStore>()(
@@ -44,7 +42,6 @@ export const useMenuItemStore = create<MenuStore>()(
       topSellingItems: [],
       topSellingLoading: false,
       topSellingInitialized: false,
-      topSellingError: null,
 
       loading: false,
       initialized: false,
@@ -161,7 +158,7 @@ export const useMenuItemStore = create<MenuStore>()(
 
       fetchTopSellingItems: async (slug: string, limit: number = 5) => {
         try {
-          set({ topSellingLoading: true, topSellingError: null });
+          set({ topSellingLoading: true });
           const response = await itemService.getTopSellingItems(slug, limit);
           set({
             topSellingItems: response || [],
@@ -172,13 +169,11 @@ export const useMenuItemStore = create<MenuStore>()(
           console.error("Top selling fetch failed", error);
           set({
             topSellingLoading: false,
-            topSellingError: "Failed to load top selling items",
           });
         }
       },
 
       setSelectedItem: (item) => set({ selectedItem: item }),
-      clearSelectedItem: () => set({ selectedItem: null }),
     }),
     {
       name: "menu-storage",

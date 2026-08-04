@@ -5,13 +5,11 @@ import { useParams, useSearchParams } from "next/navigation";
 import { CheckCircle2, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { paymentService } from "@/services/payment.service";
-import { useAuthStore } from "@/features/auth/auth.store";
 
 export default function KhaltiSuccessPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const slug = (params?.slug as string) || "";
-  const user = useAuthStore((s) => s.user);
   const [status, setStatus] = useState<"verifying" | "success" | "error">(
     "verifying"
   );

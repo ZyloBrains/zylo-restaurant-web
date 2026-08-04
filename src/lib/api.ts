@@ -34,6 +34,15 @@ function buildUrl(path: string, params?: Record<string, string | number | undefi
 }
 
 async function request<T>(method: string, path: string, options: RequestOptions = {}): Promise<{ data: T; status: number }> {
+  return doRequest<T>(method, path, options, false);
+}
+
+async function doRequest<T>(
+  method: string,
+  path: string,
+  options: RequestOptions,
+  skipAuth: boolean
+): Promise<{ data: T; status: number }> {
   const { params, body, headers } = options;
   const token = getToken();
   const publicPath = isPublicPath(path);
@@ -43,7 +52,7 @@ async function request<T>(method: string, path: string, options: RequestOptions 
     ...headers,
   };
 
-  if (token && !publicPath) {
+  if (token && !skipAuth) {
     fetchHeaders["Authorization"] = `Bearer ${token}`;
   }
 
@@ -56,6 +65,12 @@ async function request<T>(method: string, path: string, options: RequestOptions 
   const data = await response.json();
 
   if (!response.ok) {
+    // A public endpoint rejected the (possibly stale) token — retry once
+    // without it so public pages/cart keep working even on old backends.
+    if (response.status === 401 && publicPath && token && !skipAuth) {
+      return doRequest<T>(method, path, options, true);
+    }
+
     if (typeof window !== "undefined") {
       if (response.status === 401 && !publicPath) {
         useAuthStore.getState().logout();
