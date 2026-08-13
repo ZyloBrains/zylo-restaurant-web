@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X, Trash2, Minus, Plus, ShoppingCart, ArrowLeft } from "lucide-react";
-import { CheckoutModal } from "@/components/cart/checkout-modal";
+import {
+  CheckoutModal,
+  type CheckoutModalHandle,
+} from "@/components/cart/checkout-modal";
 import { useCart } from "@/features/cart/cart-context";
 import { resolveImageUrl } from "@/lib/utils/image.utils";
 import Image from "next/image";
+import { useQuickCheckoutStore } from "@/features/cart/quick-checkout-store";
 
 type CartDrawerProps = {
   restaurantName: string;
@@ -19,20 +23,33 @@ export function CartDrawer({
   tenantSlug,
 }: CartDrawerProps) {
   const [showSummary, setShowSummary] = useState(false);
+  const checkoutRef = useRef<CheckoutModalHandle>(null);
 
   const {
     items,
     increaseQty,
     decreaseQty,
     removeItem,
-    subtotal,
     total,
     isOpen,
     closeCart,
   } = useCart();
 
+  useEffect(() => {
+    useQuickCheckoutStore.getState().register(() => checkoutRef.current?.open());
+    return () => useQuickCheckoutStore.getState().register(null);
+  }, []);
+
   return (
     <>
+      {/* ALWAYS-MOUNTED CHECKOUT MODAL (shared with Order Now buttons) */}
+      <CheckoutModal
+        ref={checkoutRef}
+        restaurantName={restaurantName}
+        whatsappNumber={whatsappNumber}
+        tenantSlug={tenantSlug}
+        hideTrigger
+      />
       {/* OVERLAY */}
       {isOpen && (
         <button
@@ -197,11 +214,12 @@ export function CartDrawer({
             </button>
 
             {/* CHECKOUT */}
-            <CheckoutModal
-              restaurantName={restaurantName}
-              whatsappNumber={whatsappNumber}
-              tenantSlug={tenantSlug}
-            />
+            <button
+              onClick={() => checkoutRef.current?.open()}
+              className="btn-primary w-full text-center block"
+            >
+              Place Order
+            </button>
           </div>
         )}
 
@@ -271,11 +289,12 @@ export function CartDrawer({
                 <span className="text-[var(--color-text-muted)]">Total</span>
                 <span className="text-lg font-bold text-[var(--color-primary-text)]">NPR {total}</span>
               </div>
-              <CheckoutModal
-                restaurantName={restaurantName}
-                whatsappNumber={whatsappNumber}
-                tenantSlug={tenantSlug}
-              />
+              <button
+                onClick={() => checkoutRef.current?.open()}
+                className="btn-primary w-full text-center block"
+              >
+                Place Order
+              </button>
             </div>
           </div>
         )}

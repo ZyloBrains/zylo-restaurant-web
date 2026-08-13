@@ -86,7 +86,7 @@ export function RegisterForm({
         email: processedEmail,
         phone: form.phone.trim(),
         password: form.password,
-        role: "OTHER",
+        role: "CUSTOMER",
         userType: "NORMAL",
       });
       onSuccess();

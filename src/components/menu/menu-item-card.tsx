@@ -8,6 +8,8 @@ import { ItemResponse } from "../../features/menu/menu.types";
 import { useCart } from "@/features/cart/cart-context";
 import { resolveImageUrl } from "@/lib/utils/image.utils";
 import { useMenuItemStore } from "@/app/[slug]/store/menu-store";
+import { useQuickCheckoutStore } from "@/features/cart/quick-checkout-store";
+import { OutOfStockBridge } from "@/components/menu/out-of-stock-bridge";
 import Image from "next/image";
 
 function ItemImage({ imageUrl, name }: { imageUrl?: string | null; name: string }) {
@@ -88,14 +90,30 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
     showAddToCartToast(qty + 1);
   };
 
+  const handleOrderNow = () => {
+    addItem({
+      menuItemId: item.id.toString(),
+      itemId: item.id,
+      name: item.name,
+      price: item.price,
+      imageUrl: item.imageUrl as string,
+      isSpicy: item.tags?.includes("spicy"),
+      isFeatured: item.active,
+    });
+
+    useQuickCheckoutStore.getState().openCheckout?.();
+  };
+
   return (
     <div
       onClick={() => {
         setSelectedItem(item);
         router.push(`/menu/${item.id}`);
       }}
-      className="card-base card-hover group p-5 cursor-pointer animate-fade-up flex h-full flex-col overflow-hidden"
+      className="card-base card-hover group p-5 cursor-pointer animate-fade-up flex h-full flex-col overflow-hidden relative"
     >
+      {/* OUT OF STOCK BRIDGE */}
+      {!item.active && <OutOfStockBridge />}
       {/* IMAGE */}
       <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-background)] shadow-inner">
         <ItemImage imageUrl={item.imageUrl} name={item.name} />
@@ -146,22 +164,28 @@ export function MenuItemCard({ item }: { item: ItemResponse }) {
           )}
         </div>
 
-        <div className="mt-auto flex items-center gap-3 pt-5">
+        <div className="mt-auto flex items-stretch gap-2 pt-5">
           <button
             onClick={(e) => {
               e.stopPropagation();
               handleAdd();
             }}
             disabled={!item.active}
-            className="btn-primary w-full sm:w-auto"
+            className="btn-secondary flex-1 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {qty > 0 ? "Add One More" : "Add to Cart"}
           </button>
 
-          {qty > 0 && (
-            <span className="text-sm font-medium text-[var(--color-text-muted)]">
-              Qty: {qty}
-            </span>
+          {item.active && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOrderNow();
+              }}
+              className="btn-primary flex-1"
+            >
+              Order Now
+            </button>
           )}
         </div>
       </div>

@@ -5,24 +5,25 @@ import { toast } from "sonner";
 import { useMenuItemStore } from "@/app/[slug]/store/menu-store";
 import { useCart } from "@/features/cart/cart-context";
 import { resolveImageUrl } from "@/lib/utils/image.utils";
-import { useParams } from "next/navigation";
-import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Minus, Plus } from "lucide-react";
+import { useQuickCheckoutStore } from "@/features/cart/quick-checkout-store";
+import { OutOfStockBridge } from "@/components/menu/out-of-stock-bridge";
 
 export default function MenuItemPage() {
-  const params= useParams();
-  const slug= params?.slug as string;
-  const id= params?.id as string;
+  const params = useParams();
+  const slug = params?.slug as string;
+  const id = params?.id as string;
+  const router = useRouter();
   const fetchItemById = useMenuItemStore((s) => s.fetchItemById);
-  const item= useMenuItemStore((s)=>s.selectedItem);
-  const { addItem, getItemQty } = useCart();
+  const item = useMenuItemStore((s) => s.selectedItem);
+  const { items, addItem, increaseQty, decreaseQty } = useCart();
 
-  
-  useEffect(()=>{
-    if(!slug || !id) return;
-    fetchItemById(slug,id);
-  },[slug,id]);
+  useEffect(() => {
+    if (!slug || !id) return;
+    fetchItemById(slug, id);
+  }, [slug, id, fetchItemById]);
 
   if (!item) {
     return (
@@ -32,7 +33,9 @@ export default function MenuItemPage() {
     );
   }
 
-  const qty = getItemQty(item.id.toString());
+  const cartItem = items.find((i) => i.menuItemId === item.id.toString());
+  const qty = cartItem?.quantity ?? 0;
+  const isInactive = !item.active;
 
   const showToast = (qtyAfter: number) => {
     toast.custom(
@@ -78,16 +81,46 @@ export default function MenuItemPage() {
     showToast(qty + 1);
   };
 
+  const handleIncrease = () => {
+    increaseQty(item.id.toString());
+  };
+
+  const handleDecrease = () => {
+    decreaseQty(item.id.toString());
+  };
+
+  const handleOrderNow = () => {
+    addItem({
+      menuItemId: item.id.toString(),
+      itemId: item.id,
+      name: item.name,
+      price: item.price,
+      imageUrl: item.imageUrl || "",
+      isSpicy: item.tags?.includes("spicy"),
+      isFeatured: item.tags?.includes("featured"),
+    });
+
+    useQuickCheckoutStore.getState().openCheckout?.();
+  };
+
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push(`/${slug}/menu`);
+    }
+  };
+
   return (
     <div className="bg-[var(--color-background)] min-h-[calc(100vh-120px)] px-4 pt-10 pb-8">
-      
-      <Link
-        href="/"
+
+      <button
+        onClick={handleBack}
         className="mb-6 inline-flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition"
       >
         <ArrowLeft size={18} />
         Back to Menu
-      </Link>
+      </button>
 
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-start">
 
@@ -101,6 +134,9 @@ export default function MenuItemPage() {
             alt={item.name}
             className="absolute inset-0 h-full w-full object-cover transition duration-500 hover:scale-105"
           />
+
+          {/* OUT OF STOCK BRIDGE */}
+          {isInactive && <OutOfStockBridge />}
 
           {/* QTY BADGE */}
           {qty > 0 && (
@@ -128,7 +164,7 @@ export default function MenuItemPage() {
           </p>
 
           {/* BADGES */}
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4 flex flex-wrap gap-2">
             {item.tags?.includes("spicy") && (
               <span className="px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400 text-xs">
                 🌶 Spicy
@@ -140,21 +176,70 @@ export default function MenuItemPage() {
                 ⭐ Popular
               </span>
             )}
+
+            {isInactive && (
+              <span className="px-3 py-1 rounded-full bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-400 text-xs">
+                Out of Stock
+              </span>
+            )}
           </div>
 
-          {/* BUTTON */}
-          <div className="mt-8 flex items-center gap-3">
-            <button
-              onClick={handleAdd}
-              className="btn-primary w-full md:w-auto"
-            >
-              {qty > 0 ? "Add One More" : "Add to Cart"}
-            </button>
+          {/* QUANTITY + ORDER NOW */}
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+            {isInactive ? (
+              <button
+                disabled
+                className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Out of Stock
+              </button>
+            ) : qty === 0 ? (
+              <>
+                <button
+                  onClick={handleOrderNow}
+                  className="btn-primary w-full sm:flex-1"
+                >
+                  Order Now
+                </button>
 
-            {qty > 0 && (
-              <span className="text-sm font-medium text-[var(--color-text-muted)]">
-                Qty: {qty}
-              </span>
+                <button
+                  onClick={handleAdd}
+                  className="btn-secondary w-full sm:flex-1"
+                >
+                  Add to Cart
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="inline-flex items-center gap-4 rounded-[var(--radius-button)] border border-[var(--color-border)] bg-[var(--color-card)] px-2 py-2">
+                  <button
+                    onClick={handleDecrease}
+                    aria-label="Decrease quantity"
+                    className="flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] transition duration-200 hover:bg-[var(--color-primary)] hover:text-white"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+
+                  <span className="min-w-[32px] text-center text-xl font-bold text-[var(--color-text)]">
+                    {qty}
+                  </span>
+
+                  <button
+                    onClick={handleIncrease}
+                    aria-label="Increase quantity"
+                    className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--color-primary)] text-white transition duration-200 hover:bg-[var(--color-primary-hover)]"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <button
+                  onClick={handleOrderNow}
+                  className="btn-primary w-full sm:flex-1"
+                >
+                  Order Now
+                </button>
+              </>
             )}
           </div>
         </div>
