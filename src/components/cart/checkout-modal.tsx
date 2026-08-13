@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   X,
   CheckCircle2,
@@ -30,6 +37,7 @@ type Props = {
   restaurantName: string;
   whatsappNumber: string;
   tenantSlug: string;
+  hideTrigger?: boolean;
 };
 
 const initialForm: CheckoutFormData = {
@@ -69,8 +77,11 @@ function PaymentIcon({ opt, selected }: { opt: PaymentOption; selected: boolean 
   );
 }
 
-export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Props) {
-  const { items, subtotal, clearCart, cartId } = useCart();
+export type CheckoutModalHandle = { open: () => void };
+
+export const CheckoutModal = forwardRef<CheckoutModalHandle, Props>(
+  function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug, hideTrigger }, ref) {
+    const { items, subtotal, clearCart, cartId } = useCart();
   const tenant = useTenantStore((s) => s.tenant);
   const user = useAuthStore((s) => s.user);
   const isLoggedIn = !!user;
@@ -294,18 +305,24 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
     form.customerName.trim().length > 0 &&
     form.customerPhone.trim().length > 0;
 
+  const openModal = () => {
+    setForm(initialForm);
+    setStep("details");
+    setOpen(true);
+    setPromoApplied(false);
+    setPromoDiscount(0);
+    setOrderNumber("");
+  };
+
+  useImperativeHandle(ref, () => ({ open: openModal }));
+
   return (
     <>
-      <button onClick={() => {
-        setForm(initialForm);
-        setStep("details");
-        setOpen(true);
-        setPromoApplied(false);
-        setPromoDiscount(0);
-        setOrderNumber("");
-      }} className="btn-primary  w-full">
-        Place Order
-      </button>
+      {!hideTrigger && (
+        <button onClick={openModal} className="btn-primary  w-full">
+          Place Order
+        </button>
+      )}
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm md:items-center">
@@ -834,4 +851,4 @@ export function CheckoutModal({ restaurantName, whatsappNumber, tenantSlug }: Pr
       )}
     </>
   );
-}
+});

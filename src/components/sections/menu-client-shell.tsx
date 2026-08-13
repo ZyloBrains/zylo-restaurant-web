@@ -1,13 +1,8 @@
 "use client";
 
-import { MobileBottomBar } from "@/components/layout/mobile-bottom-bar";
-import { CartDrawer } from "@/components/cart/cart-drawer";
-
 import { HeroSection } from "@/components/sections/hero-section";
 import { FevItems, } from "@/components/sections/fav-items";
 import { ServicesSection } from "@/components/sections/services-section";
-// import type { MenuData } from "@/features/menu/menu.types";
-// import type { TenantInfo } from "@/features/tenant/tenant.types";
 import ExpoMenu from "./expo-menu";
 import { useTenantStore } from "@/features/tenant/tenant.store";
 
@@ -36,19 +31,6 @@ export function MenuClientShell() {
         <ServicesSection />
 
       </main>
-
-      {/* MOBILE ACTION BAR */}
-      <MobileBottomBar
-        phone={tenantInfo?.phone as string}
-        whatsappNumber={tenantInfo?.whatsappNumber as string}
-      />
-
-      {/* CART SYSTEM */}
-      <CartDrawer
-        restaurantName={tenantInfo?.restaurantName as string}
-        whatsappNumber={tenantInfo?.whatsappNumber as string}
-        tenantSlug={slug as string}
-      />
     </div>
   );
 }
