@@ -30,7 +30,7 @@ import { paymentService } from "@/services/payment.service";
 import { orderService } from "@/services/order.service";
 import { cartService } from "@/services/cart.service";
 import { useTenantStore } from "@/features/tenant/tenant.store";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 type Props = {
@@ -314,6 +314,13 @@ export const CheckoutModal = forwardRef<CheckoutModalHandle, Props>(
     setOrderNumber("");
   };
 
+  const router = useRouter();
+
+  const handleDone = () => {
+    setOpen(false);
+    router.push(`/${tenantSlug}`);
+  };
+
   useImperativeHandle(ref, () => ({ open: openModal }));
 
   return (
@@ -399,11 +406,9 @@ export const CheckoutModal = forwardRef<CheckoutModalHandle, Props>(
                         Send via WhatsApp
                       </a>
                     )}
-                    <Link 
-                    href="/"
-                    className="btn-secondary">
+                    <button onClick={handleDone} className="btn-secondary">
                       Done
-                    </Link>
+                    </button>
                   </div>
                 </div>
               )}
