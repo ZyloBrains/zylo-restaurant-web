@@ -32,7 +32,7 @@ export const cartService = {
   ): Promise<CartResponse> {
     const { data } = await api.get<ApiResponse<CartResponse>>(
       `/public/${slug}/cart/active`,
-      { params: { userId, sessionId } }
+      { params: { userId, sessionId }, silent: true }
     );
     return data.data;
   },
