@@ -215,7 +215,10 @@ export function CartDrawer({
 
             {/* CHECKOUT */}
             <button
-              onClick={() => checkoutRef.current?.open()}
+              onClick={() => {
+                closeCart();
+                checkoutRef.current?.open();
+              }}
               className="btn-primary w-full text-center block"
             >
               Place Order
@@ -290,7 +293,11 @@ export function CartDrawer({
                 <span className="text-lg font-bold text-[var(--color-primary-text)]">NPR {total}</span>
               </div>
               <button
-                onClick={() => checkoutRef.current?.open()}
+                onClick={() => {
+                  closeCart();
+                  setShowSummary(false);
+                  checkoutRef.current?.open();
+                }}
                 className="btn-primary w-full text-center block"
               >
                 Place Order

@@ -7,6 +7,7 @@ type RequestOptions = {
   params?: Record<string, string | number | undefined>;
   body?: unknown;
   headers?: Record<string, string>;
+  silent?: boolean;
 };
 
 function getToken(): string | null {
@@ -74,19 +75,15 @@ async function doRequest<T>(
     if (typeof window !== "undefined") {
       if (response.status === 401 && !publicPath) {
         useAuthStore.getState().logout();
-        const { toast } = await import("sonner");
-        toast.error("Session expired. Please log in again.");
-        window.location.href = "/";
         throw Object.assign(new Error("Unauthorized"), { status: 401 });
       }
-      if (response.status === 401 && publicPath) {
-        throw Object.assign(new Error("Unauthorized"), { status: 401 });
-      }
-      try {
-        const { toast } = await import("sonner");
-        toast.error(data?.message || `Request failed (${response.status})`);
-      } catch {
-        // sonner not available
+      if (!options.silent) {
+        try {
+          const { toast } = await import("sonner");
+          toast.error(data?.message || `Request failed (${response.status})`);
+        } catch {
+          // sonner not available
+        }
       }
     }
     throw Object.assign(new Error(data?.message || "Request failed"), {
@@ -99,23 +96,23 @@ async function doRequest<T>(
 }
 
 export const api = {
-  get<T>(path: string, options?: { params?: Record<string, string | number | undefined> }): Promise<{ data: T; status: number }> {
+  get<T>(path: string, options?: RequestOptions): Promise<{ data: T; status: number }> {
     return request<T>("GET", path, options);
   },
 
-  post<T>(path: string, body?: unknown, options?: { params?: Record<string, string | number | undefined> }): Promise<{ data: T; status: number }> {
+  post<T>(path: string, body?: unknown, options?: RequestOptions): Promise<{ data: T; status: number }> {
     return request<T>("POST", path, { ...options, body });
   },
 
-  put<T>(path: string, body?: unknown, options?: { params?: Record<string, string | number | undefined> }): Promise<{ data: T; status: number }> {
+  put<T>(path: string, body?: unknown, options?: RequestOptions): Promise<{ data: T; status: number }> {
     return request<T>("PUT", path, { ...options, body });
   },
 
-  patch<T>(path: string, body?: unknown, options?: { params?: Record<string, string | number | undefined> }): Promise<{ data: T; status: number }> {
+  patch<T>(path: string, body?: unknown, options?: RequestOptions): Promise<{ data: T; status: number }> {
     return request<T>("PATCH", path, { ...options, body });
   },
 
-  delete<T>(path: string, options?: { params?: Record<string, string | number | undefined> }): Promise<{ data: T; status: number }> {
+  delete<T>(path: string, options?: RequestOptions): Promise<{ data: T; status: number }> {
     return request<T>("DELETE", path, options);
   },
 };

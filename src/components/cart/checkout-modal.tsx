@@ -786,9 +786,10 @@ export const CheckoutModal = forwardRef<CheckoutModalHandle, Props>(
                       setShowLogin(true);
                       return;
                     }
+                    if (!isValid) return;
                     setStep("confirm");
                   }}
-                  disabled={!isValid}
+                  disabled={isLoggedIn && !isValid}
                   className="btn-primary w-full disabled:opacity-50"
                 >
                   {!isLoggedIn ? (
@@ -799,7 +800,7 @@ export const CheckoutModal = forwardRef<CheckoutModalHandle, Props>(
                     `Continue – NPR ${subtotal - promoDiscount + (tenant?.vatPercentage ? Math.round((subtotal - promoDiscount) * tenant.vatPercentage / 100) : 0)}`
                   )}
                 </button>
-                {!isValid && (
+                {isLoggedIn && !isValid && (
                   <p className="mt-1.5 text-center text-xs text-red-500">
                     Name and phone number are required
                   </p>
@@ -836,7 +837,15 @@ export const CheckoutModal = forwardRef<CheckoutModalHandle, Props>(
             {/* LOGIN MODAL */}
             {showLogin && (
               <LoginModal
-                onClose={() => setShowLogin(false)}
+                onClose={() => {
+                  setShowLogin(false);
+                  setOpen(false);
+                  setStep("details");
+                  setForm(initialForm);
+                  setOrderNumber("");
+                  setPromoApplied(false);
+                  setPromoDiscount(0);
+                }}
                 onSuccess={() => {
                   setShowLogin(false);
                   const currentUser = useAuthStore.getState().user;
